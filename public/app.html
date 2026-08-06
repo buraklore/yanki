@@ -351,15 +351,15 @@ svg{display:block;max-width:100%}
     <div class="sb-logo"><span class="mk">Y</span> YANKI</div>
     <div class="sb-user">
       <div class="row"><span class="av" id="uAv">DH</span>
-        <span class="ics"><button title="Theme">◐</button><button title="Language">⊕</button><button title="Sign out" onclick="signOut()">↪</button></span></div>
-      <div class="lb">WELCOME BACK,</div><div class="nm" id="uName">Demo Account</div>
+        <span class="ics"><button title="${T('Theme')}">◐</button><button title="${T('Language')}" onclick="langMenu()">⊕</button><button title="${T('Sign out')}" onclick="signOut()">↪</button></span></div>
+      <div class="lb" id="welcomeLb">WELCOME BACK,</div><div class="nm" id="uName">Demo Account</div>
     </div>
     <button class="sb-ws" onclick="toast('Single workspace — add another from Settings › Brand')">
       <span class="sq">⬢</span><span id="wsName">brand</span><span class="cv">⌄</span></button>
     <nav class="nav" id="nav"></nav>
     <div class="sb-foot">
       <button class="nav" style="font-size:12.5px;color:var(--mute2);background:none;border:0;text-align:left;padding:0 11px"
-        onclick="toast('Thanks for your feedback')">▭ Feedback</button>
+        onclick="toast(T('Thanks for your feedback'))"><span id="fbLabel">▭ Feedback</span></button>
       <div class="trial" id="trialBox"></div>
     </div>
   </aside>
@@ -423,6 +423,433 @@ const intentLabel=k=>(INTENTS[k]||{label:k}).label;
 // Audit factors and their fixes now come from the server with each audit run,
 // so the catalogue lives in one place instead of two.
 
+
+/* =====================================================================
+   i18n — Turkish is the default because the customers are.
+
+   These are not literal translations. Turkish digital-marketing practice
+   has settled on specific words and using anything else makes the product
+   read as machine-translated to the people who would buy it:
+
+     citation      → atıf        (not "alıntı", which reads as a book quote)
+     share of voice→ ses payı    (established, used by agencies and Semrush TR)
+     impression    → gösterim    (Google's own Turkish Search Console wording)
+     entity        → varlık
+     crawler       → tarayıcı / bot
+     audit         → denetim
+     dashboard     → kontrol paneli
+     insight       → içgörü
+     prompt        → sorgu       ("komut" exists but users search with sorgu)
+
+   Product names stay in English on purpose: ChatGPT, Google AI Overviews,
+   llms.txt, schema, Search Console. Translating a proper noun helps nobody.
+   ===================================================================== */
+
+const I18N = {
+  'Dashboard':'Kontrol Paneli',
+  'Analytics':'Analitik',
+  'Competitors':'Rakipler',
+  'AI Prompts':'AI Sorguları',
+  'Action Plan':'Aksiyon Planı',
+  'Audit':'Denetim',
+  'Tools':'Araçlar',
+  'Settings':'Ayarlar',
+  'Mentions':'Bahsetmeler',
+  'Platforms':'Platformlar',
+  'Sources':'Kaynaklar',
+  'Opportunities':'Fırsatlar',
+  'Bot Traffic':'Bot Trafiği',
+  'Traffic':'Trafik',
+  'Search Performance':'Arama Performansı',
+  'Feedback':'Geri Bildirim',
+  'Sign out':'Çıkış yap',
+  'Theme':'Tema',
+  'Language':'Dil',
+  'Menu':'Menü',
+  'Visibility score':'Görünürlük skoru',
+  'Mention rate':'Bahsetme oranı',
+  'Share of voice':'Ses payı',
+  'Audit score':'Denetim skoru',
+  'confidence':'güven aralığı',
+  'still counting':'sayım sürüyor',
+  'No scan yet':'Henüz tarama yok',
+  'Counting — appears as answers arrive':'Sayılıyor — cevaplar geldikçe dolar',
+  'Waiting for the first results':'İlk sonuçlar bekleniyor',
+  'prompt-platform':'sorgu-platform',
+  'so far':'şu ana kadar',
+  'Add competitors →':'Rakip ekleyin →',
+  'Run your first audit →':'İlk denetiminizi çalıştırın →',
+  'factors':'faktör',
+  'checks in':'kontrol tamam',
+  'still running':'devam ediyor',
+  'Partial':'Kısmi',
+  'AI INSIGHTS':'AI İÇGÖRÜLERİ',
+  'Go to action plan →':'Aksiyon planına git →',
+  'Visibility Trend':'Görünürlük Trendi',
+  'Platform Visibility Score':'Platform Görünürlük Skoru',
+  'How prominently your brand appears in AI responses (0–100)':'Markanızın AI cevaplarında ne kadar öne çıktığı (0–100)',
+  'Recent Mentions':'Son Bahsetmeler',
+  'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın geçtiği sorgular — ham cevabı açmak için satıra tıklayın',
+  'Top Citing Domains':'En Çok Atıf Veren Alan Adları',
+  'Websites most cited by AI platforms in your industry':'Sektörünüzde AI platformlarının en çok atıf verdiği siteler',
+  'No brand mentions found':'Marka bahsi bulunamadı',
+  'See the Opportunities tab for where to start':'Nereden başlayacağınızı Fırsatlar sekmesinde görün',
+  'No history yet — the first scan writes today\'s point.':'Henüz geçmiş yok — ilk tarama bugünün noktasını yazar.',
+  'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Skorlar günlük güncellemeler arasında hafif dalgalanabilir. En doğru sonuç için trendi 4+ hafta takip edin.',
+  'Last 7 days':'Son 7 gün',
+  'Last 30 days':'Son 30 gün',
+  'Updates daily':'Günlük güncellenir',
+  'Loading your workspace…':'Çalışma alanınız yükleniyor…',
+  'Reading the latest scan results.':'Son tarama sonuçları okunuyor.',
+  'Could not load your data':'Verileriniz yüklenemedi',
+  'Try again':'Tekrar dene',
+  'Check setup':'Kurulumu kontrol et',
+  'Upgrade Plan':'Planı Yükselt',
+  'Upgrade':'Yükselt',
+  'No key':'Anahtar yok',
+  'Failing':'Hata veriyor',
+  'No data yet':'Henüz veri yok',
+  'Rescan':'Yeniden tara',
+  'Scanning…':'Taranıyor…',
+  'Check keys':'Anahtarları kontrol et',
+  'Run a scan now':'Şimdi tarama başlat',
+  'Scan in progress':'Tarama sürüyor',
+  'checks left. Keep this page open; results appear as they arrive.':'kontrol kaldı. Bu sayfayı açık tutun; sonuçlar geldikçe görünür.',
+  'Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.':'Her sorgu × platform hücresi, 5 koşunun ortalaması. Ham cevap için satıra tıklayın.',
+  'Detailed performance metrics for each AI platform':'Her AI platformu için ayrıntılı performans metrikleri',
+  'Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.':'Sektörünüzde AI platformlarının en çok atıf verdiği siteler. Bu liste GEO stratejinizin haritasıdır.',
+  'Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.':'Kapsama, tahmini hacim, kaynak sayısı ve ticari niyet birleşerek her sorguya bir fırsat skoru verir. Yüksek skorlu sorgular yüksek hacimli ve az kaynaklıdır — oradan başlayın.',
+  'Total checks':'Toplam kontrol',
+  'Citations':'Atıf',
+  'Average rank':'Ortalama sıra',
+  'cells':'hücre',
+  'runs':'koşu',
+  'coverage':'kapsama',
+  'volume':'hacim',
+  'domain cited as source':'alan adı kaynak gösterildi',
+  'when mentioned':'bahsedildiğinde',
+  'Mention matrix':'Bahsetme matrisi',
+  'Mention rate, prominence, citation, recommendation strength and sentiment are measured separately':'Bahsetme oranı, belirginlik, atıf, tavsiye gücü ve duygu ayrı ayrı ölçülür',
+  'Rank':'Sıra',
+  'Cited':'Atıf',
+  'Sentiment':'Duygu',
+  'Score':'Skor',
+  'Mention Distribution':'Bahsetme Dağılımı',
+  'Share of your brand mentions coming from each AI platform':'Marka bahsetmelerinizin her AI platformundan gelen payı',
+  'Daily visibility scores per platform':'Platform bazlı günlük görünürlük skorları',
+  'Platform Details':'Platform Detayları',
+  'Score, citation rate and total checks. The weight column defines each platform\'s share of the total score.':'Skor, atıf oranı ve toplam kontrol. Ağırlık sütunu her platformun toplam skordaki payını belirler.',
+  'Weight':'Ağırlık',
+  'Citation rate':'Atıf oranı',
+  'Trend':'Trend',
+  '⭳ Export Platforms':'⭳ Platformları Dışa Aktar',
+  '⭳ Export Sources':'⭳ Kaynakları Dışa Aktar',
+  '⭳ Download CSV':'⭳ CSV indir',
+  'Models learn about you mostly from third-party sources, not your own site. Being absent from the domains at the top of this list is your biggest structural gap — it appears as a task in the':'Modeller sizi çoğunlukla kendi sitenizden değil üçüncü taraf kaynaklardan öğrenir. Bu listenin üstündeki alan adlarında bulunmamak en büyük yapısal açığınızdır — şurada iş kalemi olarak görünür:',
+  'Prioritised prompt opportunities':'Önceliklendirilmiş sorgu fırsatları',
+  'The "Generate content" button drafts a brief for that prompt':'"İçerik üret" düğmesi o sorgu için bir brief hazırlar',
+  'Est. volume':'Tahmini hacim',
+  'Content fit':'İçerik uyumu',
+  'Suggested action':'Önerilen aksiyon',
+  'High':'Yüksek',
+  'Medium':'Orta',
+  'Low':'Düşük',
+  'Domain':'Alan adı',
+  'Count':'Sayı',
+  'First':'İlk',
+  'Last':'Son',
+  'your site':'sizin siteniz',
+  'No crawler logs connected':'Tarayıcı logu bağlı değil',
+  'Google Analytics 4 is not connected':'Google Analytics 4 bağlı değil',
+  'Connect Google Search Console':'Google Search Console\'u bağlayın',
+  'What GPTBot, ClaudeBot, PerplexityBot and other AI crawlers do on your site.':'GPTBot, ClaudeBot, PerplexityBot ve diğer AI tarayıcılarının sitenizde ne yaptığı.',
+  'Sessions and conversions coming from AI platforms, matched through GA4.':'AI platformlarından gelen oturumlar ve dönüşümler, GA4 ile eşleştirilir.',
+  'Where your SEO and AI performance intersect.':'SEO ve AI performansınızın kesiştiği yer.',
+  'A page that is never crawled cannot enter an AI answer, which makes crawler traffic the leading indicator of visibility — typically two to six weeks ahead of the score. Reading it requires your server or CDN logs.':'Taranmayan bir sayfa AI cevabına giremez; bu yüzden tarayıcı trafiği görünürlüğün öncü göstergesidir — genelde skordan iki ila altı hafta önde. Okumak için sunucu ya da CDN loglarınız gerekir.',
+  'Supported sources: Cloudflare Logpush, Nginx/Apache access logs, S3 delivery. Ingestion ships in the next release.':'Desteklenen kaynaklar: Cloudflare Logpush, Nginx/Apache erişim logları, S3 aktarımı. Alım bir sonraki sürümde.',
+  'Most AI-sourced visits carry no referrer and land in the direct bucket in GA4. Once connected, YANKI separates those sessions using UTM and referrer signatures and shows them next to your visibility score.':'AI kaynaklı ziyaretlerin çoğu referrer taşımaz ve GA4\'te doğrudan trafik kovasına düşer. Bağlandığında YANKI bu oturumları UTM ve referrer imzalarıyla ayrıştırır ve görünürlük skorunuzun yanında gösterir.',
+  'OAuth connection ships in the next release. Until then this screen stays empty rather than showing numbers we cannot source.':'OAuth bağlantısı bir sonraki sürümde geliyor. O zamana kadar bu ekran, kaynağını gösteremeyeceğimiz sayılar yerine boş kalır.',
+  'OAuth connection ships in the next release.':'OAuth bağlantısı bir sonraki sürümde geliyor.',
+  'This screen puts SEO and AI performance side by side and surfaces the blind-spot pages that rank on Google but never appear in AI answers. It needs Search Console data, which requires an OAuth connection.':'Bu ekran SEO ve AI performansını yan yana koyar; Google\'da sıralanan ama AI cevaplarında hiç görünmeyen kör nokta sayfaları ortaya çıkarır. Search Console verisi gerektirir.',
+  'Who gets mentioned how often across the prompts you track, and where you stand.':'Takip ettiğiniz sorgularda kim ne sıklıkta anılıyor ve siz neredesiniz.',
+  '+ Add Competitor':'+ Rakip Ekle',
+  'Add Competitor':'Rakip Ekle',
+  'Search competitors...':'Rakip ara...',
+  'Name':'Ad',
+  'Website':'Web sitesi',
+  'Mention count':'Bahsetme',
+  'Avg. rank':'Ort. sıra',
+  'Remove':'Kaldır',
+  'you':'siz',
+  'Mentions across the tracked brand set — same prompts, same day':'Takip edilen marka kümesinde bahsetmeler — aynı sorgular, aynı gün',
+  'Attribute matching':'Nitelik eşleşmesi',
+  'Which qualities models associate with each brand':'Modellerin her markayla ilişkilendirdiği nitelikler',
+  'Not enough answers yet':'Henüz yeterli cevap yok',
+  'The denominator is the tracked brand set only. Adding a competitor changes every share, which is why comparisons stay inside one set.':'Payda yalnızca takip edilen marka kümesidir. Rakip eklemek her payı değiştirir; karşılaştırmalar bu yüzden tek küme içinde kalır.',
+  'Attribute extraction needs the judge model and a few hundred answers before it says anything meaningful. It appears once the corpus is large enough.':'Nitelik çıkarımı anlamlı bir şey söyleyebilmek için hakem modeline ve birkaç yüz cevaba ihtiyaç duyar. Külliyat yeterince büyüdüğünde görünür.',
+  'The search prompts you track across AI platforms. See which prompts mention your brand and add new ones.':'AI platformlarında takip ettiğiniz arama sorguları. Hangi sorgularda markanızın geçtiğini görün, yenilerini ekleyin.',
+  'All':'Tümü',
+  'Active':'Aktif',
+  'Paused':'Pasif',
+  'Search prompts...':'Sorgu ara...',
+  'Prompt':'Sorgu',
+  'Intent':'Niyet',
+  'Volume':'Hacim',
+  'Coverage':'Kapsama',
+  'Source':'Kaynak',
+  'Status':'Durum',
+  'Custom':'Özel',
+  'AI-generated':'AI üretti',
+  '+ New Prompt':'+ Yeni Sorgu',
+  '✦ Regenerate with AI':'✦ AI ile Yeniden Üret',
+  'Generate content':'İçerik üret',
+  'New prompt':'Yeni sorgu',
+  'Prompt text':'Sorgu metni',
+  'Add and scan':'Ekle ve tara',
+  'Edit':'Düzenle',
+  'Save':'Kaydet',
+  'Edit prompt':'Sorguyu düzenle',
+  'Prompt updated':'Sorgu güncellendi',
+  'Prompt removed':'Sorgu kaldırıldı',
+  'Prompt is too short':'Sorgu çok kısa',
+  'Plan limit':'Plan limiti',
+  'prompts':'sorgu',
+  'Transactional':'İşlemsel',
+  'Brand defence':'Marka savunma',
+  'Comparison':'Karşılaştırma',
+  'Evaluation':'Değerlendirme',
+  'Informational':'Bilgilendirme',
+  'GEO Site Audit':'GEO Site Denetimi',
+  '58 factors scored across 6 categories. Every failing factor comes with a copy-ready fix.':'6 kategoride 58 faktör puanlanır. Başarısız her faktör için kopyalanabilir düzeltme verilir.',
+  'Run Audit':'Denetimi Çalıştır',
+  'Crawling…':'Taranıyor…',
+  'Category scores':'Kategori skorları',
+  'Click a category to expand its factors':'Faktörleri açmak için kategoriye tıklayın',
+  'Total score':'Toplam skor',
+  'passed':'geçti',
+  'partial':'kısmi',
+  'failed':'başarısız',
+  'Pass':'Geçti',
+  'Fail':'Başarısız',
+  'Fix':'Düzeltme',
+  'Copy':'Kopyala',
+  'Download':'İndir',
+  'Generate llms.txt':'llms.txt üret',
+  'Generate schema':'schema üret',
+  'Generate robots.txt':'robots.txt üret',
+  '⭳ Download audit report':'⭳ Denetim raporunu indir',
+  'Failing factors automatically become tasks in the':'Başarısız faktörler otomatik olarak şuraya iş kalemi olarak düşer:',
+  'action plan':'aksiyon planı',
+  'A task list built from audit findings, citation gaps and the opportunity engine, sorted by impact and effort.':'Denetim bulguları, atıf açıkları ve fırsat motorundan üretilmiş; etki ve efora göre sıralı iş listesi.',
+  'Projected score if completed':'Tamamlanırsa tahmini skor',
+  'Tasks':'İş kalemi',
+  'Estimated timeline':'Tahmini süre',
+  'pts':'puan',
+  '90-day roadmap':'90 günlük yol haritası',
+  'Expected gain':'Beklenen kazanç',
+  'Download plan':'Planı indir',
+  'Expected cumulative gain at the end of each phase':'Her fazın sonunda beklenen kümülatif kazanç',
+  'Open the door':'Kapıyı aç',
+  'Fill the gaps':'Boşlukları doldur',
+  'Grow authority':'Otoriteyi büyüt',
+  'hour':'saat',
+  'days':'gün',
+  'weeks':'hafta',
+  'minutes':'dakika',
+  'Apply the snippet below':'Aşağıdaki kod parçasını uygulayın',
+  'Deploy the change':'Değişikliği yayına alın',
+  'Re-run the audit to confirm it passes':'Geçtiğini doğrulamak için denetimi yeniden çalıştırın',
+  'This factor is failing on the audited page.':'Bu faktör denetlenen sayfada başarısız.',
+  'Publish content for':'Şu sorgu için içerik yayınlayın:',
+  'Opportunity':'Fırsat',
+  'Your visibility on this prompt is low. The content writer can analyse the answer structure and draft a page aimed at it.':'Bu sorguda görünürlüğünüz düşük. İçerik yazarı cevap yapısını çözümleyip bu sorguya yönelik bir taslak üretebilir.',
+  'Write a 40–60 word direct answer in the first paragraph':'İlk paragrafta 40–60 kelimelik doğrudan cevap yazın',
+  'Convert headings into question form':'Başlıkları soru formuna çevirin',
+  'Add at least one table and one numeric data point':'En az bir tablo ve bir sayısal veri ekleyin',
+  'Mark it up with FAQPage schema':'FAQPage schema ile işaretleyin',
+  'Close the citation gap on':'Şu kaynaktaki atıf açığını kapatın:',
+  'citations in your category, none of them yours':'sektörünüzde atıf var, hiçbiri sizin değil',
+  'Models learn about you mostly from third-party sources. Being absent from the most-cited domain in your category is a structural gap that content on your own site cannot close.':'Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir. Sektörünüzde en çok atıf alan kaynakta bulunmamak, kendi sitenizdeki içeriğin kapatamayacağı yapısal bir açıktır.',
+  'Build an organic presence plan for that source':'O kaynak için organik varlık planı kurun',
+  'Reach out to editors of industry listicles':'Sektörel liste yazılarının editörleriyle iletişime geçin',
+  'Publish explainer videos where the category is discussed':'Kategorinin konuşulduğu yerlerde anlatım videoları yayınlayın',
+  'Raise your review response rate above 90%':'Yorum yanıt oranınızı %90 üzerine çıkarın',
+  'Run a site audit to generate your plan':'Planınızı üretmek için site denetimi çalıştırın',
+  'No audit has been run for this workspace yet':'Bu çalışma alanı için henüz denetim çalıştırılmadı',
+  'The action plan is built from real audit findings and prompt coverage. Run an audit and the tasks appear here.':'Aksiyon planı gerçek denetim bulgularından ve sorgu kapsamasından üretilir. Bir denetim çalıştırın, iş kalemleri burada belirir.',
+  'Open the Audit screen':'Denetim ekranını açın',
+  'Run the audit against your homepage':'Denetimi ana sayfanızda çalıştırın',
+  'Return here':'Buraya dönün',
+  'Generate your technical GEO files in one click. llms.txt, robots.txt, schema markup and meta tag generators.':'Teknik GEO dosyalarınızı tek tıkla üretin. llms.txt, robots.txt, schema markup ve meta tag üreteçleri.',
+  'AI Content Writer':'AI İçerik Yazarı',
+  'Robots.txt Analyser & Generator':'Robots.txt Analiz ve Üreteci',
+  'LLMs.txt Generator':'LLMs.txt Üreteci',
+  'Schema Markup Generator':'Schema Markup Üreteci',
+  'Meta Tag Generator':'Meta Tag Üreteci',
+  'Create Content':'İçerik Oluştur',
+  'Brand':'Marka',
+  'Site':'Site',
+  'Content Type':'İçerik Tipi',
+  'Blog Post':'Blog Yazısı',
+  'FAQ Page':'SSS Sayfası',
+  'How-To':'Nasıl Yapılır',
+  'Blog':'Blog',
+  'FAQ':'SSS',
+  'Article optimised for SEO and AI platforms':'SEO ve AI platformları için optimize makale',
+  'Frequently asked questions page':'Sıkça sorulan sorular sayfası',
+  'Product or service comparison piece':'Ürün veya hizmet karşılaştırma yazısı',
+  'Step-by-step guide content':'Adım adım rehber içeriği',
+  'Topic / Prompt':'Konu / Sorgu',
+  'The topic you want to appear for in AI platforms':'AI platformlarında görünmek istediğiniz konu',
+  'Content Language':'İçerik Dili',
+  'Brand default':'Marka varsayılanı',
+  'English':'İngilizce',
+  'Turkish':'Türkçe',
+  'German':'Almanca',
+  'Additional Context (optional)':'Ek Bağlam (opsiyonel)',
+  'Add more about your brand — it improves content quality':'Markanız hakkında daha fazla bilgi verin — içerik kalitesini artırır',
+  '✦ Generate Content':'✦ İçerik Üret',
+  'Draft ready':'Taslak hazır',
+  'GEO checklist':'GEO kontrol listesi',
+  'Generate →':'Oluştur →',
+  '7 Platform Optimisation':'7 Platform Optimizasyonu',
+  'Content optimised for ChatGPT, Perplexity, Gemini, Claude and others':'ChatGPT, Perplexity, Gemini, Claude ve diğerleri için optimize içerik',
+  '15 Language Support':'15 Dil Desteği',
+  'Generate content in any of 15 supported languages':'Desteklenen 15 dilden birinde içerik üretin',
+  '4 Content Types':'4 İçerik Türü',
+  'Blog posts, FAQ pages, comparisons and how-to guides':'Blog yazıları, SSS sayfaları, karşılaştırmalar ve nasıl yapılır rehberleri',
+  'AI Content Generator':'AI İçerik Üreteci',
+  'Pick a content type and topic, and we\'ll draft it in answer-ready structure.':'İçerik türü ve konu seçin, cevaba uygun yapıda taslak üretelim.',
+  'Analyse and optimise your robots.txt so AI crawlers can reach your content':'AI tarayıcılarının içeriğinize ulaşabilmesi için robots.txt dosyanızı analiz edip optimize edin',
+  'AI Bot Control':'AI Bot Kontrolü',
+  'Configure rules for 22 AI crawlers including GPTBot and ClaudeBot':'GPTBot ve ClaudeBot dahil 22 AI tarayıcısı için kural yapılandırın',
+  'Deep Crawl Analysis':'Derin Tarama Analizi',
+  'Detect issues, missing sitemaps and faulty rules':'Sorunları, eksik sitemapleri ve hatalı kuralları tespit edin',
+  'One-Click Generate':'Tek Tıkla Üret',
+  'Export a deploy-ready, optimised robots.txt file':'Yayına hazır, optimize robots.txt dosyası dışa aktarın',
+  'Create the llms.txt file that helps AI platforms understand and reference your brand':'AI platformlarının markanızı anlamasını ve kaynak göstermesini sağlayan llms.txt dosyasını oluşturun',
+  'llmstxt.org Standard':'llmstxt.org Standardı',
+  'The industry-standard format recognised by AI platforms':'AI platformlarının tanıdığı endüstri standardı format',
+  'Auto Crawl and Build':'Otomatik Tara ve Üret',
+  'Crawls your website and builds the file automatically':'Sitenizi tarar ve dosyayı otomatik üretir',
+  'Copy and Publish':'Kopyala ve Yayınla',
+  'One-click copy or download for your server':'Sunucunuz için tek tıkla kopyalama veya indirme',
+  'Generate valid JSON-LD structured data for better visibility in search and AI results':'Arama ve AI sonuçlarında daha iyi görünürlük için geçerli JSON-LD yapılandırılmış veri üretin',
+  '10 Schema Types':'10 Schema Türü',
+  'Organization, Product, Article, FAQ, Service and more':'Organization, Product, Article, FAQ, Service ve daha fazlası',
+  'Valid JSON-LD':'Geçerli JSON-LD',
+  'Schema.org compliant, paste-ready JSON-LD output':'Schema.org uyumlu, yapıştırmaya hazır JSON-LD çıktısı',
+  'Google Approved':'Google Uyumlu',
+  'Output follows Google\'s structured data guidelines':'Çıktı Google\'ın yapılandırılmış veri yönergelerine uyar',
+  'Analyse any page and generate AI-optimised meta tags for search and social sharing':'Herhangi bir sayfayı analiz edip arama ve sosyal paylaşım için AI optimize meta tagler üretin',
+  'Existing Tag Analysis':'Mevcut Etiket Analizi',
+  'Analyse current title, description and OG tags on any page':'Bir sayfadaki mevcut title, description ve OG etiketlerini analiz edin',
+  'AI Optimisation':'AI Optimizasyonu',
+  'Generates GEO-optimised meta tags for better AI visibility':'Daha iyi AI görünürlüğü için GEO optimize meta tagler üretir',
+  'Social Card Analysis':'Sosyal Kart Analizi',
+  'Open Graph and Twitter Card tag validation':'Open Graph ve Twitter Card etiket doğrulaması',
+  'Direct answer in first paragraph':'İlk paragrafta doğrudan cevap',
+  'Headings in question form':'Soru formunda başlıklar',
+  'Comparison table':'Karşılaştırma tablosu',
+  'Date and author info':'Tarih ve yazar bilgisi',
+  'FAQPage schema suggested':'FAQPage schema önerilir',
+  'Add numeric data':'Sayısal veri ekleyin',
+  'Fill in both fields':'İki alanı da doldurun',
+  'Topic is required':'Konu gerekli',
+  'Configure core tracking preferences such as brand name, domain, industry and location.':'Marka adı, alan adı, sektör ve konum gibi temel takip tercihlerinizi yapılandırın.',
+  'Profile':'Profil',
+  'Team':'Takım',
+  'Integrations':'Entegrasyonlar',
+  'Billing':'Ödeme',
+  'Personal Details':'Kişisel Bilgiler',
+  'Full name':'Ad soyad',
+  'Email':'E-posta',
+  '✓ Save Profile':'✓ Profili Kaydet',
+  'Change Password':'Şifre Değiştir',
+  'Current password':'Mevcut şifre',
+  'New password':'Yeni şifre',
+  'Update Password':'Şifreyi Güncelle',
+  'Danger Zone':'Tehlikeli Bölge',
+  'General':'Genel',
+  'Brand name':'Marka adı',
+  'Industry':'Sektör',
+  'Location':'Konum',
+  'Country':'Ülke',
+  'City':'Şehir',
+  '✓ Save Brand Settings':'✓ Marka Ayarlarını Kaydet',
+  'Brand Name Variants':'Marka Adı Varyantları',
+  'AI providers':'AI sağlayıcıları',
+  'Test all keys':'Tüm anahtarları test et',
+  'Testing every provider…':'Her sağlayıcı test ediliyor…',
+  'Working':'Çalışıyor',
+  'Key present':'Anahtar var',
+  'Above your plan':'Planınızın üstünde',
+  'Usage Summary':'Kullanım Özeti',
+  'Plans':'Planlar',
+  'Most Popular':'En Popüler',
+  'Current plan':'Mevcut plan',
+  'Get started':'Başla',
+  'Analytics connections':'Analitik bağlantıları',
+  'Coming soon':'Yakında',
+  'Update the name and personal details linked to your account.':'Hesabınıza bağlı adınızı ve kişisel bilgilerinizi güncelleyin.',
+  'Keep your account secure with a strong password.':'Güçlü bir parola ile hesabınızı güvende tutun.',
+  '⭳ Export My Data':'⭳ Verilerimi Dışa Aktar',
+  '🗑 Delete Account':'🗑 Hesabı Sil',
+  'These actions cannot be undone. Please proceed carefully.':'Bu işlemler geri alınamaz. Lütfen dikkatli ilerleyin.',
+  'Continue':'Devam Et',
+  '← Back':'← Geri',
+  'Cancel':'İptal',
+  'Skip':'Atla',
+  'Add':'Ekle',
+  'Delete':'Sil',
+  'Close':'Kapat',
+  'Dismiss':'Kapat',
+  'Export':'Dışa aktar',
+  'The trial scans limited platforms. The rest unlock on paid plans.':'Deneme sürümü sınırlı platform tarar. Kalanlar ücretli planlarda açılır.',
+  'WELCOME BACK,':'TEKRAR HOŞ GELDİNİZ,',
+  'Trial':'Deneme','days left':'gün kaldı',
+  'Pick a plan before your trial ends.':'Deneme süreniz bitmeden bir plan seçin.',
+  'Manage plan':'Planı yönet','plan':'plan',
+  'All platforms and modules unlocked.':'Tüm platformlar ve modüller açık.',
+  "Your brand's visibility overview across":'Markanızın görünürlük özeti:',
+  'AI platforms. Scores, trends and latest scan results at a glance.':
+    'AI platformunda. Skorlar, trendler ve son tarama sonuçları tek bakışta.',
+  'of':'/','brands':'marka',
+  'Starter':'Başlangıç','Growth':'Büyüme','Business':'Kurumsal','Agency':'Ajans',
+  'Thanks for your feedback':'Geri bildiriminiz için teşekkürler',
+  'Page not found':'Sayfa bulunamadı',
+
+};
+
+/** Translate a UI string. Unknown keys pass through, so nothing ever blanks. */
+function T(s){ return S.lang==='tr' ? (I18N[s] || s) : s; }
+
+function langMenu(){
+  openModal(T('Language'), `
+    <p style="font-size:13px;color:var(--mute);margin-bottom:16px">
+      Panel dili. Seçiminiz hesabınıza kaydedilir ve diğer cihazlarınızda da geçerli olur.<br>
+      <span style="color:var(--mute2)">Interface language. Saved to your account and applied on every device.</span></p>
+    <div style="display:grid;gap:9px">
+      ${[['tr','Türkçe','Dijital pazarlama terimleriyle'],
+         ['en','English','Original product wording']].map(([k,n,d])=>`
+        <button class="btn ${S.lang===k?'b-pri':'b-gh'} b-full" style="justify-content:flex-start;padding:13px 16px"
+          onclick="setLang('${k}');closeModal()">
+          <span style="text-align:left"><b>${n}</b><br>
+          <span style="font-size:11.5px;opacity:.75;font-weight:400">${d}</span></span></button>`).join('')}
+    </div>
+    <p style="font-size:11.5px;color:var(--mute2);margin-top:14px">
+      Ürün adları her iki dilde de İngilizce kalır — ChatGPT, Google AI Overviews, llms.txt, schema.</p>`);
+}
+
+async function setLang(l){
+  if(S.lang===l) return;
+  S.lang=l;
+  document.documentElement.lang=l;
+  render();
+  try{ await api.post('/api/auth/locale',{locale:l}); }
+  catch{ /* the UI already switched; persistence can fail quietly */ }
+}
+
 /* ---------- state ----------
    Session, workspace and results all come from the API. Nothing here is
    persisted in the browser: a reload re-reads the server, which is why
@@ -436,6 +863,7 @@ const S = {
   rawCompetitors: [], prompts: [], data: null,
   scanState: null, firstScan: null, loadError: null,
   promptSource: null, promptAiAvailable: null, promptMix: null,
+  lang: 'tr',
 };
 
 /**
@@ -743,7 +1171,7 @@ function editPrompt(i){
       <div class="hint">Intent weights the score: a transactional prompt counts almost twice an informational one.</div></div>
     <div style="display:flex;gap:9px">
       <button class="btn b-pri" onclick="savePrompt(${i})">Save</button>
-      <button class="btn b-gh" onclick="removePrompt(${i})">Remove</button>
+      <button class="btn b-gh" onclick="removePrompt(${i})">${T('Remove')}</button>
     </div>`);
 }
 function savePrompt(i){
@@ -977,43 +1405,43 @@ function buildActions() {
   // Failing audit factors that ship a fix are the cheapest wins available.
   fails.filter(f => f.fix).slice(0, 4).forEach((f, i) => push(
     f.n,
-    `${f.cat} · ${f.detail || 'Failing'}`,
+    `${f.cat} · ${f.detail || T('Failing')}`,
     (4.6 - i * 0.5).toFixed(1),
-    i === 0 ? '1 hour' : '1–3 days',
-    `+${4 - i} prompts`,
-    f.detail || 'This factor is failing on the audited page.',
-    ['Apply the snippet below', 'Deploy the change', 'Re-run the audit to confirm it passes'],
+    i === 0 ? `1 ${T('hour')}` : `1–3 ${T('days')}`,
+    `+${4 - i} ${T('prompts')}`,
+    f.detail || T('This factor is failing on the audited page.'),
+    [T('Apply the snippet below'), T('Deploy the change'), T('Re-run the audit to confirm it passes')],
     f.fix));
 
   (d.opps || []).filter(o => o.cover < 0.4).slice(0, 3).forEach((o, i) => push(
-    `Publish content for "${o.p.text.replace(/"/g, '')}"`,
-    `Opportunity ${o.opp} · coverage ${Math.round(o.cover * 100)}% · volume ${o.p.vol}`,
-    (4.2 - i * 0.6).toFixed(1), '1–3 weeks', `+${3 - i} prompts`,
-    'Your visibility on this prompt is low. The content writer can analyse the answer structure and draft a page aimed at it.',
-    ['Write a 40–60 word direct answer in the first paragraph',
-     'Convert headings into question form',
-     'Add at least one table and one numeric data point',
-     'Mark it up with FAQPage schema'],
+    `${T('Publish content for')} "${o.p.text.replace(/"/g, '')}"`,
+    `${T('Opportunity')} ${o.opp} · ${T('coverage')} ${Math.round(o.cover * 100)}% · ${T('volume')} ${o.p.vol}`,
+    (4.2 - i * 0.6).toFixed(1), `1–3 ${T('weeks')}`, `+${3 - i} ${T('prompts')}`,
+    T('Your visibility on this prompt is low. The content writer can analyse the answer structure and draft a page aimed at it.'),
+    [T('Write a 40–60 word direct answer in the first paragraph'),
+     T('Convert headings into question form'),
+     T('Add at least one table and one numeric data point'),
+     T('Mark it up with FAQPage schema')],
     null));
 
   const topSource = (d.sources || []).find(s => !s.mine);
   if (topSource) push(
-    `Close the citation gap on ${topSource.d}`,
-    `${topSource.v} citations in your category, none of them yours`,
-    '4.4', '6–10 weeks', '+3 prompts',
-    'Models learn about you mostly from third-party sources. Being absent from the most-cited domain in your category is a structural gap that content on your own site cannot close.',
-    ['Build an organic presence plan for that source',
-     'Reach out to editors of industry listicles',
-     'Publish explainer videos where the category is discussed',
-     'Raise your review response rate above 90%'],
+    `${T('Close the citation gap on')} ${topSource.d}`,
+    `${topSource.v} ${T('citations in your category, none of them yours')}`,
+    '4.4', `6–10 ${T('weeks')}`, `+3 ${T('prompts')}`,
+    T('Models learn about you mostly from third-party sources. Being absent from the most-cited domain in your category is a structural gap that content on your own site cannot close.'),
+    [T('Build an organic presence plan for that source'),
+     T('Reach out to editors of industry listicles'),
+     T('Publish explainer videos where the category is discussed'),
+     T('Raise your review response rate above 90%')],
     null);
 
   if (!A.length) push(
-    'Run a site audit to generate your plan',
-    'No audit has been run for this workspace yet',
-    '—', '2 minutes', '—',
-    'The action plan is built from real audit findings and prompt coverage. Run an audit and the tasks appear here.',
-    ['Open the Audit screen', 'Run the audit against your homepage', 'Return here'],
+    T('Run a site audit to generate your plan'),
+    T('No audit has been run for this workspace yet'),
+    '—', `2 ${T('minutes')}`, '—',
+    T('The action plan is built from real audit findings and prompt coverage. Run an audit and the tasks appear here.'),
+    [T('Open the Audit screen'), T('Run the audit against your homepage'), T('Return here')],
     null);
 
   return A;
@@ -1035,7 +1463,7 @@ function lineChart(vals,o={}){
   const W=o.w||460,H=o.h||180,P={l:30,r:8,t:10,b:20};
   // One data point is the normal state on day one. Draw a flat marker rather
   // than emitting a malformed path.
-  if(!vals.length) return `<div class="empty" style="padding:28px">No history yet — the first scan writes today's point.</div>`;
+  if(!vals.length) return `<div class="empty" style="padding:28px">${T("No history yet — the first scan writes today's point.")}</div>`;
   if(vals.length===1) vals=[vals[0],vals[0]];
   const N=vals.length;
   const mn=o.min??0,mx=o.max??100,uid='g'+Math.random().toString(36).slice(2,7);
@@ -1078,6 +1506,8 @@ function gauge(v,col){
 /* =====================================================================
    NAVIGATION
    ===================================================================== */
+// Labels go through T() at render time so switching language repaints the
+// nav without a reload.
 const NAV=[
  {r:'dashboard',g:'▦',n:'Dashboard'},
  {g:'◫',n:'Analytics',sub:[
@@ -1094,21 +1524,25 @@ function renderNav(){
   $('#nav').innerHTML=NAV.map(it=>{
     if(it.sub){
       const open=it.sub.some(s=>s.r===S.route)||S.openNav[it.n];
-      return `<button onclick="S.openNav['${it.n}']=${!open};render()"><span class="g">${it.g}</span>${it.n}
+      return `<button onclick="S.openNav['${T(it.n)}']=${!open};render()"><span class="g">${it.g}</span>${T(it.n)}
         <span style="margin-left:auto;color:var(--mute2);font-size:11px">${open?'⌃':'⌄'}</span></button>
         <div class="sub ${open?'open':''}">${it.sub.map(s=>
-          `<a class="${S.route===s.r?'on':''}" href="#" onclick="go('${s.r}');return false">${s.n}</a>`).join('')}</div>`;
+          `<a class="${S.route===s.r?'on':''}" href="#" onclick="go('${s.r}');return false">${T(s.n)}</a>`).join('')}</div>`;
     }
-    return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false"><span class="g">${it.g}</span>${it.n}</a>`;
+    return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false"><span class="g">${it.g}</span>${T(it.n)}</a>`;
   }).join('');
   const av=(S.brand.name||'YK').slice(0,2).toLocaleUpperCase('tr');
   $('#uAv').textContent=av;$('#uName').textContent=S.user.name;$('#wsName').textContent=S.brand.name||'marka';
-  const planName={trial:'Trial',starter:'Starter',pro:'Growth',business:'Business'}[S.plan];
+  // These two sit in the static shell rather than a rendered template, so they
+  // need filling in on every repaint — including after a language switch.
+  const wb=$('#welcomeLb'); if(wb) wb.textContent=T('WELCOME BACK,');
+  const fb=$('#fbLabel');   if(fb) fb.textContent='▭ '+T('Feedback');
+  const planName={trial:T('Trial'),starter:T('Starter'),growth:T('Growth'),pro:T('Growth'),business:T('Business'),agency:T('Agency')}[S.plan]||S.plan;
   $('#trialBox').innerHTML=S.plan==='trial'
-    ? `<b>Trial — 7 days left</b><p>Pick a plan before your trial ends.</p>
-       <button class="btn b-pri b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">Upgrade Plan</button>`
-    : `<b>${planName} plan</b><p>All platforms and modules unlocked.</p>
-       <button class="btn b-gh b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">Manage plan</button>`;
+    ? `<b>${T('Trial')} — 7 ${T('days left')}</b><p>${T('Pick a plan before your trial ends.')}</p>
+       <button class="btn b-pri b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button>`
+    : `<b>${planName} ${T('plan')}</b><p>${T('All platforms and modules unlocked.')}</p>
+       <button class="btn b-gh b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Manage plan')}</button>`;
 }
 function toggleSb(v){const sb=$('#sb'),sc=$('#sbScrim');
   const open=v===undefined?!sb.classList.contains('open'):v;
@@ -1121,7 +1555,7 @@ function render(){
   // legible screen instead of a blank one.
   if(!S.data){ page.innerHTML=S.loadError?errorScreen(S.loadError):loadingScreen(); return; }
   try{
-    page.innerHTML = VIEWS[S.route] ? VIEWS[S.route]() : '<div class="empty">Page not found</div>';
+    page.innerHTML = VIEWS[S.route] ? VIEWS[S.route]() : `<div class="empty">${T('Page not found')}</div>`;
     (POST[S.route]||function(){})();
   }catch(e){
     // A view throwing must not take the whole panel down with it.
@@ -1132,17 +1566,17 @@ function render(){
 
 function loadingScreen(){
   return `<div class="empty" style="padding:60px 24px"><div class="ic">◎</div>
-    <b style="color:var(--fg);font-size:15px">Loading your workspace…</b>
-    <p style="margin-top:8px">Reading the latest scan results.</p></div>`;
+    <b style="color:var(--fg);font-size:15px">${T('Loading your workspace…')}</b>
+    <p style="margin-top:8px">${T('Reading the latest scan results.')}</p></div>`;
 }
 
 function errorScreen(msg){
   return `<div class="empty" style="padding:52px 24px"><div class="ic">⚠</div>
-    <b style="color:var(--fg);font-size:15px">Could not load your data</b>
+    <b style="color:var(--fg);font-size:15px">${T('Could not load your data')}</b>
     <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${esc(msg)}</p>
     <div style="margin-top:18px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
-      <button class="btn b-pri b-sm" onclick="S.loadError=null;render();loadResults().catch(e=>{S.loadError=e.message;render()})">Try again</button>
-      <a class="btn b-gh b-sm" href="/api/health" target="_blank">Check setup</a>
+      <button class="btn b-pri b-sm" onclick="S.loadError=null;render();loadResults().catch(e=>{S.loadError=e.message;render()})">${T('Try again')}</button>
+      <a class="btn b-gh b-sm" href="/api/health" target="_blank">${T('Check setup')}</a>
     </div></div>`;
 }
 const POST={};
@@ -1157,7 +1591,7 @@ function head(title,sub,right){return `<div class="ptitle"><div><h1>${title}</h1
 function rangeSel(){return `<select class="in" aria-label="Date range" style="width:auto;padding:8px 12px;font-size:13px"
   onchange="S.range=+this.value;render()">${[7,30,90].map(v=>`<option value="${v}" ${S.range===v?'selected':''}>Last ${v} days</option>`).join('')}</select>`}
 function upsell(txt){return `<div class="banner"><span>🔒</span><span>${txt}</span>
-  <span class="r"><button class="btn b-pri b-sm" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">Upgrade Plan</button></span></div>`}
+  <span class="r"><button class="btn b-pri b-sm" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button></span></div>`}
 
 /* ---------- DASHBOARD ---------- */
 VIEWS.dashboard=()=>{
@@ -1175,7 +1609,7 @@ VIEWS.dashboard=()=>{
   const scanning = !!(sc && sc.pending>0);
   const scanBanner = sc && sc.pending>0
     ? `<div class="banner" style="margin-bottom:14px"><span>◐</span>
-        <span>Scan in progress — ${sc.pending} checks left. Keep this page open; results appear as they arrive.</span></div>`
+        <span>${T('Scan in progress')} — ${sc.pending} ${T('checks left. Keep this page open; results appear as they arrive.')}</span></div>`
     : '';
 
   // A platform that errored must say so. Silently dropping the failures turns
@@ -1183,7 +1617,7 @@ VIEWS.dashboard=()=>{
   const emptyBanner = sc && sc.error && !sc.pending && !d.cells.length
     ? `<div class="banner" style="margin-bottom:14px"><span>ℹ</span>
         <span>The last scan queued nothing — ${esc(sc.error)}.</span>
-        <span class="r"><button class="btn b-gh b-sm" onclick="rescan()">Run a scan now</button></span></div>`
+        <span class="r"><button class="btn b-gh b-sm" onclick="rescan()">${T('Run a scan now')}</button></span></div>`
     : '';
 
   const failBanner = sc && (sc.failures||[]).length
@@ -1192,66 +1626,68 @@ VIEWS.dashboard=()=>{
           ${(sc.failures||[]).slice(0,3).map(f=>
             `<b>${esc((d.plats.find(p=>p.id===f.engine)||{n:f.engine}).n)}</b> — ${esc(String(f.error||'').replace(/\s+/g,' ').slice(0,140))}`
           ).join(' · ')}</span>
-        <span class="r"><button class="btn b-gh b-sm" onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">Check keys</button></span></div>`
+        <span class="r"><button class="btn b-gh b-sm" onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">${T('Check keys')}</button></span></div>`
     : '';
   return `
   ${scanBanner}
   ${failBanner}
   ${emptyBanner}
   ${S.plan==='trial'&&d.plats.length>allowed
-     ? upsell(`You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
+     ? upsell(S.lang==='tr'
+        ? `${d.plats.length} platformun ${allowed} tanesini takip ediyorsunuz. Diğer ${d.plats.length-allowed} platformda ne söylendiğini görmeden bilemezsiniz.`
+        : `You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
      : ''}
   <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
-    <span>Your brand's visibility overview across ${allowed} AI platforms. Scores, trends and latest scan results at a glance.</span>
-    <span class="chip" style="margin-left:auto">↻ Updates daily</span></div>
+    <span>${T("Your brand's visibility overview across")} ${allowed} ${T('AI platforms. Scores, trends and latest scan results at a glance.')}</span>
+    <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
   <div class="g4">
-    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>Visibility score</div>
+    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Visibility score')}</div>
       ${d.ready
         ? `<div class="v"${scanning?' style="color:var(--fg2)"':''}>${d.total.toFixed(1)}</div>
            <div class="d">${scanning
-              ? `Partial — ${d.cells.length} checks in, ${sc.pending} still running`
-              : `±${d.ciAvg.toFixed(1)} confidence`}</div>`
+              ? `${T('Partial')} — ${d.cells.length} ${T('checks in')}, ${sc.pending} ${T('still running')}`
+              : `±${d.ciAvg.toFixed(1)} ${T('confidence')}`}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">${scanning?'Counting — appears as answers arrive':'No scan yet'}</div>`}</div>
+           <div class="d">${scanning?T('Counting — appears as answers arrive'):T('No scan yet')}</div>`}</div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>Mention rate</div>
+    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Mention rate')}</div>
       ${d.cells.length
         ? `<div class="v">${d.mentionRate.toFixed(1)}%</div>
-           <div class="d">${d.cells.filter(c=>c.m>0).length}/${d.cells.length} prompt-platform${scanning?' so far':''}</div>`
+           <div class="d">${d.cells.filter(c=>c.m>0).length}/${d.cells.length} ${T('prompt-platform')}${scanning?' '+T('so far'):''}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">Waiting for the first results</div>`}</div>
+           <div class="d">${T('Waiting for the first results')}</div>`}</div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>Share of voice</div>
+    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>${T('Share of voice')}</div>
       ${S.rivals.length
         ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}%</div>
-           <div class="d">#${d.sov.slice().sort((a,b)=>b.pct-a.pct).findIndex(x=>x.you)+1} of ${d.sov.length} brands</div>`
+           <div class="d">#${d.sov.slice().sort((a,b)=>b.pct-a.pct).findIndex(x=>x.you)+1} ${T('of')} ${d.sov.length} ${T('brands')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d"><a href="#" onclick="go('rivals');return false"
-             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">Add competitors →</a></div>`}</div>
+             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>Audit score</div>
+    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}</div>
       ${d.auditRanAt
-        ? `<div class="v">${d.auditScore.toFixed(0)}</div><div class="d">58 factors · ${new Date(d.auditRanAt).toLocaleDateString('en-GB')}</div>`
+        ? `<div class="v">${d.auditScore.toFixed(0)}</div><div class="d">58 ${T('factors')} · ${new Date(d.auditRanAt).toLocaleDateString('en-GB')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d"><a href="#" onclick="go('audit');return false"
-             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">Run your first audit →</a></div>`}</div>
+             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Run your first audit →')}</a></div>`}</div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1.1fr 1.15fr;gap:14px" class="dashg">
-    <div class="ins"><span class="tg">AI INSIGHTS</span>
+    <div class="ins"><span class="tg">${T('AI INSIGHTS')}</span>
       <div class="tx">${esc(ins.body)}</div><div class="hl">${esc(ins.head)}</div>
       <div style="display:flex;align-items:center;margin-top:16px">
         <button class="btn b-gh b-sm" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff"
-          onclick="go('plan')">Go to action plan →</button></div></div>
+          onclick="go('plan')">${T('Go to action plan →')}</button></div></div>
 
-    <div class="card"><div class="ch"><div><h3>Visibility Trend</h3>
-      <div class="sub">Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.</div></div>
-      <span class="rt">Last ${S.range} days</span></div>
+    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')}</h3>
+      <div class="sub">${T('Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.')}</div></div>
+      <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
       <div class="cb">${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','-'+Math.round(S.range/2)+'d','today']})}</div></div>
 
-    <div class="card"><div class="ch"><div><h3>Platform Visibility Score</h3>
-      <div class="sub">How prominently your brand appears in AI responses (0–100)</div></div><span class="rt">Last 7 days</span></div>
+    <div class="card"><div class="ch"><div><h3>${T('Platform Visibility Score')}</h3>
+      <div class="sub">${T('How prominently your brand appears in AI responses (0–100)')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
       <div class="cb">${d.plats.map(p=>{
         // Three states, never conflated: a platform we could not ask must not
         // show a number, because a zero reads as "invisible there".
@@ -1267,10 +1703,10 @@ VIEWS.dashboard=()=>{
         return `
         <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
           <span class="v" style="font-size:11px;color:${state==='failing'?'#FCA5A5':'var(--mute2)'}">${
-              state==='locked' ? '🔒 Upgrade'
-            : state==='nokey'  ? '<span title="No API key is configured on the server">🔑 No key</span>'
-            : state==='failing'? '<span title="Every call to this platform returned an error">⚠ Failing</span>'
-            : '<span title="No answers collected yet">◌ No data yet</span>'}</span></div>
+              state==='locked' ? '🔒 '+T('Upgrade')
+            : state==='nokey'  ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
+            : state==='failing'? `<span title="Every call to this platform returned an error">⚠ ${T('Failing')}</span>`
+            : `<span title="No answers collected yet">◌ ${T('No data yet')}</span>`}</span></div>
           <div class="bar"></div></div>`;
       }).join('')}
       ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
@@ -1283,10 +1719,10 @@ VIEWS.dashboard=()=>{
   <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
 
   <div class="g2">
-    <div class="card"><div class="ch"><div><h3>Recent Mentions</h3>
-      <div class="sub">Prompts where your brand was mentioned — click a row to open the raw answer</div></div><span class="rt">Last 7 days</span></div>
+    <div class="card"><div class="ch"><div><h3>${T('Recent Mentions')}</h3>
+      <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
       <div class="cb">
-        <div class="pills" style="margin-bottom:12px"><button class="on">All</button>
+        <div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
           ${d.plats.filter(p=>!p.locked).map(p=>
             `<button onclick="toast('${p.n}: ${p.mentions} mentions')">${p.ab} ${p.n.split(' ')[0]} <b style="opacity:.7">${p.mentions}</b></button>`).join('')}</div>
         ${recent.length?recent.map(m=>{
@@ -1295,11 +1731,11 @@ VIEWS.dashboard=()=>{
           <span class="chip">${pl.ab} ${pl.n.split(' ')[0]}</span>
           <span class="q">${esc(m.text)}</span>
           <span class="ago">${m.rank?'rank '+m.rank:''}</span></div>`}).join('')
-          :`<div class="empty"><div class="ic">◎</div>No brand mentions found<br>
-             <span style="font-size:12px">See the Opportunities tab for where to start</span></div>`}</div></div>
+          :`<div class="empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
+             <span style="font-size:12px">${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
 
-    <div class="card"><div class="ch"><div><h3>Top Citing Domains</h3>
-      <div class="sub">Websites most cited by AI platforms in your industry</div></div><span class="rt">Last 7 days</span></div>
+    <div class="card"><div class="ch"><div><h3>${T('Top Citing Domains')}</h3>
+      <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
       <div class="cb">${d.sources.slice(0,8).map((s,i)=>`
         <div class="cdr"><span class="i">${i+1}</span>
           <span class="f" style="background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
@@ -1315,16 +1751,50 @@ function insightText(){
   const measuredPlats=d.plats.filter(p=>p.active&&p.measured!==false);
   const worst=[...measuredPlats].sort((a,x)=>a.score-x.score)[0]||{n:'—',score:0};
   const cited=d.cells.filter(c=>c.c>0).length;
-  const lvl=d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
-  if(!d.ready || S.scanState && S.scanState.pending>0) return {
+  const tr = S.lang==='tr';
+
+  if(!d.ready || S.scanState && S.scanState.pending>0) return tr ? {
+    head:'Tarama sürüyor',
+    body:'Skor cevaplar geldikçe yeniden hesaplanıyor, yani tarama boyunca yükseliyor. '+
+         'Tarama bitmeden görünürlük hakkında hüküm vermek yanıltıcıdır — bir marka ilk on cevapta '+
+         'olmayıp sonraki yirmide görünebilir. Taramanın bitmesini bekleyin.'
+  } : {
     head:'Scan still running',
-    body:`The score is recalculated as answers come back, so it climbs while the scan runs. `+
-         `Judging visibility before the run finishes is misleading — a brand can be absent from `+
-         `the first ten answers and present in the next twenty. Wait for the scan to complete.`};
-  if(d.total<10)return{head:'Visibility Is Critical Across All AI Platforms',
-    body:`${b.name} scores ${d.total.toFixed(1)}/100 across the tracked platforms, which means near-total absence. The brand is almost never surfaced in AI answers and needs baseline visibility urgently. ${d.auditRanAt ? `The ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} failing factors in your audit are the first place to look.` : 'Run a site audit to find out which technical signals are blocking you.'}`};
-  return{head:`Increase Website Citations from ${cited} to ${Math.max(cited*2,12)}+`,
-    body:`${b.name} has ${d.cells.filter(c=>c.m>0).length} mentions and ${lvl} visibility (${d.total.toFixed(1)}), yet your domain is cited as a source in only ${cited} prompts. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). Implementing Organization and FAQ schema plus canonical URLs can double citations in the short term.`};
+    body:'The score is recalculated as answers come back, so it climbs while the scan runs. '+
+         'Judging visibility before the run finishes is misleading — a brand can be absent from '+
+         'the first ten answers and present in the next twenty. Wait for the scan to complete.'
+  };
+
+  if(d.total<10) return tr ? {
+    head:'Görünürlük tüm AI platformlarında kritik',
+    body:`${b.name} takip edilen platformlarda ${d.total.toFixed(1)}/100 alıyor; bu neredeyse tam bir yokluk demek. `+
+         `Marka AI cevaplarında nadiren yüzeye çıkıyor ve acilen temel görünürlüğe ihtiyacı var. `+
+         (d.auditRanAt
+           ? `Denetiminizdeki ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} başarısız faktör ilk bakılacak yer.`
+           : 'Hangi teknik sinyallerin sizi engellediğini öğrenmek için bir site denetimi çalıştırın.')
+  } : {
+    head:'Visibility Is Critical Across All AI Platforms',
+    body:`${b.name} scores ${d.total.toFixed(1)}/100 across the tracked platforms, which means near-total absence. `+
+         `The brand is almost never surfaced in AI answers and needs baseline visibility urgently. `+
+         (d.auditRanAt
+           ? `The ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} failing factors in your audit are the first place to look.`
+           : 'Run a site audit to find out which technical signals are blocking you.')
+  };
+
+  const lvlTr = d.total<15?'kritik':d.total<35?'düşük':d.total<60?'orta':'güçlü';
+  const lvl   = d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
+
+  return tr ? {
+    head:`Atıf sayısını ${cited}'ten ${Math.max(cited*2,12)}+'a çıkarın`,
+    body:`${b.name} için ${d.cells.filter(c=>c.m>0).length} bahis ve ${lvlTr} görünürlük (${d.total.toFixed(1)}) var; `+
+         `ancak alan adınız yalnızca ${cited} sorguda kaynak gösteriliyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
+         `Organization ve FAQ schema ile kanonik URL düzeni, kısa vadede atıf sayısını ikiye katlayabilir.`
+  } : {
+    head:`Increase Website Citations from ${cited} to ${Math.max(cited*2,12)}+`,
+    body:`${b.name} has ${d.cells.filter(c=>c.m>0).length} mentions and ${lvl} visibility (${d.total.toFixed(1)}), `+
+         `yet your domain is cited as a source in only ${cited} prompts. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). `+
+         `Implementing Organization and FAQ schema plus canonical URLs can double citations in the short term.`
+  };
 }
 async function answerModal(runId){
   openModal('Raw answer inspector',
@@ -1370,16 +1840,16 @@ async function answerModal(runId){
 
 VIEWS.mentions=()=>{
   const d=S.data,rows=d.cells.filter(c=>platAllowed(c.pl));
-  return head('Mentions','Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.',
-    rangeSel()+`<button class="btn b-gh b-sm" onclick="exportMentions()">⭳ Download CSV</button>`)+
+  return head(T('Mentions'),T('Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.'),
+    rangeSel()+`<button class="btn b-gh b-sm" onclick="exportMentions()">${T('⭳ Download CSV')}</button>`)+
   `<div class="g4">
-    <div class="kpi"><div class="t">Total checks</div><div class="v">${nf(rows.length*5)}</div><div class="d">${rows.length} cells × 5 runs</div></div>
-    <div class="kpi"><div class="t">Mentions</div><div class="v">${rows.filter(c=>c.m>0).length}</div><div class="d">${(rows.filter(c=>c.m>0).length/rows.length*100).toFixed(1)}% coverage</div></div>
-    <div class="kpi"><div class="t">Citations</div><div class="v">${rows.filter(c=>c.c>0).length}</div><div class="d">domain cited as source</div></div>
-    <div class="kpi"><div class="t">Average rank</div><div class="v">${(rows.filter(c=>c.rank).reduce((a,c)=>a+c.rank,0)/(rows.filter(c=>c.rank).length||1)).toFixed(1)}</div><div class="d">when mentioned</div></div>
+    <div class="kpi"><div class="t">${T('Total checks')}</div><div class="v">${nf(rows.length*5)}</div><div class="d">${rows.length} ${T('cells')} × 5 runs</div></div>
+    <div class="kpi"><div class="t">${T('Mentions')}</div><div class="v">${rows.filter(c=>c.m>0).length}</div><div class="d">${(rows.filter(c=>c.m>0).length/rows.length*100).toFixed(1)}% coverage</div></div>
+    <div class="kpi"><div class="t">${T('Citations')}</div><div class="v">${rows.filter(c=>c.c>0).length}</div><div class="d">${T('domain cited as source')}</div></div>
+    <div class="kpi"><div class="t">${T('Average rank')}</div><div class="v">${(rows.filter(c=>c.rank).reduce((a,c)=>a+c.rank,0)/(rows.filter(c=>c.rank).length||1)).toFixed(1)}</div><div class="d">${T('when mentioned')}</div></div>
   </div>
-  <div class="card"><div class="ch"><div><h3>Mention matrix</h3><div class="sub">Mention rate, prominence, citation, recommendation strength and sentiment are measured separately</div></div></div>
-  <div class="tw"><table><thead><tr><th>Prompt</th><th>Platform</th><th>Intent</th><th class="n">Mention</th>
+  <div class="card"><div class="ch"><div><h3>${T('Mention matrix')}</h3><div class="sub">${T('Mention rate, prominence, citation, recommendation strength and sentiment are measured separately')}</div></div></div>
+  <div class="tw"><table><thead><tr><th>${T('Prompt')}</th><th>Platform</th><th>${T('Intent')}</th><th class="n">${T('Mention count')}</th>
     <th class="n">Rank</th><th class="n">Cited</th><th class="n">Sentiment</th><th class="n">Score</th><th class="n">±CI</th></tr></thead>
   <tbody>${rows.map((c,i)=>`<tr style="${c.runId?'cursor:pointer':''}" ${c.runId?`onclick="answerModal(${c.runId})"`:''}>
     <td style="max-width:280px">${esc(c.p.text.replace(/"/g,''))}</td>
@@ -1403,12 +1873,12 @@ VIEWS.platforms=()=>{
   const d=S.data,ps=d.plats.filter(platAllowed);
   const dist=ps.map(p=>({n:p.n,v:p.mentions,c:p.c}));
   const tot=dist.reduce((a,x)=>a+x.v,0);
-  return head('Platforms','Detailed performance metrics for each AI platform',
-    rangeSel()+`<button class="btn b-pri b-sm" onclick="exportPlats()">⭳ Export Platforms</button>`)+
-  `${S.plan==='trial'?upsell('The trial scans 3 platforms. The remaining 5 unlock on paid plans.'):''}
+  return head(T('Platforms'),T('Detailed performance metrics for each AI platform'),
+    rangeSel()+`<button class="btn b-pri b-sm" onclick="exportPlats()">${T('⭳ Export Platforms')}</button>`)+
+  `${S.plan==='trial'?upsell(T('The trial scans limited platforms. The rest unlock on paid plans.')):''}
   <div class="g2">
-    <div class="card"><div class="ch"><div><h3>Mention Distribution</h3>
-      <div class="sub">Share of your brand mentions coming from each AI platform</div></div><span class="rt">Last ${S.range} days</span></div>
+    <div class="card"><div class="ch"><div><h3>${T('Mention Distribution')}</h3>
+      <div class="sub">${T('Share of your brand mentions coming from each AI platform')}</div></div><span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
       <div class="cb" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
         ${donut(dist,tot||0,tot?'MENTIONS':'NO DATA')}
         <div style="flex:1;min-width:150px">${ps.map(p=>`
@@ -1416,23 +1886,23 @@ VIEWS.platforms=()=>{
             <i style="width:9px;height:9px;border-radius:3px;background:${p.c};display:block"></i>
             <span style="flex:1">${p.n}</span><span class="mono">${tot?(p.mentions/tot*100).toFixed(1):0}%</span></div>`).join('')}</div></div></div>
 
-    <div class="card"><div class="ch"><div><h3>Visibility Trend</h3>
-      <div class="sub">Daily visibility scores per platform</div></div><span class="rt">Last ${S.range} days</span></div>
-      <div class="cb"><div class="pills" style="margin-bottom:12px"><button class="on">All</button>
+    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')}</h3>
+      <div class="sub">${T('Daily visibility scores per platform')}</div></div><span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
+      <div class="cb"><div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
         ${ps.map(p=>`<button style="border-color:${p.c}44">${p.ab} ${p.n.split(' ')[0]}</button>`).join('')}</div>
         ${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','today']})}</div></div>
   </div>
 
-  <div class="card"><div class="ch"><div><h3>Platform Details</h3>
-    <div class="sub">Score, citation rate and total checks. The weight column defines each platform's share of the total score.</div></div>
-    <span class="rt">Last ${S.range} days</span></div>
+  <div class="card"><div class="ch"><div><h3>${T('Platform Details')}</h3>
+    <div class="sub">${T("Score, citation rate and total checks. The weight column defines each platform's share of the total score.")}</div></div>
+    <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
   <div class="tw"><table><thead><tr><th>#</th><th>Platform</th><th>Score</th><th class="n">Weight</th>
     <th class="n">Citation rate</th><th class="n">Mentions</th><th class="n">Citations</th><th class="n">Total checks</th><th class="n">Trend</th></tr></thead>
   <tbody>${d.plats.map((p,i)=>{
     const lock=!platAllowed(p);
     return `<tr class="${lock?'locked-row':''}"><td class="n">${i+1}</td>
     <td><span style="display:flex;align-items:center;gap:8px"><i style="width:9px;height:9px;border-radius:3px;background:${p.c};display:block"></i>${p.n}</span></td>
-    <td style="min-width:180px">${lock?'<span class="lock">🔒 Upgrade Plan</span>':
+    <td style="min-width:180px">${lock?`<span class="lock">🔒 ${T('Upgrade Plan')}</span>`:
       `<div style="display:flex;align-items:center;gap:10px"><span class="mono" style="width:42px">${p.score.toFixed(2)}</span>
        <span class="bar" style="flex:1"><i style="width:${p.score}%;background:${p.c}"></i></span></div>`}</td>
     <td class="n">${p.w.toFixed(2)}</td>
@@ -1454,7 +1924,7 @@ VIEWS.sources=()=>{
   // Before the first scan produces citations this list is empty, which is a
   // normal state, not an error.
   if(!d.sources.length){
-    return head('Sources','Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.')+
+    return head(T('Sources'),T('Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.'))+
       `<div class="card"><div class="empty"><div class="ic">⊕</div>
         <b style="color:var(--fg);font-size:15px">No citations collected yet</b>
         <p style="margin-top:8px;max-width:52ch;margin-inline:auto">Sources appear once a scan finishes and the
@@ -1462,8 +1932,8 @@ VIEWS.sources=()=>{
           answering from training data rather than searching.</p></div></div>`;
   }
   const mx=d.sources[0].v||1;
-  return head('Sources','Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.',
-    rangeSel()+`<button class="btn b-pri b-sm" onclick="exportSources()">⭳ Export Sources</button>`)+
+  return head(T('Sources'),T('Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.'),
+    rangeSel()+`<button class="btn b-pri b-sm" onclick="exportSources()">${T('⭳ Export Sources')}</button>`)+
   `<div class="card"><div class="cb"><div class="tw"><table>
     <thead><tr><th>#</th><th>Domain</th><th style="width:38%">Citations</th><th class="n">Count</th><th class="n">Trend</th>
       <th>Platforms</th><th class="n">First</th><th class="n">Last</th></tr></thead>
@@ -1477,9 +1947,8 @@ VIEWS.sources=()=>{
       <td class="n ${s.trend>0?'ok':'bad'}">${s.trend>0?'↑':'↓'}</td>
       <td>${s.plats.slice(0,2).map(p=>`<span class="chip" style="border-color:${p.c}44">${p.ab} ${p.n.split(' ')[0]}</span>`).join(' ')||'<span class="mut">—</span>'}</td>
       <td class="n mut">${s.first}</td><td class="n mut">${s.last}</td></tr>`).join('')}</tbody></table></div>
-    <p style="font-size:12.5px;color:var(--mute);margin-top:14px">Models learn about you mostly from third-party sources, not your own
-      site. Being absent from the domains at the top of this list is your biggest structural gap —
-      it appears as a task in the <a href="#" onclick="go('plan');return false" style="color:var(--pri)">action plan</a>.</p></div></div>`;
+    <p style="font-size:12.5px;color:var(--mute);margin-top:14px">${T('Models learn about you mostly from third-party sources, not your own site. Being absent from the domains at the top of this list is your biggest structural gap — it appears as a task in the')}
+      <a href="#" onclick="go('plan');return false" style="color:var(--pri)">${T('action plan')}</a>.</p></div></div>`;
 };
 function exportSources(){
   const rows=[['Domain','Citations','Is yours']];
@@ -1490,9 +1959,9 @@ function exportSources(){
 /* ---------- FIRSATLAR ---------- */
 VIEWS.opps=()=>{
   const d=S.data;
-  return head('Opportunity Engine','Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.')+
-  `<div class="card"><div class="ch"><div><h3>Prioritised prompt opportunities</h3>
-    <div class="sub">The "Generate content" button drafts a brief for that prompt</div></div>
+  return head(T('Opportunities'),T('Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.'))+
+  `<div class="card"><div class="ch"><div><h3>${T('Prioritised prompt opportunities')}</h3>
+    <div class="sub">${T('The "Generate content" button drafts a brief for that prompt')}</div></div>
     <span class="rt"><button class="btn b-gh b-sm" onclick="exportOpps()">⭳ CSV</button></span></div>
   <div class="tw"><table><thead><tr><th>Prompt</th><th>Intent</th><th class="n">Est. volume</th>
     <th class="n">Coverage</th><th class="n">Sources</th><th>Content fit</th><th>Suggested action</th>
@@ -1503,10 +1972,10 @@ VIEWS.opps=()=>{
     <td class="n">${nf(o.p.vol)}</td>
     <td class="n" style="color:${o.cover>.5?'#4ADE80':o.cover>0?'#FBBF24':'#F87171'}">${(o.cover*100).toFixed(0)}%</td>
     <td class="n">${o.srcCount}</td>
-    <td><span class="chip ${o.fit==='High'?'ok':o.fit==='Medium'?'warn':''}">${o.fit}</span></td>
+    <td><span class="chip ${o.fit==='High'?'ok':o.fit==='Medium'?'warn':''}">${T(o.fit)}</span></td>
     <td class="mut" style="font-size:12.5px">${o.act}</td>
     <td class="n" style="font-weight:600;color:var(--pri)">${o.opp}</td>
-    <td><button class="btn b-gh b-sm" onclick="writerFor('${o.p.id}')">Generate content ✦</button></td></tr>`).join('')}
+    <td><button class="btn b-gh b-sm" onclick="writerFor('${o.p.id}')">${T('Generate content')} ✦</button></td></tr>`).join('')}
   </tbody></table></div></div>`;
 };
 function exportOpps(){
@@ -1516,32 +1985,24 @@ function exportOpps(){
 }
 
 /* ---------- BOT TRAFFIC ---------- */
-VIEWS.bots=()=>head('Bot Traffic','What GPTBot, ClaudeBot, PerplexityBot and other AI crawlers do on your site.')+
+VIEWS.bots=()=>head(T('Bot Traffic'),T('What GPTBot, ClaudeBot, PerplexityBot and other AI crawlers do on your site.'))+
   `<div class="card"><div class="empty"><div class="ic">⛭</div>
-    <b style="color:var(--fg);font-size:15px">No crawler logs connected</b>
-    <p style="margin-top:8px;max-width:58ch;margin-inline:auto">A page that is never crawled cannot enter an AI
-      answer, which makes crawler traffic the leading indicator of visibility — typically two to six weeks ahead of
-      the score. Reading it requires your server or CDN logs.</p>
-    <p style="margin-top:14px;font-size:12.5px;color:var(--mute2)">Supported sources: Cloudflare Logpush,
-      Nginx/Apache access logs, S3 delivery. Ingestion ships in the next release.</p>
+    <b style="color:var(--fg);font-size:15px">${T('No crawler logs connected')}</b>
+    <p style="margin-top:8px;max-width:58ch;margin-inline:auto">${T('A page that is never crawled cannot enter an AI answer, which makes crawler traffic the leading indicator of visibility — typically two to six weeks ahead of the score. Reading it requires your server or CDN logs.')}</p>
+    <p style="margin-top:14px;font-size:12.5px;color:var(--mute2)">${T('Supported sources: Cloudflare Logpush, Nginx/Apache access logs, S3 delivery. Ingestion ships in the next release.')}</p>
   </div></div>`;
 /* ---------- TRAFFIC ---------- */
-VIEWS.traffic=()=>head('Traffic','Sessions and conversions coming from AI platforms, matched through GA4.')+
+VIEWS.traffic=()=>head(T('Traffic'),T('Sessions and conversions coming from AI platforms, matched through GA4.'))+
   `<div class="card"><div class="empty"><div class="ic">◫</div>
-    <b style="color:var(--fg);font-size:15px">Google Analytics 4 is not connected</b>
-    <p style="margin-top:8px;max-width:56ch;margin-inline:auto">Most AI-sourced visits carry no referrer and land in
-      the direct bucket in GA4. Once connected, YANKI separates those sessions using UTM and referrer signatures and
-      shows them next to your visibility score.</p>
-    <p style="margin-top:14px;font-size:12.5px;color:var(--mute2)">OAuth connection ships in the next release. Until
-      then this screen stays empty rather than showing numbers we cannot source.</p>
+    <b style="color:var(--fg);font-size:15px">${T('Google Analytics 4 is not connected')}</b>
+    <p style="margin-top:8px;max-width:56ch;margin-inline:auto">${T('Most AI-sourced visits carry no referrer and land in the direct bucket in GA4. Once connected, YANKI separates those sessions using UTM and referrer signatures and shows them next to your visibility score.')}</p>
+    <p style="margin-top:14px;font-size:12.5px;color:var(--mute2)">${T('OAuth connection ships in the next release. Until then this screen stays empty rather than showing numbers we cannot source.')}</p>
   </div></div>`;
-VIEWS.search=()=>head('Search Performance','Where your SEO and AI performance intersect.')+
+VIEWS.search=()=>head(T('Search Performance'),T('Where your SEO and AI performance intersect.'))+
   `<div class="card"><div class="empty"><div class="ic">⌕</div>
-    <b style="color:var(--fg);font-size:15px">Connect Google Search Console</b>
-    <p style="margin-top:8px;max-width:56ch;margin-inline:auto">This screen puts SEO and AI performance side by side
-      and surfaces the blind-spot pages that rank on Google but never appear in AI answers. It needs Search Console
-      data, which requires an OAuth connection.</p>
-    <p style="margin-top:14px;font-size:12.5px;color:var(--mute2)">OAuth connection ships in the next release.</p>
+    <b style="color:var(--fg);font-size:15px">${T('Connect Google Search Console')}</b>
+    <p style="margin-top:8px;max-width:56ch;margin-inline:auto">${T('This screen puts SEO and AI performance side by side and surfaces the blind-spot pages that rank on Google but never appear in AI answers. It needs Search Console data, which requires an OAuth connection.')}</p>
+    <p style="margin-top:14px;font-size:12.5px;color:var(--mute2)">${T('OAuth connection ships in the next release.')}</p>
   </div></div>`;
 /* ---------- COMPETITORS ---------- */
 VIEWS.rivals=()=>{
@@ -1558,37 +2019,36 @@ VIEWS.rivals=()=>{
     }),
   ].sort((a,b)=>b.mentions-a.mentions);
 
-  return head('Competitors','Who gets mentioned how often across the prompts you track, and where you stand.',
-    `<button class="btn b-pri b-sm" onclick="addRivalModal()">+ Add Competitor</button>`)+
+  return head(T('Competitors'),T('Who gets mentioned how often across the prompts you track, and where you stand.'),
+    `<button class="btn b-pri b-sm" onclick="addRivalModal()">+ ${T('Add Competitor')}</button>`)+
   `<div class="card"><div class="cb"><input class="in" aria-label="Search competitors"
-     placeholder="Search competitors..." style="max-width:340px" oninput="filterRows(this.value,'rivTbl')"></div>
-   <div class="tw"><table id="rivTbl"><thead><tr><th>#</th><th>Name</th><th>Website</th>
-     <th class="n">Mentions</th><th class="n">Share of voice</th><th class="n">Avg. rank</th><th></th></tr></thead>
+     placeholder="${T('Search competitors...')}" style="max-width:340px" oninput="filterRows(this.value,'rivTbl')"></div>
+   <div class="tw"><table id="rivTbl"><thead><tr><th>#</th><th>${T('Name')}</th><th>${T('Website')}</th>
+     <th class="n">${T('Mention count')}</th><th class="n">${T('Share of voice')}</th><th class="n">${T('Avg. rank')}</th><th></th></tr></thead>
    <tbody>${rows.map((x,i)=>`<tr>
      <td class="n">${i+1}</td>
      <td><span style="display:flex;align-items:center;gap:9px"><span style="width:21px;height:21px;border-radius:6px;
        background:${x.you?'rgba(59,130,246,.22)':'rgba(139,92,246,.2)'};color:${x.you?'#BBD1FF':'#D6C9FF'};
        border:1px solid ${x.you?'rgba(59,130,246,.4)':'rgba(139,92,246,.38)'};display:grid;place-items:center;
        font-size:10px;font-weight:700">${ini(x.n)}</span>
-       <b style="${x.you?'color:#93B4FF':''}">${esc(x.n)}</b>${x.you?' <span class="chip pri">you</span>':''}</span></td>
+       <b style="${x.you?'color:#93B4FF':''}">${esc(x.n)}</b>${x.you?' <span class="chip pri">'+T('you')+'</span>':''}</span></td>
      <td class="mut mono" style="font-size:12px">${esc(x.site)}</td>
      <td class="n" style="font-weight:600">${x.mentions}</td>
      <td class="n">${x.sov.toFixed(1)}%</td>
      <td class="n">${x.rank!==null?x.rank.toFixed(1):'—'}</td>
-     <td>${x.you?'':`<button class="btn b-gh b-sm" onclick="rmRival('${x.id}')">Remove</button>`}</td></tr>`).join('')}
+     <td>${x.you?'':`<button class="btn b-gh b-sm" onclick="rmRival('${x.id}')">${T('Remove')}</button>`}</td></tr>`).join('')}
    </tbody></table></div></div>
 
    <div class="g2">
-    <div class="card"><div class="ch"><div><h3>Share of voice</h3>
-      <div class="sub">Mentions across the tracked brand set — same prompts, same day</div></div></div>
+    <div class="card"><div class="ch"><div><h3>${T('Share of voice')}</h3>
+      <div class="sub">${T('Mentions across the tracked brand set — same prompts, same day')}</div></div></div>
       <div class="cb">${sovBars(rows)}</div></div>
 
-    <div class="card"><div class="ch"><div><h3>Attribute matching</h3>
-      <div class="sub">Which qualities models associate with each brand</div></div></div>
+    <div class="card"><div class="ch"><div><h3>${T('Attribute matching')}</h3>
+      <div class="sub">${T('Which qualities models associate with each brand')}</div></div></div>
       <div class="cb"><div class="empty"><div class="ic">◈</div>
-        <b style="color:var(--fg);font-size:14px">Not enough answers yet</b>
-        <p style="margin-top:8px;max-width:46ch;margin-inline:auto">Attribute extraction needs the judge model and a
-          few hundred answers before it says anything meaningful. It appears once the corpus is large enough.</p>
+        <b style="color:var(--fg);font-size:14px">${T('Not enough answers yet')}</b>
+        <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${T('Attribute extraction needs the judge model and a few hundred answers before it says anything meaningful. It appears once the corpus is large enough.')}</p>
       </div></div></div>
    </div>`;
 };
@@ -1602,8 +2062,7 @@ function sovBars(rows){
        <span class="mono" style="font-size:12px">${r.mentions} · ${r.sov.toFixed(1)}%</span></div>
      <span class="bar"><i style="width:${r.mentions/max*100}%;background:${r.you?'#3B82F6':'#8B5CF6'}"></i></span>
    </div>`).join('')
-   +`<p style="font-size:12px;color:var(--mute);margin-top:12px">The denominator is the tracked brand set only.
-     Adding a competitor changes every share, which is why comparisons stay inside one set.</p>`;
+   +`<p style="font-size:12px;color:var(--mute);margin-top:12px">${T('The denominator is the tracked brand set only. Adding a competitor changes every share, which is why comparisons stay inside one set.')}</p>`;
 }
 
 
@@ -1635,33 +2094,33 @@ function filterRows(v,id){const t=trLower(v);
 let promptTab='all';
 VIEWS.prompts=()=>{
   const list=S.prompts.filter(p=>promptTab==='all'||(promptTab==='on'?p.active:!p.active));
-  return head('AI Prompts','The search prompts you track across AI platforms. See which prompts mention your brand and add new ones.',
-    `<button class="btn b-gh b-sm" onclick="regen()">✦ Regenerate with AI</button>
-     <button class="btn b-pri b-sm" onclick="newPromptModal()">+ New Prompt</button>`)+
+  return head(T('AI Prompts'),T('The search prompts you track across AI platforms. See which prompts mention your brand and add new ones.'),
+    `<button class="btn b-gh b-sm" onclick="regen()">${T('✦ Regenerate with AI')}</button>
+     <button class="btn b-pri b-sm" onclick="newPromptModal()">${T('+ New Prompt')}</button>`)+
   `<div class="card"><div class="cb">
     <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
       <div class="pills">
         <button class="${promptTab==='all'?'on':''}" onclick="promptTab='all';render()">All (${S.prompts.length})</button>
         <button class="${promptTab==='on'?'on':''}" onclick="promptTab='on';render()">Active (${S.prompts.filter(p=>p.active).length})</button>
         <button class="${promptTab==='off'?'on':''}" onclick="promptTab='off';render()">Paused (${S.prompts.filter(p=>!p.active).length})</button></div>
-      <input class="in" placeholder="Search prompts..." style="max-width:280px;margin-left:auto" oninput="filterRows(this.value,'pTbl')"></div>
-    <div class="tw"><table id="pTbl"><thead><tr><th>Prompt</th><th>Intent</th><th class="n">Volume</th>
-      <th class="n">Coverage</th><th>Source</th><th>Status</th><th></th></tr></thead>
+      <input class="in" placeholder="${T('Search prompts...')}" style="max-width:280px;margin-left:auto" oninput="filterRows(this.value,'pTbl')"></div>
+    <div class="tw"><table id="pTbl"><thead><tr><th>${T('Prompt')}</th><th>${T('Intent')}</th><th class="n">${T('Volume')}</th>
+      <th class="n">${T('Coverage')}</th><th>${T('Source')}</th><th>${T('Status')}</th><th></th></tr></thead>
     <tbody>${list.map(p=>{
       const cs=S.data.cells.filter(c=>c.p.id===p.id&&platAllowed(c.pl));
       const cov=cs.length?cs.filter(c=>c.m>0).length/cs.length*100:0;
       return `<tr><td style="max-width:320px">${esc(p.text)}</td>
       <td><span class="chip">${intentLabel(p.intent)}</span></td><td class="n">${nf(p.vol)}</td>
       <td class="n" style="color:${cov>50?'#4ADE80':cov>0?'#FBBF24':'#F87171'}">${cov.toFixed(0)}%</td>
-      <td><span class="chip ${p.src==='ai'?'vio':''}">${p.src==='ai'?'AI-generated':'Custom'}</span></td>
-      <td><button class="chip ${p.active?'ok':''}" onclick="togglePrompt('${p.id}')">${p.active?'Active':'Paused'}</button></td>
+      <td><span class="chip ${p.src==='ai'?'vio':''}">${p.src==='ai'?T('AI-generated'):T('Custom')}</span></td>
+      <td><button class="chip ${p.active?'ok':''}" onclick="togglePrompt('${p.id}')">${p.active?T('Active'):T('Paused')}</button></td>
       <td style="text-align:right;white-space:nowrap">
-        <button class="btn b-gh b-sm" onclick="writerFor('${p.id}')">Generate content ✦</button>
+        <button class="btn b-gh b-sm" onclick="writerFor('${p.id}')">${T('Generate content')} ✦</button>
         <button class="btn b-gh b-sm" onclick="delPrompt('${p.id}')">✕</button></td></tr>`}).join('')}
     </tbody></table></div>
     <div style="display:flex;align-items:center;margin-top:14px;font-size:12.5px;color:var(--mute)">
       Showing 1–${list.length} of ${S.prompts.length}
-      <span style="margin-left:auto" class="chip pri">Plan limit: ${{trial:5,starter:40,pro:150,business:500}[S.plan]} prompts</span></div>
+      <span style="margin-left:auto" class="chip pri">${T('Plan limit')}: ${(S.planLimits&&S.planLimits.prompts)||10} ${T('prompts')}</span></div>
   </div></div>`;
 };
 async function togglePrompt(id){
@@ -1707,13 +2166,13 @@ async function addPrompt2(){
 VIEWS.plan=()=>{
   const d=S.data,A=d.actions;
   const gain=A.reduce((a,x)=>a+parseFloat(x.im),0);
-  return head('Action Plan','A task list built from audit findings, citation gaps and the opportunity engine, sorted by impact and effort.',
-    `<button class="btn b-gh b-sm" onclick="exportPlan()">⭳ Download plan</button>`)+
+  return head(T('Action Plan'),T('A task list built from audit findings, citation gaps and the opportunity engine, sorted by impact and effort.'),
+    `<button class="btn b-gh b-sm" onclick="exportPlan()">⭳ ${T('Download plan')}</button>`)+
   `<div class="g3">
-    <div class="kpi"><div class="t">Projected score if completed</div><div class="v ok">${Math.min(100,d.total+gain).toFixed(1)}</div>
+    <div class="kpi"><div class="t">${T('Projected score if completed')}</div><div class="v ok">${Math.min(100,d.total+gain).toFixed(1)}</div>
       <div class="d">now ${d.total.toFixed(1)} · +${gain.toFixed(1)} points</div></div>
-    <div class="kpi"><div class="t">Tasks</div><div class="v">${A.length}</div><div class="d">split into 3 phases</div></div>
-    <div class="kpi"><div class="t">Estimated timeline</div><div class="v">90 days</div><div class="d">first wins in 1–2 weeks</div></div>
+    <div class="kpi"><div class="t">${T('Tasks')}</div><div class="v">${A.length}</div><div class="d">split into 3 phases</div></div>
+    <div class="kpi"><div class="t">${T('Estimated timeline')}</div><div class="v">90 days</div><div class="d">first wins in 1–2 weeks</div></div>
   </div>
   <div>${A.map((a,i)=>`<div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">
     <div class="i">${String(i+1).padStart(2,'0')}</div>
@@ -1721,21 +2180,21 @@ VIEWS.plan=()=>{
     <div class="m"><span class="chip ok">${a.im} pts</span><span class="chip pri">${a.q}</span><span class="chip">${a.ef}</span></div></div>
     <div class="acc-b"><p>${esc(a.desc)}</p><ol>${a.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
       ${a.code?`<pre id="code${i}">${esc(a.code)}</pre>
-        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn b-gh b-sm" onclick="copy('code${i}')">Copy</button>
-        <button class="btn b-gh b-sm" onclick="dl('fix-${i+1}.txt',document.getElementById('code${i}').textContent)">Download</button></div>`:''}
+        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn b-gh b-sm" onclick="copy('code${i}')">${T('Copy')}</button>
+        <button class="btn b-gh b-sm" onclick="dl('fix-${i+1}.txt',document.getElementById('code${i}').textContent)">${T('Download')}</button></div>`:''}
     </div></div>`).join('')}</div>
 
-  <div class="card"><div class="ch"><div><h3>90-day roadmap</h3>
-    <div class="sub">Expected cumulative gain at the end of each phase</div></div></div>
+  <div class="card"><div class="ch"><div><h3>${T('90-day roadmap')}</h3>
+    <div class="sub">${T('Expected cumulative gain at the end of each phase')}</div></div></div>
   <div class="cb"><div class="road">
-    ${[['0–30 days','Open the door',A.slice(0,2),(gain*.33)],
-       ['30–60 days','Fill the gaps',A.slice(2,5),(gain*.38)],
-       ['60–90 days','Grow authority',A.slice(5),(gain*.29)]].map(([t,h,items,g])=>`
+    ${[[`0–30 ${T('days')}`,T('Open the door'),A.slice(0,2),(gain*.33)],
+       [`30–60 ${T('days')}`,T('Fill the gaps'),A.slice(2,5),(gain*.38)],
+       [`60–90 ${T('days')}`,T('Grow authority'),A.slice(5),(gain*.29)]].map(([t,h,items,g])=>`
       <div class="card" style="background:var(--card2)"><div class="cb">
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px"><span class="chip pri">${t}</span><b>${h}</b></div>
         <ul style="margin:0;padding:0">${items.map(x=>`<li><span>›</span>${esc(x.t)}</li>`).join('')||'<li><span>›</span>No further tasks</li>'}</ul>
         <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font-size:12.5px;color:var(--mute)">
-          Expected gain <b class="ok mono" style="font-size:15px">+${g.toFixed(1)} pts</b></div></div></div>`).join('')}
+          ${T('Expected gain')} <b class="ok mono" style="font-size:15px">+${g.toFixed(1)} pts</b></div></div></div>`).join('')}
   </div></div></div>`;
 };
 function exportPlan(){
@@ -1750,11 +2209,11 @@ VIEWS.audit=()=>{
   const pass=d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='pass').length,0);
   const part=d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='partial').length,0);
   const fail=d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0);
-  return head('GEO Site Audit','58 factors scored across 6 categories. Every failing factor comes with a copy-ready fix.',
+  return head(T('GEO Site Audit'),T('58 factors scored across 6 categories. Every failing factor comes with a copy-ready fix.'),
     `<input class="in" id="auditUrl" aria-label="URL to audit" style="width:260px" value="${esc(S.brand.site)}">
-     <button class="btn b-pri b-sm" id="auditBtn" onclick="runAudit()">Run Audit</button>`)+
+     <button class="btn b-pri b-sm" id="auditBtn" onclick="runAudit()">${T('Run Audit')}</button>`)+
   `<div class="g2" style="grid-template-columns:1.5fr 1fr">
-    <div class="card"><div class="ch"><div><h3>Category scores</h3><div class="sub">Click a category to expand its factors</div></div></div>
+    <div class="card"><div class="ch"><div><h3>${T('Category scores')}</h3><div class="sub">${T('Click a category to expand its factors')}</div></div></div>
       <div class="cb">${d.audit.map((c,i)=>{
         const col=c.score>=60?'#22C55E':c.score>=40?'#F59E0B':'#EF4444';
         const tcol=c.score>=60?'#86EFAC':c.score>=40?'#FCD34D':'#FCA5A5';
@@ -1767,35 +2226,35 @@ VIEWS.audit=()=>{
           <div class="acc-b">${c.facs.map((f,j)=>`
             <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)">
               <span class="chip ${f.st==='pass'?'ok':f.st==='partial'?'warn':'bad'}" style="flex:none">
-                ${f.st==='pass'?'Pass':f.st==='partial'?'Partial':'Fail'}</span>
+                ${f.st==='pass'?T('Pass'):f.st==='partial'?T('Partial'):T('Fail')}</span>
               <span style="font-size:13px;flex:1">${f.n}</span>
-              ${f.fix?`<button class="btn b-gh b-sm" onclick="fixModal('${encodeURIComponent(f.n)}')">Fix</button>`:''}
+              ${f.fix?`<button class="btn b-gh b-sm" onclick="fixModal('${encodeURIComponent(f.n)}')">${T('Fix')}</button>`:''}
             </div>`).join('')}</div></div>`}).join('')}</div></div>
 
-    <div class="card"><div class="ch"><div><h3>Total score</h3></div></div>
+    <div class="card"><div class="ch"><div><h3>${T('Total score')}</h3></div></div>
       <div class="cb" style="text-align:center">
         ${gauge(d.auditScore,d.auditScore>=60?'#22C55E':d.auditScore>=40?'#F59E0B':'#EF4444')}
         <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
           <span class="chip ok">${pass} passed</span><span class="chip warn">${part} partial</span><span class="chip bad">${fail} failed</span></div>
-        <p style="font-size:12.5px;color:var(--mute);margin-top:14px">Failing factors automatically become tasks in the
-          <a href="#" onclick="go('plan');return false" style="color:var(--pri)">action plan</a>.</p>
+        <p style="font-size:12.5px;color:var(--mute);margin-top:14px">${T('Failing factors automatically become tasks in the')}
+          <a href="#" onclick="go('plan');return false" style="color:var(--pri)">${T('action plan')}</a>.</p>
         <div style="display:grid;gap:8px;margin-top:16px">
-          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('llms'),40)">Generate llms.txt</button>
-          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('schema'),40)">Generate schema</button>
-          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('robots'),40)">Generate robots.txt</button>
-          <button class="btn b-gh b-sm" onclick="exportAudit()">⭳ Download audit report</button></div></div></div>
+          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('llms'),40)">${T('Generate llms.txt')}</button>
+          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('schema'),40)">${T('Generate schema')}</button>
+          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('robots'),40)">${T('Generate robots.txt')}</button>
+          <button class="btn b-gh b-sm" onclick="exportAudit()">${T('⭳ Download audit report')}</button></div></div></div>
   </div>`;
 };
 async function runAudit(){
   const btn=$('#auditBtn'); const url=$('#auditUrl')?$('#auditUrl').value.trim():'';
-  if(btn){btn.disabled=true;btn.textContent='Crawling…';}
+  if(btn){btn.disabled=true;btn.textContent=T('Crawling…');}
   try{
     const r=await api.post('/api/audit',{workspaceId:S.workspaceId,url:url||undefined});
     await loadResults();
     toast(`Audit complete — ${r.score.toFixed(0)}/100 · ${r.remaining} left this month`);
   }catch(e){
     toast(e.message);
-    if(btn){btn.disabled=false;btn.textContent='Run Audit';}
+    if(btn){btn.disabled=false;btn.textContent=T('Run Audit');}
   }
 }
 
@@ -1807,8 +2266,8 @@ function fixModal(key){
     ? `<p style="font-size:13px;color:var(--mute);margin-bottom:12px">${esc(detail)}</p>
        <pre id="fixc">${esc(fix)}</pre>
        <div style="display:flex;gap:9px;margin-top:14px">
-         <button class="btn b-pri b-sm" onclick="copy('fixc')">Copy</button>
-         <button class="btn b-gh b-sm" onclick="dl('fix.txt',document.getElementById('fixc').textContent)">Download</button>
+         <button class="btn b-pri b-sm" onclick="copy('fixc')">${T('Copy')}</button>
+         <button class="btn b-gh b-sm" onclick="dl('fix.txt',document.getElementById('fixc').textContent)">${T('Download')}</button>
        </div>`
     : `<p style="font-size:13.5px;color:var(--mute)">${esc(detail||'No automated fix for this factor.')}</p>`);
 }
@@ -1822,10 +2281,10 @@ function exportAudit(){
 /* ---------- TOOLS ---------- */
 let tool='writer';
 VIEWS.tools=()=>{
-  const T={writer:'AI Content Writer',robots:'Robots.txt Analyser & Generator',
-    llms:'LLMs.txt Generator',schema:'Schema Markup Generator',meta:'Meta Tag Generator'};
-  return head('Tools','Generate your technical GEO files in one click. llms.txt, robots.txt, schema markup and meta tag generators.')+
-  `<div class="pills">${Object.entries(T).map(([k,v])=>
+  const TOOL_TITLES={writer:T('AI Content Writer'),robots:T('Robots.txt Analyser & Generator'),
+    llms:T('LLMs.txt Generator'),schema:T('Schema Markup Generator'),meta:T('Meta Tag Generator')};
+  return head(T('Tools'),T('Generate your technical GEO files in one click. llms.txt, robots.txt, schema markup and meta tag generators.'))+
+  `<div class="pills">${Object.entries(TOOL_TITLES).map(([k,v])=>
     `<button class="${tool===k?'on':''}" onclick="toolOpen('${k}')" style="padding:8px 15px;font-size:13px">${v}</button>`).join('')}</div>
    <div id="toolBox">${toolView()}</div>`;
 };
@@ -1835,60 +2294,60 @@ function toolView(){
   const feats=(arr)=>arr.map(f=>`<div class="ft"><span class="ic">${f[0]}</span><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('');
   if(tool==='writer'){
     return `<div class="tool-c"><div class="tool-l">
-      <h3 style="font-size:19px;margin-bottom:4px">Create Content</h3>
-      <p style="font-size:12.5px;color:var(--mute);margin-bottom:18px">Brand: <b>${esc(b.name)}</b> · Site: <b>${esc(b.site)}</b></p>
-      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:9px">Content Type</label>
+      <h3 style="font-size:19px;margin-bottom:4px">${T('Create Content')}</h3>
+      <p style="font-size:12.5px;color:var(--mute);margin-bottom:18px">${T('Brand')}: <b>${esc(b.name)}</b> · ${T('Site')}: <b>${esc(b.site)}</b></p>
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:9px">${T('Content Type')}</label>
       <div class="seg" id="ctype">
-        ${[['blog','Blog Post','Article optimised for SEO and AI platforms'],
-           ['faq','FAQ Page','Frequently asked questions page'],
-           ['cmp','Comparison','Product or service comparison piece'],
-           ['how','How-To','Step-by-step guide content']].map((x,i)=>
+        ${[['blog',T('Blog Post'),T('Article optimised for SEO and AI platforms')],
+           ['faq',T('FAQ Page'),T('Frequently asked questions page')],
+           ['cmp',T('Comparison'),T('Product or service comparison piece')],
+           ['how',T('How-To'),T('Step-by-step guide content')]].map((x,i)=>
         `<button class="${i===0?'on':''}" data-t="${x[0]}" onclick="$$('#ctype button').forEach(b=>b.classList.remove('on'));this.classList.add('on')">
           <b>${x[1]}</b><p>${x[2]}</p></button>`).join('')}</div>
-      <div class="fld"><label>Topic / Prompt *</label><input class="in" id="wTopic" value="${esc(S.writerTopic||'')}"
-        placeholder="The topic you want to appear for in AI platforms"></div>
-      <div class="fld"><label>Content Language</label><select class="in" id="wLang" aria-label="Content language">
-        <option>Brand default</option><option>English</option><option>Turkish</option><option>German</option></select></div>
-      <div class="fld"><label>Additional Context (optional)</label>
-        <textarea class="in" id="wCtx" placeholder="Add more about your brand — it improves content quality">${esc(b.desc)}</textarea></div>
-      <button class="btn b-pri b-full b-lg" onclick="runWriter()">✦ Generate Content</button>
+      <div class="fld"><label>${T('Topic / Prompt')} *</label><input class="in" id="wTopic" value="${esc(S.writerTopic||'')}"
+        placeholder="${T('The topic you want to appear for in AI platforms')}"></div>
+      <div class="fld"><label>${T('Content Language')}</label><select class="in" id="wLang" aria-label="Content language">
+        <option>${T('Brand default')}</option><option>${T('English')}</option><option>${T('Turkish')}</option><option>${T('German')}</option></select></div>
+      <div class="fld"><label>${T('Additional Context (optional)')}</label>
+        <textarea class="in" id="wCtx" placeholder="${T('Add more about your brand — it improves content quality')}">${esc(b.desc)}</textarea></div>
+      <button class="btn b-pri b-full b-lg" onclick="runWriter()">${T('✦ Generate Content')}</button>
       </div><div class="tool-r" id="wOut">
-      ${feats([['✦','8-Platform Optimisation','Content optimised for ChatGPT, Perplexity, Gemini, Claude and others'],
-               ['⊕','15 Language Support','Generate content in any of 15 supported languages'],
-               ['▦','4 Content Types','Blog posts, FAQ pages, comparisons and how-to guides']])}
-      <div class="empty"><div class="ic">✦</div><b style="color:var(--fg)">AI Content Generator</b>
-        <p style="margin-top:6px">Pick a content type and topic, and we'll draft it in answer-ready structure.</p></div></div></div>`;
+      ${feats([['✦',T('7 Platform Optimisation'),T('Content optimised for ChatGPT, Perplexity, Gemini, Claude and others')],
+               ['⊕',T('15 Language Support'),T('Generate content in any of 15 supported languages')],
+               ['▦',T('4 Content Types'),T('Blog posts, FAQ pages, comparisons and how-to guides')]])}
+      <div class="empty"><div class="ic">✦</div><b style="color:var(--fg)">${T('AI Content Generator')}</b>
+        <p style="margin-top:6px">${T("Pick a content type and topic, and we'll draft it in answer-ready structure.")}</p></div></div></div>`;
   }
   const gen={
-   robots:{t:'Robots.txt Analyser & Generator',d:'Analyse and optimise your robots.txt so AI crawlers can reach your content',
-     f:[['⛨','AI Bot Control','Configure rules for 22 AI crawlers including GPTBot and ClaudeBot'],
-        ['⌕','Deep Crawl Analysis','Detect issues, missing sitemaps and faulty rules'],
-        ['⭳','One-Click Generate','Export a deploy-ready, optimised robots.txt file']],
+   robots:{t:T('Robots.txt Analyser & Generator'),d:T('Analyse and optimise your robots.txt so AI crawlers can reach your content'),
+     f:[['⛨',T('AI Bot Control'),T('Configure rules for 22 AI crawlers including GPTBot and ClaudeBot')],
+        ['⌕',T('Deep Crawl Analysis'),T('Detect issues, missing sitemaps and faulty rules')],
+        ['⭳',T('One-Click Generate'),T('Export a deploy-ready, optimised robots.txt file')]],
      out:()=>`# robots.txt — ${b.name}\n# generated by YANKI\n\nUser-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /sepet\nDisallow: /*?filter=\n\n# ---- AI crawlers ----\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Perplexity-User\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: Claude-User\nAllow: /\n\nUser-agent: Claude-SearchBot\nAllow: /\n\nUser-agent: Google-Extended\nAllow: /\n\nUser-agent: Applebot-Extended\nAllow: /\n\nUser-agent: meta-externalagent\nAllow: /\n\nUser-agent: Amazonbot\nAllow: /\n\nUser-agent: cohere-ai\nAllow: /\n\nUser-agent: Bytespider\nDisallow: /\n\nSitemap: ${b.site}/sitemap.xml`,file:'robots.txt'},
-   llms:{t:'LLMs.txt Generator',d:'Create the llms.txt file that helps AI platforms understand and reference your brand',
-     f:[['◈','llmstxt.org Standard','The industry-standard format recognised by AI platforms'],
-        ['⚡','Auto Crawl and Build','Crawls your website and builds the file automatically'],
-        ['⧉','Copy and Publish','One-click copy or download for your server']],
+   llms:{t:T('LLMs.txt Generator'),d:T('Create the llms.txt file that helps AI platforms understand and reference your brand'),
+     f:[['◈',T('llmstxt.org Standard'),T('The industry-standard format recognised by AI platforms')],
+        ['⚡',T('Auto Crawl and Build'),T('Crawls your website and builds the file automatically')],
+        ['⧉',T('Copy and Publish'),T('One-click copy or download for your server')]],
      out:()=>toolOutput(),file:'llms.txt'},
-   schema:{t:'Schema Markup Generator',d:'Generate valid JSON-LD structured data for better visibility in search and AI results',
-     f:[['▤','10 Schema Types','Organization, Product, Article, FAQ, Service and more'],
-        ['<>','Valid JSON-LD','Schema.org compliant, paste-ready JSON-LD output'],
-        ['◎','Google Approved','Output follows Google\'s structured data guidelines']],
+   schema:{t:T('Schema Markup Generator'),d:T('Generate valid JSON-LD structured data for better visibility in search and AI results'),
+     f:[['▤',T('10 Schema Types'),T('Organization, Product, Article, FAQ, Service and more')],
+        ['<>',T('Valid JSON-LD'),T('Schema.org compliant, paste-ready JSON-LD output')],
+        ['◎',T('Google Approved'),T('Output follows Google\'s structured data guidelines')]],
      out:()=>'<script type="application/ld+json">\n'+schemaOrg()+'\n<\/script>\n\n<script type="application/ld+json">\n'+
        JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:S.prompts.slice(0,4).map(p=>({
         "@type":"Question",name:p.text.replace(/"/g,''),acceptedAnswer:{"@type":"Answer",
         text:'40-60 word direct answer.'}})) },null,2)+'\n<\/script>',file:'schema.html'},
-   meta:{t:'Meta Tag Generator',d:'Analyse any page and generate AI-optimised meta tags for search and social sharing',
-     f:[['◎','Existing Tag Analysis','Analyse current title, description and OG tags on any page'],
-        ['✦','AI Optimisation','Generates GEO-optimised meta tags for better AI visibility'],
-        ['⇄','Social Card Analysis','Open Graph and Twitter Card tag validation']],
+   meta:{t:T('Meta Tag Generator'),d:T('Analyse any page and generate AI-optimised meta tags for search and social sharing'),
+     f:[['◎',T('Existing Tag Analysis'),T('Analyse current title, description and OG tags on any page')],
+        ['✦',T('AI Optimisation'),T('Generates GEO-optimised meta tags for better AI visibility')],
+        ['⇄',T('Social Card Analysis'),T('Open Graph and Twitter Card tag validation')]],
      out:()=>toolOutput(),file:'meta-tags.html'}
   }[tool];
   return `<div class="tool-c"><div class="tool-l">
     <h3 style="font-size:19px;margin-bottom:8px">${gen.t}</h3>
     <p style="font-size:13px;color:var(--mute);margin-bottom:18px">${gen.d}</p>
-    <div class="fld"><label>Domain</label><input class="in" aria-label="Website" value="${esc(b.site)}" onchange="S.brand.site=this.value"></div>
-    <button class="btn b-pri b-full b-lg" onclick="runGen()">Generate →</button>
+    <div class="fld"><label>${T('Domain')}</label><input class="in" aria-label="Website" value="${esc(b.site)}" onchange="S.brand.site=this.value"></div>
+    <button class="btn b-pri b-full b-lg" onclick="runGen()">${T('Generate →')}</button>
     <div id="genOut" style="margin-top:18px"></div>
     </div><div class="tool-r">${feats(gen.f)}</div></div>`;
 }
@@ -1896,8 +2355,8 @@ function runGen(){
   const map={robots:'robots.txt',llms:'llms.txt',schema:'schema.html',meta:'meta-tags.html'};
   const out=toolOutput();
   $('#genOut').innerHTML=`<pre id="gc">${esc(out)}</pre>
-    <div style="display:flex;gap:9px;margin-top:12px"><button class="btn b-pri b-sm" onclick="copy('gc')">Copy</button>
-    <button class="btn b-gh b-sm" onclick="dl('${map[tool]}',document.getElementById('gc').textContent)">Download</button></div>`;
+    <div style="display:flex;gap:9px;margin-top:12px"><button class="btn b-pri b-sm" onclick="copy('gc')">${T('Copy')}</button>
+    <button class="btn b-gh b-sm" onclick="dl('${map[tool]}',document.getElementById('gc').textContent)">${T('Download')}</button></div>`;
   toast(map[tool]+' generated');
 }
 function toolOutput(){
@@ -1929,41 +2388,41 @@ function writerFor(pid){const p=S.prompts.find(x=>x.id===pid);S.writerTopic=p?p.
   tool='writer';go('tools');setTimeout(runWriter,60)}
 function runWriter(){
   const topic=($('#wTopic')?.value||S.writerTopic||'').trim();
-  if(!topic){toast('Topic is required');return}
+  if(!topic){toast(T('Topic is required'),'error');return}
   const type=document.querySelector('#ctype button.on')?.dataset.t||'blog';
   const b=S.brand,sec=sectorTerm(b.sector);
-  const T=topic.charAt(0).toLocaleUpperCase('tr')+topic.slice(1);
+  const TITLE=topic.charAt(0).toLocaleUpperCase('tr')+topic.slice(1);
   let md='';
   if(type==='faq'){
-    md=`# ${T} — Frequently Asked Questions\n\n`+
-    [`What is ${T}?`,`How do you choose ${T}?`,`What does ${b.name} offer here?`,`How does pricing work?`,`How long until results?`]
+    md=`# ${TITLE} — Frequently Asked Questions\n\n`+
+    [`What is ${TITLE}?`,`How do you choose ${TITLE}?`,`What does ${b.name} offer here?`,`How does pricing work?`,`How long until results?`]
     .map(q=>`## ${q}\n\n${b.name} … in ${sec}. (40–60 word direct answer.) This section should include at least one numeric data point and one source link.\n`).join('\n');
   }else if(type==='cmp'){
-    md=`# ${T}: Comparison (${new Date().getFullYear()})\n\nWhen choosing ${T}, the criteria that matter are price, local support, integration depth and setup time. The table below puts the leading options side by side.\n\n`+
+    md=`# ${TITLE}: Comparison (${new Date().getFullYear()})\n\nWhen choosing ${TITLE}, the criteria that matter are price, local support, integration depth and setup time. The table below puts the leading options side by side.\n\n`+
     `| Criterion | ${b.name} | ${(S.rivals[0]?.n)||'Competitor A'} | ${(S.rivals[1]?.n)||'Competitor B'} |\n|---|---|---|---|\n`+
     `| Price | … | … | … |\n| Local support | … | … | … |\n| Setup time | … | … | … |\n| Integrations | … | … | … |\n\n`+
     `## Which one, and when?\n\n…\n\n## Verdict\n\n${b.name} stands out in the ${b.city||b.country} market thanks to … .\n`;
   }else if(type==='how'){
-    md=`# ${T} — Step-by-Step Guide\n\n${T} is the process to follow for … in ${sec}. The steps below take about … to complete.\n\n`+
+    md=`# ${TITLE} — Step-by-Step Guide\n\n${TITLE} is the process to follow for … in ${sec}. The steps below take about … to complete.\n\n`+
     [1,2,3,4,5].map(i=>`## Step ${i}: …\n\n… (clear, actionable instruction)\n`).join('\n')+
     `\n## Common mistakes\n\n- …\n- …\n\n## Summary\n\n…\n`;
   }else{
-    md=`# ${T}\n\n${T} is a frequently asked topic in ${sec} in the ${b.city||b.country} market. This article covers everything from the definition to the selection criteria, with data.\n\n`+
-    `## What is ${T}?\n\n… (40–60 word direct answer in the first paragraph — this is the part models quote.)\n\n`+
+    md=`# ${TITLE}\n\n${TITLE} is a frequently asked topic in ${sec} in the ${b.city||b.country} market. This article covers everything from the definition to the selection criteria, with data.\n\n`+
+    `## What is ${TITLE}?\n\n… (40–60 word direct answer in the first paragraph — this is the part models quote.)\n\n`+
     `## How does it work?\n\n…\n\n## Selection criteria\n\n| Criterion | Why it matters | How to measure |\n|---|---|---|\n| … | … | … |\n\n`+
-    `## The ${b.name} approach\n\n${b.desc||'…'}\n\n## FAQ\n\n**How long does ${T} take?**\n…\n\n**What does it cost?**\n…\n\n`+
+    `## The ${b.name} approach\n\n${b.desc||'…'}\n\n## FAQ\n\n**How long does ${TITLE} take?**\n…\n\n**What does it cost?**\n…\n\n`+
     `---\n*Published: ${new Date().toLocaleDateString('en-GB')} · Author: ${b.name} editorial team*\n`;
   }
-  const check=[['Direct answer in first paragraph','ok'],['Headings in question form',type==='faq'?'ok':'warn'],
-    ['Comparison table',type==='cmp'||type==='blog'?'ok':'warn'],['Date and author info','ok'],
-    ['FAQPage schema suggested','ok'],['Add numeric data','warn']];
+  const check=[[T('Direct answer in first paragraph'),'ok'],[T('Headings in question form'),type==='faq'?'ok':'warn'],
+    [T('Comparison table'),type==='cmp'||type==='blog'?'ok':'warn'],[T('Date and author info'),'ok'],
+    [T('FAQPage schema suggested'),'ok'],[T('Add numeric data'),'warn']];
   $('#wOut').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-    <b style="font-size:14px">Draft ready</b><span class="chip pri">${{blog:'Blog',faq:'FAQ',cmp:'Comparison',how:'How-To'}[type]}</span>
+    <b style="font-size:14px">${T('Draft ready')}</b><span class="chip pri">${{blog:T('Blog'),faq:T('FAQ'),cmp:T('Comparison'),how:T('How-To')}[type]}</span>
     <span style="margin-left:auto;display:flex;gap:8px">
-      <button class="btn b-gh b-sm" onclick="copy('wmd')">Copy</button>
+      <button class="btn b-gh b-sm" onclick="copy('wmd')">${T('Copy')}</button>
       <button class="btn b-pri b-sm" onclick="dl('content.md',document.getElementById('wmd').textContent,'text/markdown')">⭳ .md</button></span></div>
    <pre id="wmd" style="max-height:340px;overflow:auto">${esc(md)}</pre>
-   <div style="margin-top:14px"><b style="font-size:13px">GEO checklist</b>
+   <div style="margin-top:14px"><b style="font-size:13px">${T('GEO checklist')}</b>
      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">
        ${check.map(c=>`<span class="chip ${c[1]}">${c[1]==='ok'?'✓':'!'} ${c[0]}</span>`).join('')}</div></div>`;
   toast('Content draft generated');
@@ -1974,26 +2433,26 @@ let setTabV='profile';
 function setTab(t){setTabV=t;render()}
 VIEWS.settings=()=>{
   const b=S.brand;
-  const tabs=[['profile','Profile'],['brand','Brand'],['team','Team'],['integrations','Integrations'],['billing','Billing']];
+  const tabs=[['profile',T('Profile')],['brand',T('Brand')],['team',T('Team')],['integrations',T('Integrations')],['billing',T('Billing')]];
   let body='';
   if(setTabV==='profile'){
-    body=`<div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">Personal Details</h4>
-      <p style="font-size:12.5px;color:var(--mute)">Update the name and personal details linked to your account.</p></div>
+    body=`<div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">${T('Personal Details')}</h4>
+      <p style="font-size:12.5px;color:var(--mute)">${T('Update the name and personal details linked to your account.')}</p></div>
       <div><div class="fld"><label>Email</label><input class="in" aria-label="Email" value="${esc(S.user.mail)}" onchange="S.user.mail=this.value"></div>
       <div class="fld"><label>Full name</label><input class="in" aria-label="Full name" value="${esc(S.user.name)}" onchange="S.user.name=this.value"></div>
-      <button class="btn b-pri" onclick="render();toast('Profile saved')">✓ Save Profile</button></div></div>
+      <button class="btn b-pri" onclick="render();toast('Profile saved')">${T('✓ Save Profile')}</button></div></div>
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
-      <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">Change Password</h4>
-        <p style="font-size:12.5px;color:var(--mute)">Keep your account secure with a strong password.</p></div>
+      <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">${T('Change Password')}</h4>
+        <p style="font-size:12.5px;color:var(--mute)">${T('Keep your account secure with a strong password.')}</p></div>
         <div><div class="fld"><label>Current password</label><input class="in" id="pwCur" type="password" placeholder="Enter your current password"></div>
         <div class="fld"><label>New password</label><input class="in" id="pwNew" type="password" placeholder="At least 10 characters"></div>
-        <button class="btn b-gh" onclick="changePassword()">Update Password</button></div></div>
+        <button class="btn b-gh" onclick="changePassword()">${T('Update Password')}</button></div></div>
       <div class="card" style="margin-top:26px;border-color:rgba(239,68,68,.3)"><div class="cb">
-        <b class="bad" style="font-size:14px">Danger Zone</b>
-        <p style="font-size:12.5px;color:var(--mute);margin:6px 0 14px">These actions cannot be undone. Please proceed carefully.</p>
+        <b class="bad" style="font-size:14px">${T('Danger Zone')}</b>
+        <p style="font-size:12.5px;color:var(--mute);margin:6px 0 14px">${T('These actions cannot be undone. Please proceed carefully.')}</p>
         <div style="display:flex;gap:9px;flex-wrap:wrap">
-          <button class="btn b-gh b-sm" onclick="exportAll()">⭳ Export My Data</button>
-          <button class="btn b-dg b-sm" onclick="if(confirm('Delete this account?'))reset()">🗑 Delete Account</button></div></div></div>`;
+          <button class="btn b-gh b-sm" onclick="exportAll()">${T('⭳ Export My Data')}</button>
+          <button class="btn b-dg b-sm" onclick="if(confirm('Delete this account?'))reset()">${T('🗑 Delete Account')}</button></div></div></div>`;
   }else if(setTabV==='brand'){
     body=`<div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">General</h4>
       <p style="font-size:12.5px;color:var(--mute)">Update your brand name, website and industry.</p></div>
@@ -2057,7 +2516,7 @@ VIEWS.settings=()=>{
       <span style="flex:1;color:var(--mute)">${a[0]}</span><b class="mono">${a[1]} / ${a[2]}</b></div>
       <div class="bar"><i style="width:${Math.min(100,a[1]/a[2]*100)}%;background:${a[1]/a[2]>.85?'#EF4444':'#22C55E'}"></i></div></div>`;
     body=`${S.plan==='trial'?`<div class="banner" style="margin-bottom:16px"><span>⏳</span>
-      <span>Trial — 7 days left</span><span class="r chip">7 days left</span></div>`:''}
+      <span>${T('Trial')} — 7 ${T('days left')}</span><span class="r chip">7 ${T('days left')}</span></div>`:''}
       <div class="g2" style="margin-bottom:26px"><div><h4 style="font-size:15px;margin-bottom:6px">Usage Summary</h4>
         <p style="font-size:12.5px;color:var(--mute)">Track current usage of every feature in your plan.</p></div>
         <div>${use(['AI Prompts',S.prompts.length,lim.q])}${use(['Competitors',S.rivals.length,lim.r])}
@@ -2083,7 +2542,7 @@ VIEWS.settings=()=>{
           <p style="font-size:12.5px;color:var(--mute)">No payment method on file. Add one to keep your subscription active.</p></div>
         <button class="btn b-gh b-sm" style="margin-left:auto" onclick="toast('Redirects to the payment provider')">Add Payment Method</button></div></div>`;
   }
-  return head('Settings','Configure core tracking preferences such as brand name, domain, industry and location.')+
+  return head(T('Settings'),T('Configure core tracking preferences such as brand name, domain, industry and location.'))+
   `<div class="tabs">${tabs.map(t=>`<button class="${setTabV===t[0]?'on':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
    <div>${body}</div>`;
 };
@@ -2112,11 +2571,11 @@ async function loadEngines(probe){
 
   box.innerHTML = `
    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-     <div><h4 style="font-size:15px">AI providers</h4>
+     <div><h4 style="font-size:15px">${T('AI providers')}</h4>
        <p style="font-size:12.5px;color:var(--mute);margin-top:3px">
          Each key is set as an environment variable on the server. A platform with no key is skipped silently —
          it never produces a zero that looks like bad visibility.</p></div>
-     <button class="btn b-gh b-sm" style="margin-left:auto" onclick="loadEngines(true)">Test all keys</button>
+     <button class="btn b-gh b-sm" style="margin-left:auto" onclick="loadEngines(true)">${T('Test all keys')}</button>
    </div>
    ${d.mock?`<div class="banner" style="margin-bottom:14px"><span>⚠</span>
      <span>MOCK_ENGINES is on. Answers are synthetic — set it to 0 and add real keys before launch.</span></div>`:''}
@@ -2143,7 +2602,7 @@ async function loadEngines(probe){
 
 async function changePassword(){
   const cur=$('#pwCur').value, next=$('#pwNew').value;
-  if(!cur||!next) return toast('Fill in both fields');
+  if(!cur||!next) return toast(T('Fill in both fields'),'error');
   try{
     await api.post('/api/auth/password',{current:cur,next});
     $('#pwCur').value=''; $('#pwNew').value='';
@@ -2232,6 +2691,8 @@ async function boot(){
   // a 30-character email overflows the sidebar and tells the user nothing.
   S.user={name: me.user.fullName || me.user.email.split('@')[0], mail: me.user.email};
   S.plan=me.org.plan; S.planLimits=me.limits; S.org=me.org; S.role=me.role;
+  S.lang=(me.user.locale==='en'?'en':'tr');
+  document.documentElement.lang=S.lang;
 
   const ready=(me.workspaces||[]).find(w=>w.onboarded);
   if(ready){
