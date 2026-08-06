@@ -112,11 +112,26 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
     }
   }));
 
+  // Finalise scans whose queue is empty.
   const finished = await sql`
     select s.id, s.workspace_id from scans s
      where s.status in ('queued','running')
        and not exists (select 1 from scan_jobs j where j.scan_id = s.id and j.done_at is null and j.attempts < 4)`;
   for (const s of finished) await rollUp(s.id, s.workspace_id);
+
+  // Scans still in flight get a partial rollup, so the dashboard shows the
+  // score building rather than a flat zero for the whole run.
+  if (ok > 0) {
+    const inFlight = await sql`
+      select distinct s.id, s.workspace_id from scans s
+        join scan_jobs j on j.scan_id = s.id
+       where s.status = 'running' and j.done_at is not null
+         and exists (select 1 from scan_jobs k where k.scan_id = s.id and k.done_at is null)`;
+    for (const s of inFlight) {
+      try { await rollUp(s.id, s.workspace_id, { finalize: false }); }
+      catch { /* partial rollup is best effort */ }
+    }
+  }
 
   return { claimed: jobs.length, ok, failed, finalised: finished.length };
 }
@@ -235,15 +250,27 @@ const toRun = (r: RunRow): Run => ({
 
 /* ------------------------------------------------------------------ */
 
-export async function rollUp(scanId: string, workspaceId: string) {
+/**
+ * Recomputes the rollup from whatever answers exist so far.
+ *
+ * `finalize: false` is used mid-scan. A first scan can take many minutes with
+ * real providers, and a dashboard that shows 0.0 the whole time reads as
+ * "your brand scored zero" rather than "we are still counting". Partial
+ * scores make the number climb as evidence arrives, which is both honest and
+ * far easier to trust.
+ */
+export async function rollUp(scanId: string, workspaceId: string, opts: { finalize?: boolean } = {}) {
+  const finalize = opts.finalize !== false;
   const runs = await sql`
     select ar.*, p.intent, p.volume from answer_runs ar
       join prompts p on p.id = ar.prompt_id
      where ar.scan_id = ${scanId}`;
 
   if (!runs.length) {
-    await sql`update scans set status = 'failed', finished_at = now(),
-                error = 'no answers were collected' where id = ${scanId}`;
+    if (finalize) {
+      await sql`update scans set status = 'failed', finished_at = now(),
+                  error = 'no answers were collected' where id = ${scanId}`;
+    }
     return null;
   }
 
@@ -304,11 +331,13 @@ export async function rollUp(scanId: string, workspaceId: string) {
       mention_rate = excluded.mention_rate, citation_rate = excluded.citation_rate,
       share_of_voice = excluded.share_of_voice, by_engine = excluded.by_engine`;
 
-  const [{ n: stuck }] = await sql`
-    select count(*)::int as n from scan_jobs
-     where scan_id = ${scanId} and done_at is null`;
-  await sql`update scans set status = ${stuck > 0 ? 'partial' : 'done'}, finished_at = now()
-             where id = ${scanId}`;
+  if (finalize) {
+    const [{ n: stuck }] = await sql`
+      select count(*)::int as n from scan_jobs
+       where scan_id = ${scanId} and done_at is null`;
+    await sql`update scans set status = ${stuck > 0 ? 'partial' : 'done'}, finished_at = now()
+               where id = ${scanId}`;
+  }
 
   return agg;
 }
