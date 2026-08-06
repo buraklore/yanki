@@ -277,10 +277,22 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .mh h3{font-size:19px}
 .mh button{margin-left:auto;background:none;border:0;color:var(--mute);font-size:22px;line-height:1}
 .mb{padding:16px 22px 24px}
-.toast{position:fixed;right:20px;bottom:20px;z-index:300;display:grid;gap:9px}
-.tst{background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);padding:12px 15px;font-size:13px;
-  display:flex;gap:10px;align-items:center;box-shadow:0 20px 40px -20px #000;animation:sl .25s}
-@keyframes sl{from{opacity:0;transform:translateY(8px)}}
+.toast{position:fixed;right:20px;bottom:20px;z-index:300;display:grid;gap:10px;max-width:min(420px,calc(100vw - 40px))}
+.tst{position:relative;overflow:hidden;background:var(--card2);border:1px solid var(--border2);
+  border-left:3px solid var(--pri);border-radius:var(--rl);padding:14px 40px 14px 16px;font-size:13.5px;
+  line-height:1.5;display:flex;gap:11px;align-items:flex-start;
+  box-shadow:0 24px 50px -18px #000,0 0 0 1px rgba(255,255,255,.04);animation:sl .28s cubic-bezier(.2,.9,.3,1)}
+.tst.err{border-left-color:var(--bad)}
+.tst.err .ic{color:#FCA5A5}
+.tst .ic{flex:none;font-size:14px;line-height:1.4}
+.tst .x{position:absolute;top:8px;right:8px;width:24px;height:24px;border:0;background:none;color:var(--mute2);
+  font-size:15px;line-height:1;border-radius:6px;cursor:pointer;display:grid;place-items:center}
+.tst .x:hover{background:rgba(255,255,255,.07);color:var(--fg)}
+.tst .life{position:absolute;left:0;bottom:0;height:2px;background:var(--pri);opacity:.55;
+  animation:tlife 5s linear forwards}
+.tst.err .life{background:var(--bad)}
+@keyframes tlife{from{width:100%}to{width:0}}
+@keyframes sl{from{opacity:0;transform:translateY(10px) scale(.98)}}
 mark{background:rgba(59,130,246,.22);color:#BBD1FF;padding:0 3px;border-radius:3px}
 mark.riv{background:rgba(139,92,246,.2);color:#C4B5FD}
 
@@ -423,10 +435,32 @@ const S = {
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
   scanState: null, firstScan: null, loadError: null,
+  promptSource: null, promptAiAvailable: null, promptMix: null,
 };
 
-function toast(t){const d=document.createElement('div');d.className='tst';d.innerHTML='<span class="ok">✓</span>'+esc(t);
-  $('#toasts').append(d);setTimeout(()=>d.remove(),3400)}
+/**
+ * Five seconds, a progress bar so the countdown is visible, and a close
+ * button. Anything shorter is missed by someone reading the screen rather
+ * than watching the corner — and an error the user never saw is an error
+ * they will report as "nothing happened".
+ */
+function toast(t, kind){
+  const err = kind==='error' || /fail|error|could not|cannot|invalid|too many|not correct|required/i.test(t);
+  const d=document.createElement('div');
+  d.className='tst'+(err?' err':'');
+  d.innerHTML=`<span class="ic">${err?'⚠':'✓'}</span><span>${esc(t)}</span>
+    <button class="x" aria-label="Dismiss">×</button><span class="life"></span>`;
+  const close=()=>{ d.style.opacity='0'; d.style.transform='translateY(6px)';
+                    d.style.transition='.2s'; setTimeout(()=>d.remove(),220); };
+  d.querySelector('.x').onclick=close;
+  const timer=setTimeout(close,5000);
+  // Hovering pauses the countdown, so a long message can actually be read.
+  d.onmouseenter=()=>{clearTimeout(timer); const l=d.querySelector('.life');
+    if(l) l.style.animationPlayState='paused';};
+  d.onmouseleave=()=>{ setTimeout(close,1800); const l=d.querySelector('.life');
+    if(l) l.style.animationPlayState='running';};
+  $('#toasts').append(d);
+}
 function openModal(t,b){$('#mTitle').textContent=t;$('#mBody').innerHTML=b;$('#modal').classList.add('on')}
 function closeModal(){$('#modal').classList.remove('on')}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
@@ -583,9 +617,10 @@ async function obNext4(){
     if(btn){btn.disabled=true;btn.textContent='Generating…';}
     try{
       const r=await api.post('/api/prompts/generate',{workspaceId:S.workspaceId});
+      const cap=Math.min(10,(S.planLimits&&S.planLimits.prompts)||10);
       S.prompts=r.prompts.map((p,i)=>({id:'g'+i,text:p.text,intent:p.intent,vol:p.volume,
-        on:i<Math.min(10,(S.planLimits&&S.planLimits.prompts)||10),src:'ai',active:true}));
-      S.promptMix=r.mix;
+        on:i<cap,src:'ai',active:true,reason:p.reason}));
+      S.promptSource=r.source; S.promptAiAvailable=r.aiAvailable; S.promptMix=r.mix;
     }catch(e){
       toast(e.message);
       if(btn){btn.disabled=false;btn.textContent='Continue';}
@@ -596,44 +631,129 @@ async function obNext4(){
 }
 
 async function regenOnboarding(){
+  const btn=$('#regenBtn');
+  if(btn){btn.disabled=true;btn.textContent='Writing…';}
   try{
     const r=await api.post('/api/prompts/generate',{workspaceId:S.workspaceId});
-    const cap=(S.planLimits&&S.planLimits.prompts)||10;
+    const cap=Math.min(10,(S.planLimits&&S.planLimits.prompts)||10);
+    // Anything the operator typed is theirs; regenerating must not delete it.
+    const mine=S.prompts.filter(p=>p.src==='custom');
     S.prompts=r.prompts.map((p,i)=>({id:'g'+i,text:p.text,intent:p.intent,vol:p.volume,
-      on:i<Math.min(10,cap),src:'ai',active:true}));
+      on:i<cap,src:'ai',active:true,reason:p.reason})).concat(mine);
+    S.promptSource=r.source; S.promptAiAvailable=r.aiAvailable;
     renderOb();
-  }catch(e){ toast(e.message); }
+    toast(r.source==='ai'?'New prompts written for your brand':'Regenerated from templates');
+  }catch(e){ toast(e.message,'error'); }
+  finally{ const b=$('#regenBtn'); if(b){b.disabled=false;b.textContent='↻ Regenerate';} }
 }
 
 function obS5(){
   const sel=S.prompts.filter(p=>p.on).length;
+  const byAi=S.promptSource==='ai';
   $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>AI Search Prompts</h2>
-  <p class="lead">Review the AI-generated prompts below. Deselect, edit or remove any you don't want,
-    and add your own custom prompts.</p>
+  <p class="lead">These are the searches we will run on every platform. Keep the ones your customers
+    would actually type, drop the rest, and add your own — you know your buyers better than any model does.</p>
+
+  ${byAi
+    ? `<div class="info" style="margin-bottom:14px">✦ Written for <b>${esc(S.brand.name)}</b> from your category,
+        country and description. Edit freely — a starting point, not a verdict.</div>`
+    : `<div class="banner" style="margin-bottom:14px"><span>ℹ</span><span>${S.promptAiAvailable===false
+        ? 'Generated from templates because no OpenAI or Anthropic key is configured. Templates are generic — your own prompts will measure something far more useful.'
+        : 'Generated from templates this time. Try Regenerate, or write your own below.'}</span></div>`}
+
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:12.5px;flex-wrap:wrap">
-    <b style="font-size:13px">✦ AI-generated prompts</b>
-    <span class="mut">${sel} of ${S.prompts.length} prompts selected</span>
-    <button class="btn b-gh b-sm" style="margin-left:auto" onclick="regenOnboarding()">↻ Regenerate</button>
+    <b style="font-size:13px">${byAi?'✦ Suggested for your brand':'Suggested prompts'}</b>
+    <span class="mut">${sel} of ${S.prompts.length} selected</span>
+    <button class="btn b-gh b-sm" style="margin-left:auto" id="regenBtn" onclick="regenOnboarding()">↻ Regenerate</button>
   </div>
+
   <div class="ob-form">
-    ${S.prompts.map((p,i)=>`<div class="qitem ${p.on?'on':''}" onclick="S.prompts[${i}].on=!S.prompts[${i}].on;renderOb()">
-      <span class="qbox">✓</span><span>${esc(p.text)}<br><span class="chip" style="margin-top:6px">${p.intent}</span>
-      <span class="chip">vol ~${nf(p.vol)}</span></span></div>`).join('')}
-    <label style="display:block;font-size:13px;font-weight:500;margin:18px 0 7px">+ Your custom prompts</label>
-    <div style="display:flex;gap:9px"><input class="in" id="iq" placeholder="Add your own search prompt..."
-      onkeydown="if(event.key==='Enter')addPrompt()"><button class="btn b-pri" onclick="addPrompt()">+</button></div>
-    <div class="info" style="margin-top:18px">💡 Only the selected AI prompts and your custom prompts will be saved.
-      You can change them at any time. Tip: keep informational, evaluation, comparison and transactional prompts
-      together for a balanced funnel.</div>
+    ${S.prompts.length?S.prompts.map((p,i)=>`
+      <div class="qitem ${p.on?'on':''}" onclick="if(event.target.tagName!=='BUTTON'){S.prompts[${i}].on=!S.prompts[${i}].on;renderOb()}">
+        <span class="qbox">✓</span>
+        <span style="flex:1;min-width:0">${esc(p.text)}<br>
+          <span class="chip" style="margin-top:6px">${intentLabel(p.intent)}</span>
+          <span class="chip">vol ~${nf(p.vol)}</span>
+          ${p.src==='custom'?'<span class="chip pri">yours</span>':''}
+        </span>
+        <button class="btn b-gh b-sm" style="flex:none" onclick="editPrompt(${i})">Edit</button>
+      </div>`).join('')
+     :'<div class="empty" style="padding:26px">No suggestions yet — write your own below.</div>'}
+
+    <label style="display:block;font-size:13px;font-weight:500;margin:20px 0 7px">+ Your own prompts</label>
+    <p style="font-size:12px;color:var(--mute);margin-bottom:9px">
+      Write them exactly as a customer would type them. One per line — paste a whole list if you have one.</p>
+    <textarea class="in" id="iq" rows="3" style="resize:vertical"
+      placeholder="en ucuz steam cüzdan kodu nereden alınır&#10;knight online cash satın al&#10;güvenilir epin sitesi önerir misin"></textarea>
+    <button class="btn b-pri b-full" style="margin-top:9px" onclick="addPrompt()">Add these prompts</button>
+
+    <div class="info" style="margin-top:18px">💡 A prompt that names your brand only proves the model can read.
+      Keep the brand out of them — except the trust question, which is there on purpose to show what is said
+      when someone checks up on you.</div>
+
     <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=4;renderOb()">← Back</button>
       <button class="btn b-pri b-lg" ${sel?'':'disabled'} onclick="obFinish()">Continue (${sel})</button></div>
   </div>`;
 }
+
+/** Accepts one prompt or a pasted list, one per line. */
 function addPrompt(){
-  const v=$('#iq').value.trim(); if(!v) return;
-  S.prompts.push({id:'c'+Date.now(),text:v.replace(/^"|"$/g,''),intent:'transactional',on:true,
-    vol:300,src:'custom',active:true});
+  const raw=$('#iq').value||'';
+  const lines=raw.split('\n')
+    .map(l=>l.trim().replace(/^[-•*\d.)\s]+/,'').replace(/^["']|["']$/g,''))
+    .filter(l=>l.length>=6);
+  if(!lines.length) return toast('Write at least one prompt (6 characters or more)','error');
+  const existing=new Set(S.prompts.map(p=>p.text.toLocaleLowerCase('tr')));
+  let added=0;
+  for(const text of lines){
+    const key=text.toLocaleLowerCase('tr');
+    if(existing.has(key)) continue;
+    existing.add(key);
+    S.prompts.push({id:'c'+Date.now()+'_'+added,text,intent:guessIntent(text),on:true,
+      vol:400,src:'custom',active:true});
+    added++;
+  }
+  $('#iq').value='';
   renderOb();
+  toast(added?`${added} prompt${added===1?'':'s'} added`:'Those prompts are already in the list');
+}
+
+/**
+ * Rough intent guess from the wording. Intent weights the score, so getting it
+ * roughly right matters; the operator can correct it from Edit.
+ */
+function guessIntent(t){
+  const s=t.toLocaleLowerCase('tr');
+  const brand=(S.brand.name||'').toLocaleLowerCase('tr');
+  if(brand && s.includes(brand) && /güvenilir|yorum|şikayet|dolandır|scam|review|trust/.test(s)) return 'brand_defence';
+  if(/fiyat|ücret|satın al|sipariş|nereden al|ucuz|indirim|kampanya|price|buy|cheap/.test(s)) return 'transactional';
+  if(/karşılaştır|farkı|hangisi daha|compare|versus|\bvs\b/.test(s)) return 'comparison';
+  if(/nedir|nasıl|ne işe yarar|rehber|what is|how to/.test(s)) return 'informational';
+  return 'evaluation';
+}
+
+function editPrompt(i){
+  const p=S.prompts[i]; if(!p) return;
+  openModal('Edit prompt',`
+    <div class="fld"><label>Prompt text</label>
+      <input class="in" id="epText" value="${esc(p.text)}"></div>
+    <div class="fld"><label>Intent</label>
+      <select class="in" id="epIntent">${Object.entries(INTENTS).map(([k,v])=>
+        `<option value="${k}" ${p.intent===k?'selected':''}>${v.label} · ×${v.mult.toFixed(2)}</option>`).join('')}</select>
+      <div class="hint">Intent weights the score: a transactional prompt counts almost twice an informational one.</div></div>
+    <div style="display:flex;gap:9px">
+      <button class="btn b-pri" onclick="savePrompt(${i})">Save</button>
+      <button class="btn b-gh" onclick="removePrompt(${i})">Remove</button>
+    </div>`);
+}
+function savePrompt(i){
+  const t=$('#epText').value.trim();
+  if(t.length<6) return toast('Prompt is too short','error');
+  S.prompts[i].text=t; S.prompts[i].intent=$('#epIntent').value;
+  closeModal(); renderOb(); toast('Prompt updated');
+}
+function removePrompt(i){
+  S.prompts.splice(i,1); closeModal(); renderOb(); toast('Prompt removed');
 }
 async function obFinish(){
   const chosen=S.prompts.filter(p=>p.on);
@@ -1548,8 +1668,10 @@ async function regen(){
     const added=await api.post('/api/prompts',{workspaceId:S.workspaceId,
       prompts:r.prompts.map(p=>({text:p.text,intent:p.intent,volume:p.volume,source:'ai'}))});
     await loadResults();
-    toast(`${added.added} new prompt${added.added===1?'':'s'} added`);
-  }catch(e){ toast(e.message); }
+    toast(added.added
+      ? `${added.added} new prompt${added.added===1?'':'s'} added${r.source==='template'?' (from templates)':''}`
+      : 'No new prompts — the suggestions were already in your list');
+  }catch(e){ toast(e.message,'error'); }
 }
 function newPromptModal(){
   openModal('New prompt',`<div class="fld"><label>Prompt text</label>
