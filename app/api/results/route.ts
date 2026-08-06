@@ -2,6 +2,7 @@ import { sql } from '@/lib/db';
 import { requireSession, requireWorkspace, handler } from '@/lib/auth';
 import { PLAN_RANK, limits, type PlanKey } from '@/lib/plans';
 import { opportunityScore, type Intent } from '@/lib/prompts';
+import { engineByKey } from '@/lib/engines';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,13 +22,25 @@ export const GET = handler(async (req) => {
   const ws = await requireWorkspace(s, workspaceId);
 
   const engineRows = await sql`select key, label, default_weight, min_plan, sort_order from engines order by sort_order`;
-  const engines = engineRows.map((e: { key: string; label: string; default_weight: string; min_plan: PlanKey }) => ({
-    key: e.key,
-    label: e.label,
-    weight: Number(e.default_weight),
-    locked: PLAN_RANK[s.plan as PlanKey] < PLAN_RANK[e.min_plan],
-  }));
-  const allowed = engines.filter(e => !e.locked).map(e => e.key);
+  // Three distinct states, and conflating them is how a dashboard lies:
+  //   locked      — above the plan, we deliberately did not ask
+  //   unconfigured— no API key on the server, we could not ask
+  //   active      — we asked, so a zero means a real absence
+  // Showing 0.00 for the first two reads as "your brand is invisible there",
+  // which is a different and much worse claim than "we never looked".
+  const engines = engineRows.map((e: { key: string; label: string; default_weight: string; min_plan: PlanKey }) => {
+    const locked = PLAN_RANK[s.plan as PlanKey] < PLAN_RANK[e.min_plan];
+    const configured = !!engineByKey(e.key)?.enabled();
+    return {
+      key: e.key,
+      label: e.label,
+      weight: Number(e.default_weight),
+      locked,
+      configured,
+      active: !locked && configured,
+    };
+  });
+  const allowed = engines.filter(e => e.active).map(e => e.key);
 
   const [latestRow] = await sql`
     select * from daily_scores where workspace_id = ${workspaceId} order by scan_date desc limit 1`;
@@ -77,7 +90,15 @@ export const GET = handler(async (req) => {
          order by ar.asked_at desc limit 12`,
 
     sql`select id, status, scan_date, queued_jobs, started_at, finished_at, error,
-               (select count(*)::int from scan_jobs j where j.scan_id = scans.id and j.done_at is null) as pending
+               (select count(*)::int from scan_jobs j
+                 where j.scan_id = scans.id and j.done_at is null and j.attempts < 4) as pending,
+               (select count(*)::int from scan_jobs j
+                 where j.scan_id = scans.id and j.done_at is null and j.attempts >= 4) as failed,
+               -- Report an error the moment it happens, not after four retries.
+               -- A wrong key otherwise hides behind "scan in progress" for minutes.
+               (select json_agg(distinct jsonb_build_object('engine', j.engine_key, 'error', left(j.error, 200)))
+                  from scan_jobs j
+                 where j.scan_id = scans.id and j.error is not null and j.done_at is null) as failures
           from scans where workspace_id = ${workspaceId} order by scan_date desc limit 1`,
 
     sql`select a.id, a.url, a.ran_at, a.total_score,
