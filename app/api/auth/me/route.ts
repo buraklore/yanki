@@ -15,7 +15,7 @@ export const GET = handler(async () => {
 
   return Response.json({
     signedIn: true,
-    user: { email: s.email, fullName: s.fullName },
+    user: { email: s.email, fullName: s.fullName, locale: s.locale },
     org: { id: s.orgId, name: s.orgName, plan: s.plan, trialEndsAt: s.trialEndsAt },
     limits: limits(s.plan),
     role: s.role,
