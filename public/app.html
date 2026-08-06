@@ -422,7 +422,7 @@ const S = {
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
-  scanState: null, firstScan: null,
+  scanState: null, firstScan: null, loadError: null,
 };
 
 function toast(t){const d=document.createElement('div');d.className='tst';d.innerHTML='<span class="ok">✓</span>'+esc(t);
@@ -666,15 +666,16 @@ function obS6(){
 }
 async function enterApp(){
   S.onboarded=true;$('#ob').classList.remove('on');$('#app').classList.add('on');
+  // Paint the shell first. A network call can take seconds; leaving the panel
+  // blank until it returns looks exactly like a broken deploy.
+  render();
   try{
     await loadResults();
-    // Give the queue a moment to produce the first rows, then repaint once.
-    if(S.scanState && S.scanState.pending>0){
-      setTimeout(()=>loadResults().then(()=>{ if(S.data.ready) firstScanModal(); }).catch(()=>{}), 6000);
-    }else if(S.data.ready){
-      setTimeout(firstScanModal,500);
-    }
-  }catch(e){toast(e.message);render();}
+    if(S.data.ready) setTimeout(firstScanModal,500);
+  }catch(e){
+    S.loadError=e.message; render();
+  }
+  if(S.scanState && S.scanState.pending>0) pollScan();
 }
 
 /* =====================================================================
@@ -831,6 +832,7 @@ function groupAudit(factors) {
 /** Loads the workspace and repaints. Called on boot and after every mutation. */
 async function loadResults(opts = {}) {
   const r = await api.get(`/api/results?workspace=${S.workspaceId}&days=${S.range}`);
+  S.loadError = null;
   adopt(r);
   if (!opts.silent) render();
   return r;
@@ -989,8 +991,37 @@ function toggleSb(v){const sb=$('#sb'),sc=$('#sbScrim');
   const open=v===undefined?!sb.classList.contains('open'):v;
   sb.classList.toggle('open',open);sc.classList.toggle('on',open);}
 function go(r){S.route=r;toggleSb(false);render();scrollTo(0,0)}
-function render(){renderNav();($('#page').innerHTML=VIEWS[S.route]?VIEWS[S.route]():'<div class="empty">Page not found</div>');
-  (POST[S.route]||function(){})()}
+function render(){
+  renderNav();
+  const page=$('#page');
+  // Data has not arrived yet, or arriving failed. Either way the user gets a
+  // legible screen instead of a blank one.
+  if(!S.data){ page.innerHTML=S.loadError?errorScreen(S.loadError):loadingScreen(); return; }
+  try{
+    page.innerHTML = VIEWS[S.route] ? VIEWS[S.route]() : '<div class="empty">Page not found</div>';
+    (POST[S.route]||function(){})();
+  }catch(e){
+    // A view throwing must not take the whole panel down with it.
+    console.error('view failed:',S.route,e);
+    page.innerHTML=errorScreen(`This screen could not be drawn (${e.message}).`);
+  }
+}
+
+function loadingScreen(){
+  return `<div class="empty" style="padding:60px 24px"><div class="ic">◎</div>
+    <b style="color:var(--fg);font-size:15px">Loading your workspace…</b>
+    <p style="margin-top:8px">Reading the latest scan results.</p></div>`;
+}
+
+function errorScreen(msg){
+  return `<div class="empty" style="padding:52px 24px"><div class="ic">⚠</div>
+    <b style="color:var(--fg);font-size:15px">Could not load your data</b>
+    <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${esc(msg)}</p>
+    <div style="margin-top:18px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+      <button class="btn b-pri b-sm" onclick="S.loadError=null;render();loadResults().catch(e=>{S.loadError=e.message;render()})">Try again</button>
+      <a class="btn b-gh b-sm" href="/api/health" target="_blank">Check setup</a>
+    </div></div>`;
+}
 const POST={};
 
 /* =====================================================================
@@ -1010,8 +1041,16 @@ VIEWS.dashboard=()=>{
   const d=S.data,allowed=d.plats.filter(p=>!p.locked).length;
   const ins=insightText();
   const recent=(d.recent||[]).slice(0,6);
+  const sc=S.scanState;
+  const scanBanner = sc && sc.pending>0
+    ? `<div class="banner" style="margin-bottom:14px"><span>◐</span>
+        <span>Scan in progress — ${sc.pending} checks left. Keep this page open; results appear as they arrive.</span></div>`
+    : '';
   return `
-  ${S.plan==='trial'?upsell(`You're tracking ${allowed} platforms. You can't know what the other ${8-allowed} are saying without seeing them.`):''}
+  ${scanBanner}
+  ${S.plan==='trial'&&d.plats.length>allowed
+     ? upsell(`You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
+     : ''}
   <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
     <span>Your brand's visibility overview across ${allowed} AI platforms. Scores, trends and latest scan results at a glance.</span>
     <span class="chip" style="margin-left:auto">↻ Updates daily</span></div>
@@ -1999,10 +2038,11 @@ async function boot(){
   const ready=(me.workspaces||[]).find(w=>w.onboarded);
   if(ready){
     S.workspaceId=ready.id;
+    S.brand.name=ready.brand_name; S.brand.site=ready.domain; S.brand.sector=ready.sector;
     $('#ob').classList.remove('on'); $('#app').classList.add('on');
+    render();                       // shell immediately, data after
     try{ await loadResults(); }
-    catch(e){ toast(e.message); render(); }
-    // A scan still draining? Poll until it settles, then repaint.
+    catch(e){ S.loadError=e.message; render(); }
     if(S.scanState && S.scanState.pending>0) pollScan();
     return;
   }
@@ -2018,20 +2058,34 @@ async function boot(){
   renderOb();
 }
 
-let pollTimer=null;
+let pollTimer=null, ticking=false;
+
+/**
+ * While a scan is outstanding: ask the server to process a batch, then refresh.
+ * The two calls are separate on purpose — a provider can take thirty seconds
+ * to answer, and the read must never wait on that.
+ */
 function pollScan(){
   clearTimeout(pollTimer);
-  let tries=0;
-  const tick=async()=>{
-    tries++;
+  let rounds=0;
+  const step=async()=>{
+    rounds++;
     try{
+      if(!ticking){
+        ticking=true;
+        try{ await api.post('/api/scan/tick',{workspaceId:S.workspaceId}); }
+        finally{ ticking=false; }
+      }
       await loadResults({silent:true});
-      const pending=S.scanState?S.scanState.pending:0;
       render();
-      if(pending>0 && tries<40){ pollTimer=setTimeout(tick,5000); }
-    }catch{ /* transient; stop quietly */ }
+      const pending=S.scanState?S.scanState.pending:0;
+      if(pending>0 && rounds<80) pollTimer=setTimeout(step,900);
+    }catch(e){
+      // Transient failures are expected while providers are being called.
+      if(rounds<80) pollTimer=setTimeout(step,6000);
+    }
   };
-  pollTimer=setTimeout(tick,5000);
+  pollTimer=setTimeout(step,600);
 }
 
 boot();
