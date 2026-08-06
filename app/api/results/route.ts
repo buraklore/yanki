@@ -169,6 +169,22 @@ export const GET = handler(async (req) => {
     };
   });
 
+  // Per-engine health. An engine we asked but that errored on every call is
+  // not a zero — it is an unknown, and printing 0.00 for it claims the brand
+  // is invisible there when in fact we never got an answer.
+  const cellsByEngine = new Map<string, number>();
+  for (const c of cells) {
+    cellsByEngine.set(c.engine_key as string, (cellsByEngine.get(c.engine_key as string) ?? 0) + 1);
+  }
+  const failingEngines = new Set(
+    ((scanState[0]?.failures ?? []) as { engine: string }[]).map(f => f.engine));
+
+  const enginesWithHealth = engines.map(e => ({
+    ...e,
+    measured: (cellsByEngine.get(e.key) ?? 0) > 0,
+    failing: failingEngines.has(e.key),
+  }));
+
   const ownHost = ws.domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
 
   return Response.json({
@@ -185,7 +201,7 @@ export const GET = handler(async (req) => {
       language: ws.language, aliases: ws.aliases, onboarded: ws.onboarded,
     },
     org: { plan: s.plan, planLimits: limits(s.plan as PlanKey), trialEndsAt: s.trialEndsAt },
-    engines,
+    engines: enginesWithHealth,
     latest: latestRow ?? null,
     series,
     prompts,
