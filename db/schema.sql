@@ -22,9 +22,14 @@ create table if not exists users (
   email         citext unique not null,
   password_hash text not null,          -- scrypt: salt:hash, see lib/password.ts
   full_name     text,
+  -- Interface language. Stored on the user, not the browser, so it follows
+  -- them across devices and does not reset when cookies are cleared.
+  locale        text not null default 'tr',
   created_at    timestamptz not null default now(),
   last_login_at timestamptz
 );
+
+alter table users add column if not exists locale text not null default 'tr';
 
 create table if not exists organizations (
   id               uuid primary key default gen_random_uuid(),
