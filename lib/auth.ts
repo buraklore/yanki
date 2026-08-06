@@ -14,6 +14,7 @@ export interface Session {
   userId: string;
   email: string;
   fullName: string | null;
+  locale: 'tr' | 'en';
   orgId: string;
   orgName: string;
   plan: PlanKey;
@@ -52,7 +53,7 @@ export async function getSession(): Promise<Session | null> {
   if (!token) return null;
 
   const rows = await sql`
-    select u.id as user_id, u.email, u.full_name,
+    select u.id as user_id, u.email, u.full_name, u.locale,
            o.id as org_id, o.name as org_name, o.plan, o.trial_ends_at,
            m.role
       from sessions s
@@ -67,6 +68,7 @@ export async function getSession(): Promise<Session | null> {
   const r = rows[0];
   return {
     userId: r.user_id, email: r.email, fullName: r.full_name,
+    locale: (r.locale === 'en' ? 'en' : 'tr'),
     orgId: r.org_id, orgName: r.org_name, plan: r.plan,
     trialEndsAt: r.trial_ends_at, role: r.role,
   };
