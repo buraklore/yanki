@@ -23,6 +23,8 @@ export interface EnqueueResult {
   jobs: number;
   engines: string[];
   skipped?: string;
+  /** Set when nothing was queued, so the caller can explain why. */
+  reason?: string;
 }
 
 export async function enqueueScan(
@@ -60,8 +62,9 @@ export async function enqueueScan(
     .map((e: { key: string }) => e.key as string);
 
   const rows: Record<string, unknown>[] = [];
+  let deferred = 0;
   for (const p of prompts) {
-    if (!opts.force && !dueToday(p.intent)) continue;
+    if (!opts.force && !dueToday(p.intent)) { deferred++; continue; }
     for (const key of allowed) {
       // Enqueue three runs; the worker adds runs 4–5 only if the first three
       // disagree. See maybeExtendRuns.
@@ -75,7 +78,17 @@ export async function enqueueScan(
     await sql`insert into scan_jobs ${sql(rows)} on conflict do nothing`;
     await sql`update scans set queued_jobs = ${rows.length}, status = 'running' where id = ${scan.id}`;
   } else {
-    await sql`update scans set status = 'done', finished_at = now() where id = ${scan.id}`;
+    // Queueing nothing and reporting "done" is a silent no-op the operator
+    // cannot debug. Say which condition produced an empty queue.
+    const reason = !prompts.length
+      ? 'no active prompts'
+      : !allowed.length
+        ? 'no engine is both configured and included in this plan'
+        : deferred
+          ? 'every active prompt is informational, and those are scanned weekly'
+          : 'nothing to do';
+    await sql`update scans set status = 'done', finished_at = now(), error = ${reason} where id = ${scan.id}`;
+    return { scanId: scan.id, jobs: 0, engines: allowed, reason };
   }
 
   return { scanId: scan.id, jobs: rows.length, engines: allowed };
@@ -105,8 +118,14 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
       } catch (e) {
         failed++;
         const msg = e instanceof Error ? e.message : String(e);
+        // A bad key or a retired model will never succeed on retry. Burning
+        // four attempts with a minute of backoff between them hides the cause
+        // for five minutes and tells the operator nothing.
+        const permanent = /HTTP 40[0134]|invalid.?api.?key|API key not valid|incorrect api key|model.*not found|does not exist|unauthorized|permission/i.test(msg);
         await sql`update scan_jobs
-             set error = ${msg.slice(0, 400)}, locked_until = now() + interval '60 seconds'
+             set error = ${msg.slice(0, 400)},
+                 attempts = ${permanent ? 4 : sql`attempts`},
+                 locked_until = now() + interval '45 seconds'
            where id = ${job.id}`;
       }
     }
