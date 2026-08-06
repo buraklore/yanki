@@ -1040,8 +1040,16 @@ function upsell(txt){return `<div class="banner"><span>🔒</span><span>${txt}</
 VIEWS.dashboard=()=>{
   const d=S.data,allowed=d.plats.filter(p=>!p.locked).length;
   const ins=insightText();
-  const recent=(d.recent||[]).slice(0,6);
+  // One row per prompt+engine. The same prompt is asked several times, and
+  // listing every run makes six repeats look like six separate findings.
+  const seenKey=new Set();
+  const recent=(d.recent||[]).filter(m=>{
+    const k=m.text+'|'+m.engine_key;
+    if(seenKey.has(k))return false;
+    seenKey.add(k); return true;
+  }).slice(0,6);
   const sc=S.scanState;
+  const scanning = !!(sc && sc.pending>0);
   const scanBanner = sc && sc.pending>0
     ? `<div class="banner" style="margin-bottom:14px"><span>◐</span>
         <span>Scan in progress — ${sc.pending} checks left. Keep this page open; results appear as they arrive.</span></div>`
@@ -1057,11 +1065,29 @@ VIEWS.dashboard=()=>{
 
   <div class="g4">
     <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>Visibility score</div>
-      <div class="v">${d.total.toFixed(1)}</div><div class="d">±${d.ciAvg.toFixed(1)} confidence · 5 runs</div></div>
+      ${d.ready
+        ? `<div class="v"${scanning?' style="color:var(--fg2)"':''}>${d.total.toFixed(1)}</div>
+           <div class="d">${scanning
+              ? `Partial — ${d.cells.length} checks in, ${sc.pending} still running`
+              : `±${d.ciAvg.toFixed(1)} confidence`}</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d">${scanning?'Counting — appears as answers arrive':'No scan yet'}</div>`}</div>
+
     <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>Mention rate</div>
-      <div class="v">${d.mentionRate.toFixed(1)}%</div><div class="d">${d.cells.filter(c=>c.m>0).length}/${d.cells.length} prompt-platform</div></div>
+      ${d.cells.length
+        ? `<div class="v">${d.mentionRate.toFixed(1)}%</div>
+           <div class="d">${d.cells.filter(c=>c.m>0).length}/${d.cells.length} prompt-platform${scanning?' so far':''}</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d">Waiting for the first results</div>`}</div>
+
     <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>Share of voice</div>
-      <div class="v">${(d.sov[0]?d.sov[0].pct:0).toFixed(1)}%</div><div class="d">#${Math.max(1,d.sov.slice().sort((a,b)=>b.pct-a.pct).findIndex(s=>s.you)+1)} of ${d.sov.length||1} brands</div></div>
+      ${S.rivals.length
+        ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}%</div>
+           <div class="d">#${d.sov.slice().sort((a,b)=>b.pct-a.pct).findIndex(x=>x.you)+1} of ${d.sov.length} brands</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d"><a href="#" onclick="go('rivals');return false"
+             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">Add competitors →</a></div>`}</div>
+
     <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>Audit score</div>
       ${d.auditRanAt
         ? `<div class="v">${d.auditScore.toFixed(0)}</div><div class="d">58 factors · ${new Date(d.auditRanAt).toLocaleDateString('en-GB')}</div>`
@@ -1125,6 +1151,11 @@ function insightText(){
   const worst=[...d.plats].filter(platAllowed).sort((a,x)=>a.score-x.score)[0];
   const cited=d.cells.filter(c=>c.c>0).length;
   const lvl=d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
+  if(!d.ready || S.scanState && S.scanState.pending>0) return {
+    head:'Scan still running',
+    body:`The score is recalculated as answers come back, so it climbs while the scan runs. `+
+         `Judging visibility before the run finishes is misleading — a brand can be absent from `+
+         `the first ten answers and present in the next twenty. Wait for the scan to complete.`};
   if(d.total<10)return{head:'Visibility Is Critical Across All AI Platforms',
     body:`${b.name} scores ${d.total.toFixed(1)}/100 across the tracked platforms, which means near-total absence. The brand is almost never surfaced in AI answers and needs baseline visibility urgently. ${d.auditRanAt ? `The ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} failing factors in your audit are the first place to look.` : 'Run a site audit to find out which technical signals are blocking you.'}`};
   return{head:`Increase Website Citations from ${cited} to ${Math.max(cited*2,12)}+`,
