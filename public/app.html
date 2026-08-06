@@ -440,7 +440,9 @@ function reset(){location.reload()}
 function planRank(){return {trial:0,starter:1,pro:2,business:3}[S.plan]}
 // The server decides what is visible; the client only reflects it. Locked
 // engines never carry numbers in the payload, so this is presentation only.
-function platAllowed(p){return !p.locked}
+// "Allowed" means we could and did ask: within the plan AND with a key.
+// Anything else must never contribute a number to a table or an export.
+function platAllowed(p){return p.active!==undefined ? p.active : !p.locked}
 
 /* =====================================================================
    ONBOARDING
@@ -749,7 +751,7 @@ function adopt(r) {
     const cites     = own.filter(c => c.c > 0).length;
     return {
       id: e.key, n: e.label, ab: ENGINE_GLYPH[e.key] || '◆', c: ENGINE_COLOR[e.key] || '#3B82F6',
-      w: e.weight, locked: e.locked,
+      w: e.weight, locked: e.locked, configured: e.configured, active: e.active,
       score: Number(stats.score || 0),
       ci: Number(stats.ci || 0),
       mentions, cites, checks: cellCount,
@@ -1054,8 +1056,27 @@ VIEWS.dashboard=()=>{
     ? `<div class="banner" style="margin-bottom:14px"><span>◐</span>
         <span>Scan in progress — ${sc.pending} checks left. Keep this page open; results appear as they arrive.</span></div>`
     : '';
+
+  // A platform that errored must say so. Silently dropping the failures turns
+  // a provider outage into what looks like zero visibility.
+  const emptyBanner = sc && sc.error && !sc.pending && !d.cells.length
+    ? `<div class="banner" style="margin-bottom:14px"><span>ℹ</span>
+        <span>The last scan queued nothing — ${esc(sc.error)}.</span>
+        <span class="r"><button class="btn b-gh b-sm" onclick="rescan()">Run a scan now</button></span></div>`
+    : '';
+
+  const failBanner = sc && (sc.failures||[]).length
+    ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07)">
+        <span>⚠</span><span>Some checks are failing and will not be counted:
+          ${(sc.failures||[]).slice(0,3).map(f=>
+            `<b>${esc((d.plats.find(p=>p.id===f.engine)||{n:f.engine}).n)}</b> — ${esc(String(f.error||'').replace(/\s+/g,' ').slice(0,140))}`
+          ).join(' · ')}</span>
+        <span class="r"><button class="btn b-gh b-sm" onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">Check keys</button></span></div>`
+    : '';
   return `
   ${scanBanner}
+  ${failBanner}
+  ${emptyBanner}
   ${S.plan==='trial'&&d.plats.length>allowed
      ? upsell(`You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
      : ''}
@@ -1110,13 +1131,25 @@ VIEWS.dashboard=()=>{
 
     <div class="card"><div class="ch"><div><h3>Platform Visibility Score</h3>
       <div class="sub">How prominently your brand appears in AI responses (0–100)</div></div><span class="rt">Last 7 days</span></div>
-      <div class="cb">${d.plats.map(p=>platAllowed(p)?`
+      <div class="cb">${d.plats.map(p=>{
+        // Three states, never conflated: a platform we could not ask must not
+        // show a number, because a zero reads as "invisible there".
+        const state = p.locked ? 'locked' : (!p.configured ? 'nokey' : 'ok');
+        if(state==='ok') return `
         <div class="pvr"><div class="l"><span class="d" style="background:${p.c}33;color:#EDF1F8;border:1px solid ${p.c}66">${p.ab}</span>${p.n}
           <span class="v">${p.score.toFixed(2)} <small>/ 100</small></span></div>
-          <div class="bar"><i style="width:${p.score}%;background:${p.c}"></i></div></div>`:`
+          <div class="bar"><i style="width:${p.score}%;background:${p.c}"></i></div></div>`;
+        return `
         <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
-          <span class="v" style="font-size:11px;color:var(--mute2)">🔒 Upgrade</span></div>
-          <div class="bar"></div></div>`).join('')}</div></div>
+          <span class="v" style="font-size:11px;color:var(--mute2)">${state==='locked'
+            ? '🔒 Upgrade'
+            : '<span title="No API key is configured on the server for this platform">🔑 No key</span>'}</span></div>
+          <div class="bar"></div></div>`;
+      }).join('')}
+      ${d.plats.some(p=>!p.locked&&!p.configured)?`<p style="font-size:11.5px;color:var(--mute);margin-top:10px">
+        Platforms marked <b>No key</b> were never queried — that is not a zero score.
+        Add the key in <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
+        style="color:#93B4FF">Settings → Integrations</a>.</p>`:''}</div></div>
   </div>
   <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
 
