@@ -872,6 +872,7 @@ function adopt(r) {
     return {
       id: e.key, n: e.label, ab: ENGINE_GLYPH[e.key] || '◆', c: ENGINE_COLOR[e.key] || '#3B82F6',
       w: e.weight, locked: e.locked, configured: e.configured, active: e.active,
+      measured: e.measured, failing: e.failing,
       score: Number(stats.score || 0),
       ci: Number(stats.ci || 0),
       mentions, cites, checks: cellCount,
@@ -1254,21 +1255,29 @@ VIEWS.dashboard=()=>{
       <div class="cb">${d.plats.map(p=>{
         // Three states, never conflated: a platform we could not ask must not
         // show a number, because a zero reads as "invisible there".
-        const state = p.locked ? 'locked' : (!p.configured ? 'nokey' : 'ok');
+        const state = p.locked ? 'locked'
+                    : !p.configured ? 'nokey'
+                    : p.failing && !p.measured ? 'failing'
+                    : !p.measured ? 'nodata'
+                    : 'ok';
         if(state==='ok') return `
         <div class="pvr"><div class="l"><span class="d" style="background:${p.c}33;color:#EDF1F8;border:1px solid ${p.c}66">${p.ab}</span>${p.n}
           <span class="v">${p.score.toFixed(2)} <small>/ 100</small></span></div>
           <div class="bar"><i style="width:${p.score}%;background:${p.c}"></i></div></div>`;
         return `
         <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
-          <span class="v" style="font-size:11px;color:var(--mute2)">${state==='locked'
-            ? '🔒 Upgrade'
-            : '<span title="No API key is configured on the server for this platform">🔑 No key</span>'}</span></div>
+          <span class="v" style="font-size:11px;color:${state==='failing'?'#FCA5A5':'var(--mute2)'}">${
+              state==='locked' ? '🔒 Upgrade'
+            : state==='nokey'  ? '<span title="No API key is configured on the server">🔑 No key</span>'
+            : state==='failing'? '<span title="Every call to this platform returned an error">⚠ Failing</span>'
+            : '<span title="No answers collected yet">◌ No data yet</span>'}</span></div>
           <div class="bar"></div></div>`;
       }).join('')}
-      ${d.plats.some(p=>!p.locked&&!p.configured)?`<p style="font-size:11.5px;color:var(--mute);margin-top:10px">
-        Platforms marked <b>No key</b> were never queried — that is not a zero score.
-        Add the key in <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
+      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
+        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
+        <b>No key</b> and <b>Failing</b> platforms were never measured — neither is a zero score,
+        and neither counts towards your visibility score.
+        Check them in <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
         style="color:#93B4FF">Settings → Integrations</a>.</p>`:''}</div></div>
   </div>
   <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
@@ -1301,7 +1310,10 @@ VIEWS.dashboard=()=>{
 };
 function insightText(){
   const d=S.data,b=S.brand;
-  const worst=[...d.plats].filter(platAllowed).sort((a,x)=>a.score-x.score)[0];
+  // Only platforms we actually measured can be called the weakest. Naming an
+  // engine that errored would send the operator optimising for a billing problem.
+  const measuredPlats=d.plats.filter(p=>p.active&&p.measured!==false);
+  const worst=[...measuredPlats].sort((a,x)=>a.score-x.score)[0]||{n:'—',score:0};
   const cited=d.cells.filter(c=>c.c>0).length;
   const lvl=d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
   if(!d.ready || S.scanState && S.scanState.pending>0) return {
