@@ -1,0 +1,12 @@
+{
+  "crons": [
+    { "path": "/api/cron/enqueue", "schedule": "0 3 * * *" }
+  ],
+  "functions": {
+    "app/api/cron/enqueue/route.ts": { "maxDuration": 60 },
+    "app/api/cron/drain/route.ts": { "maxDuration": 60 },
+    "app/api/scan/route.ts": { "maxDuration": 60 },
+    "app/api/results/route.ts": { "maxDuration": 30 },
+    "app/api/audit/route.ts": { "maxDuration": 60 }
+  }
+}

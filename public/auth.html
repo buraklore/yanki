@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YANKI — Giriş</title>
+<meta name="theme-color" content="#0A0B0F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%233B82F6%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238B5CF6%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2245%22%20font-family%3D%22Poppins%2CArial%2Csans-serif%22%20font-size%3D%2238%22%20font-weight%3D%22700%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EY%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0B0F;--card:#111319;--card2:#151821;--border:#20232E;--border2:#2A2E3C;
+  --fg:#F3F5F9;--fg2:#C6CCD9;--mute:#949CAD;--mute2:#7C8598;
+  --pri:#3B82F6;--pri-btn:#2563EB;--vio:#8B5CF6;--ok:#22C55E;--bad:#EF4444;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);
+  font-family:Poppins,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.6;
+  display:grid;place-items:center;padding:24px;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:radial-gradient(60% 50% at 50% 0%,rgba(59,130,246,.22) 0,rgba(139,92,246,.07) 45%,transparent 78%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(to right,rgba(255,255,255,.04) 1px,transparent 1px),
+                   linear-gradient(to bottom,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+  -webkit-mask-image:radial-gradient(ellipse 60% 50% at 50% 10%,#000 20%,transparent 100%);
+  mask-image:radial-gradient(ellipse 60% 50% at 50% 10%,#000 20%,transparent 100%)}
+.wrap{position:relative;z-index:1;width:100%;max-width:420px}
+.brand{display:flex;align-items:center;justify-content:center;gap:11px;font-weight:600;font-size:22px;
+  letter-spacing:-.035em;margin-bottom:26px}
+.brand .mk{width:34px;height:34px;border-radius:10px;background:linear-gradient(140deg,#3B82F6,#8B5CF6);
+  display:grid;place-items:center;color:#fff;font-size:15px;font-weight:700;
+  box-shadow:0 5px 18px -4px rgba(59,130,246,.8)}
+.card{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:28px;
+  box-shadow:0 40px 90px -40px #000}
+h1{margin:0 0 6px;font-size:22px;font-weight:600;letter-spacing:-.03em}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:22px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--card2);
+  border:1px solid var(--border);border-radius:12px;margin-bottom:22px}
+.tabs button{border:0;background:none;padding:9px;border-radius:9px;font:inherit;font-size:13.5px;
+  color:var(--mute);cursor:pointer}
+.tabs button.on{background:var(--pri-btn);color:#fff;font-weight:500}
+label{display:block;font-size:13px;font-weight:500;margin-bottom:7px}
+.fld{margin-bottom:15px}
+input{width:100%;padding:12px 13px;border:1px solid var(--border2);border-radius:10px;background:#0D0F15;
+  color:var(--fg);font:inherit;font-size:14.5px}
+input::placeholder{color:var(--mute2)}
+input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(59,130,246,.18)}
+.hint{font-size:12px;color:var(--mute);margin-top:6px}
+button.go{width:100%;padding:13px;border:0;border-radius:10px;background:var(--pri-btn);color:#fff;
+  font:inherit;font-size:15px;font-weight:500;cursor:pointer;box-shadow:0 6px 22px -8px rgba(59,130,246,.8)}
+button.go:hover{background:#3B82F6}
+button.go:disabled{opacity:.55;cursor:not-allowed}
+.msg{margin-top:14px;padding:11px 13px;border-radius:10px;font-size:13.5px;display:none}
+.msg.on{display:block}
+.msg.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.28);color:#FCA5A5}
+.msg.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.28);color:#86EFAC}
+.foot{text-align:center;margin-top:20px;font-size:13px;color:var(--mute)}
+.foot a{color:var(--pri);text-decoration:none;display:inline-block;padding:6px 4px}
+.foot a:hover{text-decoration:underline}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="mk">Y</span> YANKI</div>
+  <div class="card">
+    <div class="tabs">
+      <button id="tLogin" class="on" onclick="setMode('login')">Giriş yap</button>
+      <button id="tReg" onclick="setMode('register')">Hesap oluştur</button>
+    </div>
+    <h1 id="title">Tekrar hoş geldiniz</h1>
+    <p class="sub" id="sub">Markanızın AI görünürlüğünü izlemeye devam edin.</p>
+
+    <form id="form" autocomplete="on">
+      <div class="fld" id="nameField" style="display:none">
+        <label for="fullName">Ad soyad</label>
+        <input id="fullName" name="name" autocomplete="name" placeholder="Adınız">
+      </div>
+      <div class="fld">
+        <label for="email">E-posta</label>
+        <input id="email" name="email" type="email" autocomplete="email" required placeholder="ad@sirket.com">
+      </div>
+      <div class="fld">
+        <label for="password">Parola</label>
+        <input id="password" name="password" type="password" required
+               autocomplete="current-password" placeholder="••••••••••">
+        <div class="hint" id="pwHint" style="display:none">En az 10 karakter. Sadece rakamlardan oluşamaz.</div>
+      </div>
+      <button class="go" id="submit" type="submit">Giriş yap</button>
+    </form>
+    <p class="foot" id="forgotRow" style="margin-top:16px">
+      <a href="#" onclick="startForgot();return false">Parolamı unuttum</a></p>
+
+    <div class="msg" id="msg"></div>
+  </div>
+  <p class="foot">Sorunuz mu var? <a href="/yardim">Yardım merkezi</a> · <a href="/">Ana sayfa</a></p>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let mode = new URLSearchParams(location.search).get('mode') === 'register'
+  || location.pathname.includes('kayit') ? 'register' : 'login';
+
+function setMode(m) {
+  mode = m;
+  $('#tLogin').classList.toggle('on', m === 'login');
+  $('#tReg').classList.toggle('on', m === 'register');
+  $('#nameField').style.display = m === 'register' ? '' : 'none';
+  $('#pwHint').style.display = m === 'register' ? '' : 'none';
+  $('#title').textContent = m === 'register' ? 'Hesabınızı oluşturun' : 'Tekrar hoş geldiniz';
+  $('#sub').textContent = m === 'register'
+    ? 'Kurulum 2 dakika. Kart istemiyoruz.'
+    : 'Markanızın AI görünürlüğünü izlemeye devam edin.';
+  $('#submit').textContent = m === 'register' ? 'Hesap oluştur' : 'Giriş yap';
+  $('#password').setAttribute('autocomplete', m === 'register' ? 'new-password' : 'current-password');
+  hide();
+}
+
+function show(text, kind) {
+  const el = $('#msg');
+  el.textContent = text;
+  el.className = 'msg on ' + kind;
+}
+function hide() { $('#msg').className = 'msg'; }
+
+$('#form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hide();
+  const btn = $('#submit');
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = mode === 'register' ? 'Oluşturuluyor…' : 'Giriş yapılıyor…';
+
+  const payload = { email: $('#email').value.trim(), password: $('#password').value };
+  if (mode === 'register') {
+    payload.fullName = $('#fullName').value.trim() || undefined;
+    payload.orgName = payload.fullName || undefined;
+  }
+
+  try {
+    const res = await fetch('/api/auth/' + mode, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      show(data.error || 'Bir şeyler ters gitti. Tekrar deneyin.', 'err');
+      btn.disabled = false;
+      btn.textContent = original;
+      return;
+    }
+    show('Yönlendiriliyorsunuz…', 'ok');
+    location.href = '/app';
+  } catch {
+    show('Sunucuya ulaşılamadı. Bağlantınızı kontrol edin.', 'err');
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+
+let resetToken = new URLSearchParams(location.search).get('reset');
+
+async function startForgot(){
+  const email = $('#email').value.trim();
+  if(!email) { show('Önce e-posta adresinizi yazın.','err'); $('#email').focus(); return; }
+  hide();
+  try{
+    const res = await fetch('/api/auth/forgot',{method:'POST',
+      headers:{'content-type':'application/json'},body:JSON.stringify({email})});
+    const data = await res.json().catch(()=>({}));
+    show(res.ok ? 'Bu adrese ait bir hesap varsa sıfırlama bağlantısı yola çıktı.'
+               : (data.error||'İstek gönderilemedi.'), res.ok?'ok':'err');
+  }catch{ show('Sunucuya ulaşılamadı.','err'); }
+}
+
+// Arriving from a reset email: swap the form for a new-password field.
+if(resetToken){
+  document.querySelector('.tabs').style.display='none';
+  $('#forgotRow').style.display='none';
+  $('#nameField').style.display='none';
+  $('#email').closest('.fld').style.display='none';
+  $('#title').textContent='Yeni parolanızı belirleyin';
+  $('#sub').textContent='Bağlantı bir saat geçerlidir ve yalnızca bir kez kullanılabilir.';
+  $('#password').placeholder='En az 10 karakter';
+  $('#password').setAttribute('autocomplete','new-password');
+  $('#pwHint').style.display='';
+  $('#submit').textContent='Parolayı güncelle';
+  $('#form').addEventListener('submit', async (e)=>{
+    e.preventDefault(); e.stopImmediatePropagation();
+    const btn=$('#submit'); btn.disabled=true; btn.textContent='Güncelleniyor…';
+    try{
+      const res=await fetch('/api/auth/reset',{method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({token:resetToken,password:$('#password').value})});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok){ show(data.error||'Bağlantı geçersiz.','err'); btn.disabled=false; btn.textContent='Parolayı güncelle'; return; }
+      show('Parolanız güncellendi. Yönlendiriliyorsunuz…','ok');
+      location.href='/app';
+    }catch{ show('Sunucuya ulaşılamadı.','err'); btn.disabled=false; btn.textContent='Parolayı güncelle'; }
+  }, true);
+}
+
+// Already signed in? Skip the form entirely.
+if(!resetToken){
+  fetch('/api/auth/me').then(r => r.json()).then(d => {
+    if (d.signedIn) location.replace('/app');
+  }).catch(() => {});
+}
+
+setMode(mode);
+</script>
+</body>
+</html>

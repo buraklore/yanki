@@ -1,0 +1,28 @@
+{
+  "name": "yanki",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "db:push": "node scripts/migrate.mjs",
+    "worker": "node --experimental-strip-types worker.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "15.1.6",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "postgres": "3.4.5",
+    "cheerio": "1.0.0",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "5.7.3",
+    "@types/node": "22.10.5",
+    "@types/react": "19.0.7",
+    "vitest": "2.1.9",
+    "tsx": "4.19.2"
+  }
+}
