@@ -29,6 +29,8 @@ export interface PromptContext {
   country: string;     // "Turkey"
   city?: string | null;
   language: 'tr' | 'en';
+  /** What the operator wrote about the business, used to ground generation. */
+  description?: string | null;
 }
 
 /**
