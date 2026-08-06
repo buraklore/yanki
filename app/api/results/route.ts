@@ -2,7 +2,6 @@ import { sql } from '@/lib/db';
 import { requireSession, requireWorkspace, handler } from '@/lib/auth';
 import { PLAN_RANK, limits, type PlanKey } from '@/lib/plans';
 import { opportunityScore, type Intent } from '@/lib/prompts';
-import { drainJobs } from '@/lib/scan';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,19 +28,6 @@ export const GET = handler(async (req) => {
     locked: PLAN_RANK[s.plan as PlanKey] < PLAN_RANK[e.min_plan],
   }));
   const allowed = engines.filter(e => !e.locked).map(e => e.key);
-
-  // Opportunistic drain. Vercel's free tier allows one cron a day, which is
-  // not enough to move a queue while someone is watching a scan. The dashboard
-  // already polls this endpoint every few seconds when work is outstanding, so
-  // we spend a little of that request advancing the queue. SKIP LOCKED makes
-  // concurrent pollers safe; a paid cron simply makes this redundant.
-  const [{ n: pendingNow }] = await sql`
-    select count(*)::int as n from scan_jobs j
-      join scans sc on sc.id = j.scan_id
-     where sc.workspace_id = ${workspaceId} and j.done_at is null and j.attempts < 4`;
-  if (pendingNow > 0) {
-    try { await drainJobs(8, 12_000); } catch { /* results must render regardless */ }
-  }
 
   const [latestRow] = await sql`
     select * from daily_scores where workspace_id = ${workspaceId} order by scan_date desc limit 1`;
