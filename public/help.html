@@ -150,7 +150,8 @@ svg{display:block;max-width:100%}
       <a href="yardim.html" class="on">Yardım</a>
     </div>
     <div class="nav-cta">
-      <a class="btn btn-ghost btn-sm" href="app.html">Giriş yap</a>
+      <button class="btn btn-ghost btn-sm" data-lang-btn onclick="toggleSiteLang()" aria-label="Language">EN</button>
+      <a class="btn btn-ghost btn-sm" href="/giris">Giriş yap</a>
       <a class="btn btn-primary btn-sm" href="app.html">Ücretsiz deneyin</a>
     </div>
   </div>
@@ -332,5 +333,6 @@ function renderArts(){
 $('#q').addEventListener('input',()=>{if($('#q').value.trim().length>1)active=null;renderCats();renderArts();});
 renderCats();renderArts();
 </script>
+<script src="/site-i18n.js"></script>
 </body>
 </html>
