@@ -351,7 +351,7 @@ svg{display:block;max-width:100%}
     <div class="sb-logo"><span class="mk">Y</span> YANKI</div>
     <div class="sb-user">
       <div class="row"><span class="av" id="uAv">DH</span>
-        <span class="ics"><button title="${T('Theme')}">◐</button><button title="${T('Language')}" onclick="langMenu()">⊕</button><button title="${T('Sign out')}" onclick="signOut()">↪</button></span></div>
+        <span class="ics"><button title="Theme" data-i18n-title>◐</button><button title="Language" data-i18n-title onclick="langMenu()">⊕</button><button title="Sign out" data-i18n-title onclick="signOut()">↪</button></span></div>
       <div class="lb" id="welcomeLb">WELCOME BACK,</div><div class="nm" id="uName">Demo Account</div>
     </div>
     <button class="sb-ws" onclick="toast('Single workspace — add another from Settings › Brand')">
@@ -446,9 +446,134 @@ const intentLabel=k=>(INTENTS[k]||{label:k}).label;
    ===================================================================== */
 
 const I18N = {
+  'AI tools sometimes mention your brand in a different form than its official name. Add your alternatives so no mention is missed.':'AI araçları markanızdan bazen resmî adı yerine farklı bir biçimde söz eder. Tek bir bahsi bile kaçırmamak için alternatiflerinizi ekleyin.',
+  'Alternative names AI may use for your brand. This lets us track mentions across every variation, and it is critical for brands with non-ASCII characters.':'AI\'ın markanız için kullanabileceği alternatif adlar. Tüm varyasyonlardaki bahisleri takip etmemizi sağlar; Türkçe karakter içeren markalarda kritiktir.',
+  'These are the searches we will run on every platform. Keep the ones your customers would actually type, drop the rest, and add your own — you know your buyers better than any model does.':'Her platformda çalıştıracağımız aramalar bunlar. Müşterilerinizin gerçekten yazacağı olanları tutun, kalanını çıkarın ve kendinizinkileri ekleyin — alıcılarınızı hiçbir modelden iyi bilirsiniz.',
+  'Each key is set as an environment variable on the server. A platform with no key is skipped silently — it never produces a zero that looks like bad visibility.':'Her anahtar sunucuda bir ortam değişkeni olarak tanımlanır. Anahtarı olmayan platform sessizce atlanır — kötü görünürlük gibi duran bir sıfır üretmez.',
+  'Model names are configuration, not code. If a provider retires a model, set the matching *_MODEL variable rather than waiting for a release.':'Model adları koda değil yapılandırmaya aittir. Bir sağlayıcı modeli emekliye ayırırsa sürüm beklemek yerine ilgili *_MODEL değişkenini ayarlayın.',
+  'GA4 and Search Console need an OAuth flow, which ships in the next release. Until then those screens stay empty rather than showing numbers we cannot source.':'GA4 ve Search Console bir OAuth akışı gerektiriyor; bu bir sonraki sürümde geliyor. O zamana kadar bu ekranlar, kaynağını gösteremeyeceğimiz sayılar yerine boş kalır.',
+  '💡 A prompt that names your brand only proves the model can read. Keep the brand out of them — except the trust question, which is there on purpose to show what is said when someone checks up on you.':'💡 Markanızın adını geçen bir sorgu yalnızca modelin okuyabildiğini kanıtlar. Markayı sorguların dışında tutun — güven sorusu hariç; o, biri sizi araştırdığında ne söylendiğini göstermek için bilerek orada.',
+  'Above your plan':'Planınızın üstünde',
+  'Key present':'Anahtar var',
+  'Google Search Console':'Google Search Console',
+  'Platform':'Platform',
+  'Content pieces':'İçerik',
+  'GEO audits':'GEO denetimi',
+  'AI prompts':'AI sorgusu',
+  'Competitors':'Rakipler',
+  'Step':'Adım',
+  'Set Up Your Hub':'Merkezinizi Kurun',
+  'Let\'s configure your project workspace':'Proje çalışma alanınızı yapılandıralım',
+  'Project / Brand Name':'Proje / Marka Adı',
+  'This is how your project will appear in the dashboard':'Projeniz panelde bu şekilde görünecek',
+  'Your website':'Web siteniz',
+  'We\'ll track brand visibility for this domain':'Bu alan adı için marka görünürlüğünü takip edeceğiz',
+  'Define Your Identity':'Kimliğinizi Tanımlayın',
+  'Help us understand your business so we can build better AI monitoring prompts':'Daha iyi AI izleme sorguları kurabilmemiz için işinizi anlamamıza yardım edin',
+  'Industry *':'Sektör *',
+  'Describe Your Business':'İşinizi Anlatın',
+  'Leave empty for country-wide targeting':'Ülke geneli hedefleme için boş bırakın',
+  'We use this to generate smarter prompts specific to your services':'Bunu hizmetlerinize özel daha isabetli sorgular üretmek için kullanıyoruz',
+  'Alternative Brand Names':'Alternatif Marka Adları',
+  'AI systems refer to your brand with different names — let\'s track all of them.':'AI sistemleri markanızdan farklı adlarla söz eder — hepsini birlikte takip edelim.',
+  'AI tools sometimes mention your brand in a different form than its official name.':'AI araçları markanızdan bazen resmî adı yerine farklı bir biçimde söz eder.',
+  'Add your alternatives so no mention is missed.':'Tek bir bahsi bile kaçırmamak için alternatiflerinizi ekleyin.',
+  'Abbreviations — e.g. "THY" for Turk Hava Yollari':'Kısaltmalar — örn. Türk Hava Yolları için "THY"',
+  'Spelling without special characters — e.g. "Turk Hava Yollari"':'Özel karakter içermeyen yazım — örn. "Turk Hava Yollari"',
+  'Local-language or translated names':'Yerel dildeki veya çevrilmiş adlar',
+  'Domain form — e.g. "yourbrand.com"':'Alan adı biçimi — örn. "markaniz.com"',
+  '+ Add variant':'+ Varyant ekle',
+  'Competitor Radar':'Rakip Radarı',
+  'Who are your main competitors? We\'ll track them too':'Ana rakipleriniz kim? Onları da takip edeceğiz',
+  'Competitor 1':'Rakip 1',
+  'Competitor 2':'Rakip 2',
+  'Competitor 3':'Rakip 3',
+  '+ Add Another Competitor':'+ Başka Rakip Ekle',
+  'Skip this step':'Bu adımı atla',
+  'AI Search Prompts':'AI Arama Sorguları',
+  'These are the searches we will run on every platform. Keep the ones your customers':'Her platformda çalıştıracağımız aramalar bunlar. Müşterilerinizin gerçekten yazacağı',
+  'would actually type, drop the rest, and add your own — you know your buyers better than any model does.':'olanları tutun, kalanını çıkarın ve kendinizinkileri ekleyin — alıcılarınızı hiçbir modelden iyi bilirsiniz.',
+  '+ Your own prompts':'+ Kendi sorgularınız',
+  'Write them exactly as a customer would type them. One per line — paste a whole list if you have one.':'Tam olarak bir müşterinin yazacağı gibi yazın. Her satıra bir tane — listeniz varsa toptan yapıştırın.',
+  'Add these prompts':'Bu sorguları ekle',
+  '💡 A prompt that names your brand only proves the model can read.':'💡 Markanızın adını geçen bir sorgu yalnızca modelin okuyabildiğini kanıtlar.',
+  'Keep the brand out of them — except the trust question, which is there on purpose to show what is said':'Markayı sorguların dışında tutun — güven sorusu hariç; o, biri sizi araştırdığında ne söylendiğini',
+  'when someone checks up on you.':'göstermek için bilerek orada.',
+  'First scan queued':'İlk tarama kuyruğa alındı',
+  'checks across':'kontrol,',
+  'platforms':'platformda',
+  'Your scan is running in the background — results will appear in the dashboard shortly':'Taramanız arka planda çalışıyor — sonuçlar kısa süre içinde panelde görünecek',
+  'OUT OF 100':'100 ÜZERİNDEN',
+  'Update your brand name, website and industry.':'Marka adınızı, web sitenizi ve sektörünüzü güncelleyin.',
+  'Set the primary country and city for localised AI monitoring results.':'Yerelleştirilmiş AI izleme sonuçları için birincil ülke ve şehri belirleyin.',
+  'Alternative names AI may use for your brand. This lets us track mentions across':'AI\'ın markanız için kullanabileceği alternatif adlar. Tüm varyasyonlardaki bahisleri',
+  'every variation, and it is critical for brands with non-ASCII characters.':'takip etmemizi sağlar; Türkçe karakter içeren markalarda kritiktir.',
+  'Team Members':'Takım Üyeleri',
+  'Manage who can access this brand. There is no per-seat charge.':'Bu markaya kimlerin erişebildiğini yönetin. Koltuk başına ücret yoktur.',
+  'Track current usage of every feature in your plan.':'Planınızdaki her özelliğin güncel kullanımını takip edin.',
+  'Content Writer':'İçerik Yazarı',
+  'For small brands starting with AI visibility':'AI görünürlüğüne yeni başlayan küçük markalar için',
+  'For growing brands that need deeper analysis':'Daha derin analize ihtiyaç duyan büyüyen markalar için',
+  'For enterprises with advanced requirements':'Gelişmiş ihtiyaçları olan kurumlar için',
+  'Resell to your clients under your own brand':'Müşterilerinize kendi markanızla satın',
+  'White label + your own domain':'Beyaz etiket + kendi alan adınız',
+  'Add Payment Method':'Ödeme Yöntemi Ekle',
+  'No payment method on file. Add one to keep your subscription active.':'Kayıtlı ödeme yöntemi yok. Aboneliğinizin aktif kalması için bir tane ekleyin.',
+  'Each key is set as an environment variable on the server. A platform with no key is skipped silently —':'Her anahtar sunucuda bir ortam değişkeni olarak tanımlanır. Anahtarı olmayan platform sessizce atlanır —',
+  'it never produces a zero that looks like bad visibility.':'kötü görünürlük gibi duran bir sıfır üretmez.',
+  'Model names are configuration, not code. If a provider retires a model, set the matching':'Model adları koda değil yapılandırmaya aittir. Bir sağlayıcı modeli emekliye ayırırsa ilgili',
+  'variable rather than waiting for a release.':'değişkeni ayarlayın, sürüm beklemeyin.',
+  'MOCK_ENGINES is on. Answers are synthetic — set it to 0 and add real keys before launch.':'MOCK_ENGINES açık. Cevaplar sahte — lansmandan önce 0 yapıp gerçek anahtarları ekleyin.',
+  'No usable provider yet. Scans cannot run until at least one key is configured.':'Henüz kullanılabilir sağlayıcı yok. En az bir anahtar tanımlanana kadar tarama çalışamaz.',
+  'GA4 and Search Console need an OAuth flow, which ships in the':'GA4 ve Search Console bir OAuth akışı gerektiriyor; bu',
+  'next release. Until then those screens stay empty rather than showing numbers we cannot source.':'bir sonraki sürümde geliyor. O zamana kadar bu ekranlar, kaynağını gösteremeyeceğimiz sayılar yerine boş kalır.',
+  'Separates AI-sourced sessions from direct traffic.':'AI kaynaklı oturumları doğrudan trafikten ayrıştırır.',
+  'Finds pages that rank on Google but never appear in AI answers.':'Google\'da sıralanan ama AI cevaplarında hiç görünmeyen sayfaları bulur.',
+  'Server / CDN log delivery':'Sunucu / CDN log aktarımı',
+  'GPTBot and ClaudeBot crawl activity. Cloudflare Logpush, Nginx, S3.':'GPTBot ve ClaudeBot tarama aktivitesi. Cloudflare Logpush, Nginx, S3.',
+  'Google Analytics 4':'Google Analytics 4',
+  'weight':'ağırlık',
+  'official API':'resmî API',
+  'licensed SERP provider':'lisanslı SERP sağlayıcısı',
+  'model':'model',
+  'Owner':'Sahip',
+  'Roles':'Roller',
+  'Analyst':'Analist',
+  'Client':'Müşteri',
+  'edits prompts and competitors ·':'sorgu ve rakipleri düzenler ·',
+  'has view-only access. Client seats are unlimited on the Agency plan.':'yalnızca görüntüler. Ajans planında müşteri koltuğu sınırsızdır.',
+  'manages everything ·':'her şeyi yönetir ·',
+  'Generated from templates because no OpenAI or Anthropic key is configured. Templates are generic — your own prompts will measure something far more useful.':'OpenAI veya Anthropic anahtarı tanımlı olmadığı için şablonlardan üretildi. Şablonlar geneldir — kendi sorgularınız çok daha işe yarar bir şey ölçer.',
+  'Generated from templates this time. Try Regenerate, or write your own below.':'Bu sefer şablonlardan üretildi. Yeniden Üret deneyin ya da aşağıya kendinizinkini yazın.',
+  'Suggested prompts':'Önerilen sorgular',
+  '✦ Suggested for your brand':'✦ Markanız için önerilenler',
+  'selected':'seçildi',
+  'yours':'sizin',
+  'No suggestions yet — write your own below.':'Henüz öneri yok — aşağıya kendinizinkini yazın.',
+  'Last 90 days':'Son 90 gün',
+  'Competitor name':'Rakip adı',
+  'competitor.com':'rakip.com',
+  'Enter your current password':'Mevcut şifrenizi girin',
+  'At least 10 characters':'En az 10 karakter',
+  'Search competitors':'Rakip ara',
+  'URL to audit':'Denetlenecek adres',
+  'Content language':'İçerik dili',
+  'Menu':'Menü',
+  'Theme':'Tema',
+  'Language':'Dil',
+  'Sign out':'Çıkış yap',
+  'e.g. We offer a cloud CRM for small businesses — sales tracking, e-invoicing and WhatsApp management in one panel...':'örn. KOBİ\'ler için bulut CRM sunuyoruz — satış takibi, e-fatura ve WhatsApp yönetimi tek panelde...',
+  'e.g. Acme Commerce':'örn. Acme Ticaret',
+  'https://www.example.com':'https://www.ornekmarka.com',
+  'e.g. Istanbul':'örn. İstanbul',
+  'e.g. THY, Turkish Air':'örn. THY, Turkish Air',
+  'brand':'marka',
+  '▭ Feedback':'▭ Geri Bildirim',
+  'WELCOME BACK,':'TEKRAR HOŞ GELDİNİZ,',
+  'first wins in 1–2 weeks':'ilk kazanç 1–2 haftada',
+  '90 days':'90 gün',
   'Dashboard':'Kontrol Paneli',
   'Analytics':'Analitik',
-  'Competitors':'Rakipler',
   'AI Prompts':'AI Sorguları',
   'Action Plan':'Aksiyon Planı',
   'Audit':'Denetim',
@@ -462,10 +587,6 @@ const I18N = {
   'Traffic':'Trafik',
   'Search Performance':'Arama Performansı',
   'Feedback':'Geri Bildirim',
-  'Sign out':'Çıkış yap',
-  'Theme':'Tema',
-  'Language':'Dil',
-  'Menu':'Menü',
   'Visibility score':'Görünürlük skoru',
   'Mention rate':'Bahsetme oranı',
   'Share of voice':'Ses payı',
@@ -782,8 +903,6 @@ const I18N = {
   'Test all keys':'Tüm anahtarları test et',
   'Testing every provider…':'Her sağlayıcı test ediliyor…',
   'Working':'Çalışıyor',
-  'Key present':'Anahtar var',
-  'Above your plan':'Planınızın üstünde',
   'Usage Summary':'Kullanım Özeti',
   'Plans':'Planlar',
   'Most Popular':'En Popüler',
@@ -806,7 +925,6 @@ const I18N = {
   'Dismiss':'Kapat',
   'Export':'Dışa aktar',
   'The trial scans limited platforms. The rest unlock on paid plans.':'Deneme sürümü sınırlı platform tarar. Kalanlar ücretli planlarda açılır.',
-  'WELCOME BACK,':'TEKRAR HOŞ GELDİNİZ,',
   'Trial':'Deneme','days left':'gün kaldı',
   'Pick a plan before your trial ends.':'Deneme süreniz bitmeden bir plan seçin.',
   'Manage plan':'Planı yönet','plan':'plan',
@@ -820,6 +938,122 @@ const I18N = {
   'Page not found':'Sayfa bulunamadı',
 
 };
+
+
+/**
+ * Post-render translation pass.
+ *
+ * Wrapping several hundred strings in T() by hand is slow and, worse, easy to
+ * get subtly wrong — one missed template literal and the raw ${T('…')} ends up
+ * on screen. Instead we walk the rendered DOM once and swap any text node or
+ * attribute whose exact content is a dictionary key. Adding a translation then
+ * means adding a dictionary entry, nothing else.
+ *
+ * Only exact, whole-string matches are replaced, so brand names, numbers and
+ * anything we have not deliberately translated pass through untouched.
+ */
+/** Original English text of every node the pass has rewritten. */
+const ORIGINALS = new WeakMap();
+
+/** Puts the English back, so the switch works without reloading the page. */
+function delocalise(root){
+  const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT);
+  let n; while(n=walker.nextNode()){
+    if(ORIGINALS.has(n)) n.textContent=ORIGINALS.get(n);
+  }
+  (root||document).querySelectorAll('[data-origtitle],[data-origplaceholder],[data-origarialabel]').forEach(el=>{
+    for(const attr of ['title','placeholder','aria-label']){
+      const slot='orig'+attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase());
+      const saved=el.dataset[slot];
+      if(saved){ el.setAttribute(attr,saved); delete el.dataset[slot]; }
+    }
+  });
+}
+
+function localise(root){
+  if(S.lang!=='tr') return;
+
+  // Text in HTML is wrapped across lines, so an exact match against the
+  // dictionary key almost never fires. Compare on collapsed whitespace and
+  // the key can be written as one readable line.
+  if(!localise._index){
+    localise._index = new Map();
+    for(const k in I18N) localise._index.set(k.replace(/\s+/g,' ').trim(), I18N[k]);
+  }
+  const idx = localise._index;
+
+  // Strings that carry a number cannot be dictionary keys. A handful of
+  // patterns covers them without turning this into a template engine.
+  const patterns = [
+    [/^All \((\d+)\)$/,            m=>`Tümü (${m[1]})`],
+    [/^Active \((\d+)\)$/,         m=>`Aktif (${m[1]})`],
+    [/^Paused \((\d+)\)$/,         m=>`Pasif (${m[1]})`],
+    [/^(\d+(?:\.\d+)?)% coverage$/,m=>`%${m[1]} kapsama`],
+    [/^(\d+) content pieces\/mo$/, m=>`ayda ${m[1]} içerik`],
+    [/^(\d+) AI prompts$/,         m=>`${m[1]} AI sorgusu`],
+    [/^(\d+) competitors$/,        m=>`${m[1]} rakip`],
+    [/^(\d+) GEO audits\/mo$/,     m=>`ayda ${m[1]} GEO denetimi`],
+    [/^· weight (\d[\d.]*)$/,      m=>`· ağırlık ${m[1]}`],
+    [/^First scan queued — (\d+) checks across (\d+) platforms?$/,
+                                   m=>`İlk tarama kuyruğa alındı — ${m[2]} platformda ${m[1]} kontrol`],
+    [/^Showing 1–(\d+) of (\d+)$/, m=>`${m[2]} sorgudan ${m[1]} tanesi gösteriliyor`],
+  ];
+
+  // A few nodes glue several labels together with separators, so neither an
+  // exact key nor a whole-string pattern can match. Swap the fragments.
+  const fragments = [
+    [/· weight /g, '· ağırlık '],
+    [/· official API/g, '· resmî API'],
+    [/· licensed SERP provider/g, '· lisanslı SERP sağlayıcısı'],
+    [/· model /g, '· model '],
+  ];
+
+  const swap = (text) => {
+    const key = text.replace(/\s+/g,' ').trim();
+    if(!key) return null;
+    const hit = idx.get(key);
+    if(hit) return hit;
+    for(const [re,fn] of patterns){ const m = key.match(re); if(m) return fn(m); }
+    let frag = text, changed = false;
+    for(const [re,to] of fragments){ if(re.test(frag)){ frag = frag.replace(re,to); changed = true; } }
+    return changed ? frag : null;
+  };
+
+  const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,{
+    acceptNode(n){
+      // Never rewrite generated files, code samples or anything the user typed.
+      const p=n.parentElement;
+      if(!p) return NodeFilter.FILTER_REJECT;
+      if(p.closest('pre,code,textarea,input,#gc,#wmd,#fixc')) return NodeFilter.FILTER_REJECT;
+      return n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const jobs=[]; let n;
+  while(n=walker.nextNode()) jobs.push(n);
+  for(const node of jobs){
+    const hit = swap(node.textContent);
+    if(hit !== null){
+      // Remember the original so switching back to English does not need a
+      // page reload — the pass rewrites in place and cannot otherwise undo it.
+      if(!ORIGINALS.has(node)) ORIGINALS.set(node, node.textContent);
+      node.textContent = hit;
+    }
+  }
+
+  (root||document).querySelectorAll('[placeholder],[title],[aria-label]').forEach(el=>{
+    for(const attr of ['placeholder','title','aria-label']){
+      const v=el.getAttribute(attr);
+      if(!v) continue;
+      const hit=swap(v);
+      if(hit!==null){
+        // dataset keys cannot contain hyphens, so aria-label needs a safe name.
+        const slot='orig'+attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase());
+        if(!el.dataset[slot]) el.dataset[slot]=v;
+        el.setAttribute(attr,hit);
+      }
+    }
+  });
+}
 
 /** Translate a UI string. Unknown keys pass through, so nothing ever blanks. */
 function T(s){ return S.lang==='tr' ? (I18N[s] || s) : s; }
@@ -845,7 +1079,9 @@ async function setLang(l){
   if(S.lang===l) return;
   S.lang=l;
   document.documentElement.lang=l;
-  render();
+  if(l==='en') delocalise(document.body);
+  render(); renderOb();
+  if(l==='tr') localise(document.body);
   try{ await api.post('/api/auth/locale',{locale:l}); }
   catch{ /* the UI already switched; persistence can fail quietly */ }
 }
@@ -888,8 +1124,10 @@ function toast(t, kind){
   d.onmouseleave=()=>{ setTimeout(close,1800); const l=d.querySelector('.life');
     if(l) l.style.animationPlayState='running';};
   $('#toasts').append(d);
+  localise(d);
 }
-function openModal(t,b){$('#mTitle').textContent=t;$('#mBody').innerHTML=b;$('#modal').classList.add('on')}
+function openModal(t,b){$('#mTitle').textContent=t;$('#mBody').innerHTML=b;$('#modal').classList.add('on');
+  localise($('#modal'));}
 function closeModal(){$('#modal').classList.remove('on')}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
@@ -912,7 +1150,7 @@ function platAllowed(p){return p.active!==undefined ? p.active : !p.locked}
 const STEPS=['Workspace','Identity','Variants','Competitors','Prompts','Done'];
 
 function renderOb(){
-  $('#obStep').textContent=`Step ${S.step} / 6`;
+  $('#obStep').textContent=`${T('Step')} ${S.step} / 6`;
   $('#obProg').style.width=(S.step/6*100)+'%';
   $('#obDots').innerHTML=STEPS.map((_,i)=>`<i class="${i<S.step?'on':''}"></i>`).join('');
   $('#stepper').innerHTML=STEPS.map((s,i)=>{
@@ -920,7 +1158,9 @@ function renderOb(){
     return `<div class="st ${cls}"><div style="position:relative"><div class="n">${n<S.step?'✓':n}</div>
       <div class="lb" style="left:50%">${s}</div></div>${i<5?'<span class="ln"></span>':''}</div>`}).join('');
   ({1:obS1,2:obS2,3:obS3,4:obS4,5:obS5,6:obS6})[S.step]();
+  localise(document.body);
 }
+
 function obS1(){
   $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>Set Up Your Hub</h2>
   <p class="lead">Let's configure your project workspace</p>
@@ -1556,6 +1796,7 @@ function render(){
   if(!S.data){ page.innerHTML=S.loadError?errorScreen(S.loadError):loadingScreen(); return; }
   try{
     page.innerHTML = VIEWS[S.route] ? VIEWS[S.route]() : `<div class="empty">${T('Page not found')}</div>`;
+    localise(document.body);
     (POST[S.route]||function(){})();
   }catch(e){
     // A view throwing must not take the whole panel down with it.
@@ -2598,6 +2839,7 @@ async function loadEngines(probe){
    <p style="font-size:12px;color:var(--mute);margin-top:12px">
      Model names are configuration, not code. If a provider retires a model, set the matching
      <code>*_MODEL</code> variable rather than waiting for a release.</p>`;
+  localise(box);
 }
 
 async function changePassword(){
@@ -2691,9 +2933,17 @@ async function boot(){
   // a 30-character email overflows the sidebar and tells the user nothing.
   S.user={name: me.user.fullName || me.user.email.split('@')[0], mail: me.user.email};
   S.plan=me.org.plan; S.planLimits=me.limits; S.org=me.org; S.role=me.role;
-  S.lang=(me.user.locale==='en'?'en':'tr');
+  // A visitor who switched the marketing site to English arrives with ?lang=en
+  // and expects the product in English too; that choice wins for this visit and
+  // is written back to the account.
+  const urlLang=new URLSearchParams(location.search).get('lang');
+  S.lang = (urlLang==='en'||urlLang==='tr') ? urlLang : (me.user.locale==='en'?'en':'tr');
+  if(urlLang && urlLang!==me.user.locale){
+    api.post('/api/auth/locale',{locale:S.lang}).catch(()=>{});
+  }
   document.documentElement.lang=S.lang;
 
+  localise(document.body);   // static shell: sidebar labels, titles, aria
   const ready=(me.workspaces||[]).find(w=>w.onboarded);
   if(ready){
     S.workspaceId=ready.id;
