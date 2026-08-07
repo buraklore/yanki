@@ -3,6 +3,7 @@ import { engineByKey, enabledEngines, type Engine } from './engines';
 import { extract, type BrandRef } from './extract';
 import { scoreCell, aggregate, shareOfVoice, type Cell, type Run } from './score';
 import { PLAN_RANK, limits, type PlanKey } from './plans';
+import { buildAliases, rankBrands } from './entity';
 
 /**
  * A daily scan is prompts × engines × runs. For a Growth workspace that is
@@ -359,4 +360,77 @@ export async function rollUp(scanId: string, workspaceId: string, opts: { finali
   }
 
   return agg;
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Backfill                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Re-examines stored answers for a workspace's current brand set.
+ *
+ * A competitor added today would otherwise read as zero mentions until the
+ * next scan — which, for a well-known brand, looks like a broken product
+ * rather than a missing measurement. We keep the full answer text of every
+ * run, so the honest answer is already on disk: match the new brand against
+ * it and the numbers are correct immediately, at no provider cost.
+ *
+ * Ranks are recomputed for every brand in each affected answer, not just the
+ * new one. Inserting a brand changes the order of the others, and leaving
+ * stale ranks behind would quietly corrupt the prominence term of the score.
+ */
+export async function backfillBrands(workspaceId: string, opts: { days?: number; limit?: number } = {}) {
+  const days = opts.days ?? 90;
+  const limit = opts.limit ?? 4000;
+
+  const [ws] = await sql`select brand_name, domain, aliases from workspaces where id = ${workspaceId}`;
+  if (!ws) return { runs: 0, rows: 0 };
+
+  const rivals = await sql`
+    select id, name, domain, aliases from competitors
+     where workspace_id = ${workspaceId} and active`;
+
+  const brands = [
+    { id: 'self', aliases: buildAliases({ name: ws.brand_name, domain: ws.domain, variants: ws.aliases }) },
+    ...rivals.map((r: { id: string; name: string; domain: string | null; aliases: string[] }) => ({
+      id: r.id,
+      aliases: buildAliases({ name: r.name, domain: r.domain ?? undefined, variants: r.aliases }),
+    })),
+  ];
+
+  const runs = await sql`
+    select id, answer_text from answer_runs
+     where workspace_id = ${workspaceId}
+       and answer_text is not null
+       and asked_at > now() - make_interval(days => ${days})
+     order by asked_at desc limit ${limit}`;
+
+  let rows = 0;
+  for (const run of runs) {
+    const ranks = rankBrands(run.answer_text as string, brands);
+    const present = Object.entries(ranks)
+      .filter(([, rank]) => (rank as number) > 0)
+      .map(([id, rank]) => ({
+        run_id: run.id,
+        competitor_id: id === 'self' ? null : id,
+        is_self: id === 'self',
+        rank: rank as number,
+      }));
+
+    await sql`delete from run_brands where run_id = ${run.id}`;
+    if (present.length) {
+      await sql`insert into run_brands ${sql(present)} on conflict do nothing`;
+      rows += present.length;
+    }
+  }
+
+  // Share of voice is derived from these rows, so the rollup has to follow.
+  const [scan] = await sql`
+    select id from scans where workspace_id = ${workspaceId} order by scan_date desc limit 1`;
+  if (scan) {
+    try { await rollUp(scan.id, workspaceId, { finalize: false }); } catch { /* best effort */ }
+  }
+
+  return { runs: runs.length, rows };
 }
