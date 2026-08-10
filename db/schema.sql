@@ -313,6 +313,89 @@ begin
 end;
 $$;
 
+
+-- ---------- attributes -------------------------------------------------
+-- Which qualities a model attaches to which brand. This is the difference
+-- between "you scored 42" and "the model calls your rival trustworthy and
+-- calls you cheap" — the second is actionable, the first is not.
+--
+-- Extraction is a separate pass over answers we already stored, so it costs
+-- one cheap model call per batch and never re-queries a provider.
+
+create table if not exists run_attributes (
+  id             bigserial primary key,
+  run_id         bigint not null references answer_runs(id) on delete cascade,
+  workspace_id   uuid not null references workspaces(id) on delete cascade,
+  -- null competitor_id means the workspace's own brand.
+  competitor_id  uuid references competitors(id) on delete cascade,
+  is_self        boolean not null default false,
+  attribute      text not null,          -- normalised, lower case
+  attribute_raw  text not null,          -- as the model wrote it
+  polarity       smallint not null,      -- -1 negative, 0 neutral, 1 positive
+  evidence       text,                   -- the clause it came from
+  created_at     timestamptz not null default now()
+);
+create index if not exists run_attributes_ws_idx on run_attributes (workspace_id, attribute);
+create index if not exists run_attributes_run_idx on run_attributes (run_id);
+create unique index if not exists run_attributes_uniq
+  on run_attributes (run_id, coalesce(competitor_id, '00000000-0000-0000-0000-000000000000'::uuid), attribute);
+
+-- Marks answers that have been through the attribute pass, so a re-run only
+-- looks at what is new.
+alter table answer_runs add column if not exists attributes_at timestamptz;
+
+-- ---------- change tracking and alerts ---------------------------------
+-- Turning a checklist into a monitoring system: the product has to notice a
+-- loss and say so, otherwise a customer fixes everything once and leaves.
+
+create table if not exists change_events (
+  id           bigserial primary key,
+  workspace_id uuid not null references workspaces(id) on delete cascade,
+  scan_date    date not null,
+  kind         text not null,      -- score_drop | score_rise | rank_loss | rank_gain
+                                   -- | lost_mention | new_mention | rival_overtake
+                                   -- | rival_surge | citation_lost | citation_gained
+  severity     smallint not null default 1,   -- 1 info, 2 notable, 3 urgent
+  prompt_id    uuid references prompts(id) on delete cascade,
+  engine_key   text references engines(key),
+  competitor_id uuid references competitors(id) on delete cascade,
+  before_val   numeric,
+  after_val    numeric,
+  detail       text,
+  created_at   timestamptz not null default now()
+);
+create index if not exists change_events_ws_idx on change_events (workspace_id, scan_date desc);
+create unique index if not exists change_events_uniq
+  on change_events (workspace_id, scan_date, kind,
+                    coalesce(prompt_id, '00000000-0000-0000-0000-000000000000'::uuid),
+                    coalesce(engine_key, ''),
+                    coalesce(competitor_id, '00000000-0000-0000-0000-000000000000'::uuid));
+
+-- Digest delivery log. Keeps us from sending the same week twice when a cron
+-- retries, and gives the customer a history they can open in the panel.
+create table if not exists digests (
+  id           bigserial primary key,
+  workspace_id uuid not null references workspaces(id) on delete cascade,
+  period       text not null,          -- weekly | monthly
+  period_start date not null,
+  period_end   date not null,
+  summary      jsonb not null,
+  sent_at      timestamptz,
+  send_error   text,
+  created_at   timestamptz not null default now(),
+  unique (workspace_id, period, period_start)
+);
+
+-- Per-user notification preferences. Defaults are deliberately on: a customer
+-- who never hears about a loss has no reason to keep paying.
+alter table users add column if not exists notify_weekly boolean not null default true;
+alter table users add column if not exists notify_alerts boolean not null default true;
+
+-- ---------- agency / white label ---------------------------------------
+alter table organizations add column if not exists brand_logo_url text;
+alter table organizations add column if not exists brand_colour text;
+alter table organizations add column if not exists brand_name_override text;
+
 -- ---------- rate limiting ---------------------------------------------
 -- Fixed windows in Postgres rather than memory: on serverless every request
 -- may hit a different instance, so an in-memory counter limits nothing.
