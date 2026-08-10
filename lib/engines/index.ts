@@ -389,6 +389,35 @@ async function serp(query: string, language: string, country: string, signal?: A
   return { json: JSON.parse(text) as Json, latencyMs: Date.now() - started };
 }
 
+/**
+ * Google does not always ship the overview inside the search response. When it
+ * defers, SerpApi returns `ai_overview.page_token` and nothing else, and the
+ * content has to be fetched with a second call.
+ *
+ * Without this, a deferred overview parses to an empty string and is stored as
+ * "Google showed no AI Overview for this query" — a confident, wrong negative
+ * that would quietly drag the score down. An empty overview and an unfetched
+ * one are different facts and must not collapse into the same row.
+ *
+ * The token expires in about a minute, so the follow-up happens immediately or
+ * not at all. A failure here is swallowed on purpose: the caller still has the
+ * first response, and a missing overview is better than a failed scan cell.
+ */
+async function serpOverviewByToken(pageToken: string, signal?: AbortSignal): Promise<Json | null> {
+  try {
+    const url = new URL(env('SERP_PROVIDER_URL', 'https://serpapi.com/search'));
+    url.searchParams.set('engine', 'google_ai_overview');
+    url.searchParams.set('page_token', pageToken);
+    url.searchParams.set('api_key', env('SERP_PROVIDER_KEY'));
+    const res = await fetch(url, { signal });
+    if (!res.ok) return null;
+    const json = JSON.parse(await res.text()) as Json;
+    return ((json.ai_overview as Json) ?? null);
+  } catch {
+    return null;
+  }
+}
+
 export const aiOverviews: Engine = {
   key: 'ai_overviews',
   label: 'Google AI Overviews',
@@ -400,7 +429,12 @@ export const aiOverviews: Engine = {
 
   async ask({ prompt, language, country, signal }) {
     const { json, latencyMs } = await serp(prompt, language, country, signal);
-    const ov = (json.ai_overview as Json) ?? {};
+    let ov = (json.ai_overview as Json) ?? {};
+
+    // Deferred overview: the first response carries only a token.
+    if (!ov.text_blocks && typeof ov.page_token === 'string') {
+      ov = (await serpOverviewByToken(ov.page_token, signal)) ?? ov;
+    }
 
     const flatten = (b: Json): string =>
       (b.snippet as string) ||
