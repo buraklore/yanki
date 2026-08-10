@@ -4,6 +4,7 @@ import { extract, type BrandRef } from './extract';
 import { scoreCell, aggregate, shareOfVoice, type Cell, type Run } from './score';
 import { PLAN_RANK, limits, type PlanKey } from './plans';
 import { buildAliases, rankBrands } from './entity';
+import { detectChanges } from './digest';
 
 /**
  * A daily scan is prompts × engines × runs. For a Growth workspace that is
@@ -357,6 +358,13 @@ export async function rollUp(scanId: string, workspaceId: string, opts: { finali
        where scan_id = ${scanId} and done_at is null`;
     await sql`update scans set status = ${stuck > 0 ? 'partial' : 'done'}, finished_at = now()
                where id = ${scanId}`;
+
+    // Detection belongs here, not in the cron. A scan can be drained by the
+    // scheduled job, by the Rescan button, or by the panel polling while it is
+    // open — on the free tier it is almost always the last of those. Hanging
+    // detection off one of those paths means a customer on the free tier never
+    // gets an alert, which is exactly the customer we most need to keep.
+    try { await detectChanges(workspaceId); } catch { /* never block a scan */ }
   }
 
   return agg;
