@@ -670,6 +670,8 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Henüz veri yok',
   'Rescan':'Yeniden tara',
+  'Continue anyway?':'Yine de devam edilsin mi?',
+  'Brand settings saved':'Marka ayarları kaydedildi',
   'Scanning…':'Taranıyor…',
   'Check keys':'Anahtarları kontrol et',
   'Run a scan now':'Şimdi tarama başlat',
@@ -3192,13 +3194,32 @@ async function changePassword(){
 }
 
 async function saveBrand(){
-  try{
-    await api.patch(`/api/workspaces/${S.workspaceId}`,{
-      brandName:S.brand.name, domain:S.brand.site, sector:S.brand.sector,
-      country:S.brand.country, city:S.brand.city||null});
+  const body={
+    brandName:S.brand.name, domain:S.brand.site, sector:S.brand.sector,
+    country:S.brand.country, city:S.brand.city||null};
+  const send=async()=>{
+    await api.patch(`/api/workspaces/${S.workspaceId}`,body);
     await loadResults();
-    toast('Brand settings saved');
-  }catch(e){ toast(e.message); }
+    toast(T('Brand settings saved'));
+  };
+  try{ await send(); }
+  catch(e){
+    // 409 means the server spotted that this rename would re-attribute stored
+    // history to a different company. It is a question, not a failure: repeat
+    // the request only once the user has read what happens and agreed.
+    if(e.status===409){
+      if(confirm(e.message+'\n\n'+T('Continue anyway?'))){
+        body.confirmRebrand=true;
+        try{ await send(); }catch(e2){ toast(e2.message,'error'); }
+      }else{
+        // Put the stored values back so the form stops showing a change that
+        // was never saved.
+        await loadResults(); render();
+      }
+      return;
+    }
+    toast(e.message,'error');
+  }
 }
 
 async function setPlan(p){
