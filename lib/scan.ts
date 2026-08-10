@@ -123,7 +123,19 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
         // A bad key or a retired model will never succeed on retry. Burning
         // four attempts with a minute of backoff between them hides the cause
         // for five minutes and tells the operator nothing.
-        const permanent = /HTTP 40[0134]|invalid.?api.?key|API key not valid|incorrect api key|model.*not found|does not exist|unauthorized|permission/i.test(msg);
+        //
+        // An exhausted balance belongs in the same bucket even though it
+        // arrives as 429, which is otherwise the one status worth retrying.
+        // OpenAI reports a spent account as "You have no credits remaining"
+        // with 429; retrying that four times delays the whole scan by roughly
+        // ten minutes and cannot succeed. Rate limiting proper — no quota
+        // wording — still retries, because that one does clear on its own.
+        const quotaSpent =
+          /no credits remaining|insufficient_quota|insufficient quota|credit balance is too low|billing.?hard.?limit|exceeded your current quota/i
+            .test(msg);
+        const permanent =
+          quotaSpent ||
+          /HTTP 40[0134]|invalid.?api.?key|API key not valid|incorrect api key|model.*not found|does not exist|unauthorized|permission/i.test(msg);
         await sql`update scan_jobs
              set error = ${msg.slice(0, 400)},
                  attempts = ${permanent ? 4 : sql`attempts`},
