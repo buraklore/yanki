@@ -15,6 +15,7 @@ export async function GET(req: Request) {
     return new Response('unauthorized', { status: 401 });
   }
   const result = await drainJobs(20, 45_000);
+
   // Housekeeping rides along with a job that already runs every two minutes,
   // rather than earning its own cron entry.
   pruneRateLimits().catch(() => {});
