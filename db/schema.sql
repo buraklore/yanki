@@ -126,7 +126,8 @@ insert into engines (key,label,default_weight,method,min_plan,sort_order) values
   ('ai_overviews','Google AI Overviews', 0.215,'serp_provider','starter',4),
   ('claude',      'Claude',              0.100,'official_api','starter', 5),
   ('grok',        'Grok',                0.043,'official_api','growth',  6),
-  ('deepseek',    'DeepSeek',            0.042,'official_api','growth',  7)
+  ('deepseek',    'DeepSeek',            0.042,'official_api','growth',  7),
+  ('groq',        'Groq',                0.020,'official_api','growth',  8)
 on conflict (key) do update
   set label = excluded.label, default_weight = excluded.default_weight,
       method = excluded.method, min_plan = excluded.min_plan, sort_order = excluded.sort_order;
