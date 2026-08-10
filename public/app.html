@@ -446,6 +446,45 @@ const intentLabel=k=>(INTENTS[k]||{label:k}).label;
    ===================================================================== */
 
 const I18N = {
+  'By platform':'Platforma göre',
+  'Task list':'İş listesi',
+  'now':'şu an',
+  'unclaimed':'kazanılmamış',
+  'split into 3 phases':'3 faza bölünmüş',
+  'Each platform picks its sources differently, so the same score can need different work. Ordered by how much score is unclaimed.':'Her platform kaynağını farklı seçer; aynı skor farklı iş gerektirebilir. Kazanılmamış puana göre sıralı.',
+  'Sources this platform cited most':'Bu platformun en çok atıf verdiği kaynaklar',
+  'platforms are not being measured, so no advice can be given for them':'platform ölçülmüyor, bu yüzden onlar için tavsiye verilemez',
+  'Reading your platform data…':'Platform verileriniz okunuyor…',
+  'No platform has been measured yet':'Henüz hiçbir platform ölçülmedi',
+  'Add a provider key and run a scan; the advice below is generated from your own results, not from a template.':'Bir sağlayıcı anahtarı ekleyip tarama çalıştırın; buradaki tavsiye şablondan değil kendi sonuçlarınızdan üretilir.',
+  'Nothing queued for this phase':'Bu faza atanmış iş yok',
+  'Impact':'Etki',
+  'Reading answers…':'Cevaplar okunuyor…',
+  'Attribute analysis needs a judge model':'Nitelik analizi bir hakem modeli gerektirir',
+  'Add an OpenAI or Anthropic key. The pass reads answers already collected, so it costs nothing extra in scans.':'Bir OpenAI veya Anthropic anahtarı ekleyin. Bu geçiş, zaten toplanmış cevapları okur; taramalarda ek maliyeti yoktur.',
+  'Reading your answers':'Cevaplarınız okunuyor',
+  'An attribute has to appear at least twice before it means anything. Keep this page open while the pass runs.':'Bir nitelik anlam taşıması için en az iki kez geçmelidir. Geçiş sürerken bu sayfayı açık tutun.',
+  'answers read':'cevap okundu',
+  'Ordered by the widest gap. A quality a rival owns and you do not is a positioning gap, not a technical one.':'En geniş farka göre sıralı. Rakibin sahiplendiği, sizde olmayan bir nitelik teknik değil konumlandırma açığıdır.',
+  'Numbers are how many answers attached that quality to that brand. + and − show whether it was said favourably.':'Sayılar, o niteliği o markaya bağlayan cevap adedidir. + ve − olumlu mu söylendiğini gösterir.',
+  'Quality':'Nitelik',
+  'Gap':'Fark',
+  'What changed since the last scan':'Son taramadan bu yana ne değişti',
+  'need attention':'dikkat gerektiriyor',
+  'improvements':'iyileşme',
+  'Inspect':'İncele',
+  'Where to spend this month':'Bu ay nereye yatırım yapmalısınız',
+  'Highest volume, lowest coverage — content here moves the score most.':'En yüksek hacim, en düşük kapsama — buraya yazılan içerik skoru en çok hareket ettirir.',
+  'Write content':'İçerik yaz',
+  'A weekly summary of this goes to your inbox. Turn it off in Settings → Profile.':'Bunun haftalık özeti e-postanıza gelir. Ayarlar → Profil bölümünden kapatabilirsiniz.',
+  'Notifications':'Bildirimler',
+  'Weekly summary':'Haftalık özet',
+  'Loss alerts':'Kayıp uyarıları',
+  'The weekly summary is what tells you a competitor has passed you. Without it you would only find out by logging in and looking.':'Bir rakibin sizi geçtiğini size söyleyen şey haftalık özettir. O olmadan bunu ancak girip bakarak öğrenirsiniz.',
+  'Every Monday: score movement, losses, competitor changes and what to write this month.':'Her pazartesi: skor hareketi, kayıplar, rakip değişimleri ve bu ay ne yazmanız gerektiği.',
+  'Told immediately when you fall out of an answer or a competitor overtakes you.':'Bir cevaptan çıktığınızda ya da bir rakip sizi geçtiğinde anında haber verilir.',
+  'No email provider is configured on the server, so nothing can be sent yet. The summary is still available in the panel.':'Sunucuda e-posta sağlayıcısı tanımlı değil, bu yüzden henüz gönderim yapılamıyor. Özet yine de panelde görünür.',
+  'Notification preferences saved':'Bildirim tercihleri kaydedildi',
   'AI tools sometimes mention your brand in a different form than its official name. Add your alternatives so no mention is missed.':'AI araçları markanızdan bazen resmî adı yerine farklı bir biçimde söz eder. Tek bir bahsi bile kaçırmamak için alternatiflerinizi ekleyin.',
   'Alternative names AI may use for your brand. This lets us track mentions across every variation, and it is critical for brands with non-ASCII characters.':'AI\'ın markanız için kullanabileceği alternatif adlar. Tüm varyasyonlardaki bahisleri takip etmemizi sağlar; Türkçe karakter içeren markalarda kritiktir.',
   'These are the searches we will run on every platform. Keep the ones your customers would actually type, drop the rest, and add your own — you know your buyers better than any model does.':'Her platformda çalıştıracağımız aramalar bunlar. Müşterilerinizin gerçekten yazacağı olanları tutun, kalanını çıkarın ve kendinizinkileri ekleyin — alıcılarınızı hiçbir modelden iyi bilirsiniz.',
@@ -1098,7 +1137,9 @@ const S = {
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
   scanState: null, firstScan: null, loadError: null,
+  notify: { weekly: true, alerts: true, mailerConfigured: null },
   promptSource: null, promptAiAvailable: null, promptMix: null,
+  insights: null, attributes: null, changes: null, attrBusy: false,
   lang: 'tr',
 };
 
@@ -1621,6 +1662,40 @@ function groupAudit(factors) {
 }
 
 /** Loads the workspace and repaints. Called on boot and after every mutation. */
+/**
+ * Platform-by-platform diagnosis. Kept out of loadResults so the dashboard
+ * paints immediately; only the Action Plan screen waits for it.
+ */
+async function loadInsights(){
+  try{
+    const r = await api.get(`/api/insights?workspace=${S.workspaceId}&days=${S.range}`);
+    S.insights = r.platforms;
+  }catch(e){ S.insights = { error: e.message }; }
+}
+
+/**
+ * Attribute matrix. The extraction pass runs a batch at a time, so the screen
+ * shows what exists and quietly asks for more while the operator reads.
+ */
+async function loadAttributes(pull){
+  try{
+    const r = await api.get(`/api/attributes?workspace=${S.workspaceId}&days=${S.range}`);
+    S.attributes = r;
+    const c = r.coverage;
+    if(pull && c.available && c.done < c.total && !S.attrBusy){
+      S.attrBusy = true;
+      api.post('/api/attributes',{workspaceId:S.workspaceId})
+        .then(()=>{ S.attrBusy=false; loadAttributes(true).then(()=>{ if(S.route==='rivals') render(); }); })
+        .catch(()=>{ S.attrBusy=false; });
+    }
+  }catch(e){ S.attributes = { error: e.message }; }
+}
+
+async function loadChanges(){
+  try{ S.changes = await api.get(`/api/changes?workspace=${S.workspaceId}&days=7`); }
+  catch(e){ S.changes = { error: e.message }; }
+}
+
 async function loadResults(opts = {}) {
   const r = await api.get(`/api/results?workspace=${S.workspaceId}&days=${S.range}`);
   S.loadError = null;
@@ -1752,7 +1827,7 @@ const NAV=[
  {r:'dashboard',g:'▦',n:'Dashboard'},
  {g:'◫',n:'Analytics',sub:[
    {r:'mentions',n:'Mentions'},{r:'platforms',n:'Platforms'},{r:'sources',n:'Sources'},
-   {r:'opps',n:'Opportunities'},{r:'bots',n:'Bot Traffic'},{r:'traffic',n:'Traffic'},{r:'search',n:'Search Performance'}]},
+   {r:'opps',n:'Opportunities'}]},
  {r:'rivals',g:'⚔',n:'Competitors'},
  {r:'prompts',g:'▤',n:'AI Prompts'},
  {r:'plan',g:'✦',n:'Action Plan'},
@@ -1820,7 +1895,10 @@ function errorScreen(msg){
       <a class="btn b-gh b-sm" href="/api/health" target="_blank">${T('Check setup')}</a>
     </div></div>`;
 }
-const POST={};
+const POST={
+  plan(){ if(!S.insights) loadInsights().then(()=>{ if(S.route==='plan') render(); }); },
+  rivals(){ if(!S.attributes) loadAttributes(true).then(()=>{ if(S.route==='rivals') render(); }); },
+  dashboard(){ if(!S.changes) loadChanges().then(()=>{ if(S.route==='dashboard') render(); }); },};
 
 /* =====================================================================
    VIEWS
@@ -1873,6 +1951,7 @@ VIEWS.dashboard=()=>{
   ${scanBanner}
   ${failBanner}
   ${emptyBanner}
+  ${changesPanel()}
   ${S.plan==='trial'&&d.plats.length>allowed
      ? upsell(S.lang==='tr'
         ? `${d.plats.length} platformun ${allowed} tanesini takip ediyorsunuz. Diğer ${d.plats.length-allowed} platformda ne söylendiğini görmeden bilemezsiniz.`
@@ -2287,12 +2366,153 @@ VIEWS.rivals=()=>{
 
     <div class="card"><div class="ch"><div><h3>${T('Attribute matching')}</h3>
       <div class="sub">${T('Which qualities models associate with each brand')}</div></div></div>
-      <div class="cb"><div class="empty"><div class="ic">◈</div>
-        <b style="color:var(--fg);font-size:14px">${T('Not enough answers yet')}</b>
-        <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${T('Attribute extraction needs the judge model and a few hundred answers before it says anything meaningful. It appears once the corpus is large enough.')}</p>
-      </div></div></div>
+      <div class="cb">${attributePanel()}</div></div>
    </div>`;
 };
+
+/**
+ * Attribute matrix.
+ *
+ * The single most actionable screen in the product: the score says you are
+ * losing, this says why. If the model calls a rival "güvenilir" and calls you
+ * "ucuz", no amount of schema markup fixes that — it is a positioning problem,
+ * and it is invisible in every other view.
+ *
+ * Sorted by gap, not volume. An attribute both brands own equally teaches
+ * nothing; one a rival owns outright is the work.
+ */
+function attributePanel(){
+  const A=S.attributes;
+  if(!A) return `<div class="empty" style="padding:30px"><div class="ic">◈</div>
+    <b style="color:var(--fg);font-size:14px">${T('Reading answers…')}</b></div>`;
+  if(A.error) return `<div class="empty" style="padding:30px"><div class="ic">⚠</div>
+    <p>${esc(A.error)}</p></div>`;
+
+  const c=A.coverage||{};
+  if(!c.available) return `<div class="empty" style="padding:30px"><div class="ic">🔑</div>
+    <b style="color:var(--fg);font-size:14px">${T('Attribute analysis needs a judge model')}</b>
+    <p style="margin-top:8px;max-width:48ch;margin-inline:auto">${T('Add an OpenAI or Anthropic key. The pass reads answers already collected, so it costs nothing extra in scans.')}</p>
+    <div style="margin-top:14px"><button class="btn b-gh b-sm"
+      onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">${T('Check keys')}</button></div></div>`;
+
+  const rows=(A.matrix||[]).slice(0,14);
+  if(!rows.length){
+    const pct=c.total?Math.round(c.done/c.total*100):0;
+    return `<div class="empty" style="padding:30px"><div class="ic">◈</div>
+      <b style="color:var(--fg);font-size:14px">${T('Reading your answers')}</b>
+      <p style="margin-top:8px;max-width:48ch;margin-inline:auto">
+        ${T('An attribute has to appear at least twice before it means anything. Keep this page open while the pass runs.')}</p>
+      <div style="max-width:280px;margin:14px auto 0">
+        <div class="bar"><i style="width:${pct}%;background:var(--pri)"></i></div>
+        <div style="font-size:11.5px;color:var(--mute2);margin-top:6px">
+          ${c.done} / ${c.total} ${T('answers read')}</div></div></div>`;
+  }
+
+  const brands=[{id:'self',n:S.brand.name,you:true},
+                ...S.rivals.map(r=>({id:r.id,n:r.n,you:false}))];
+
+  const cell=(a,b)=>{
+    const v=a.brands[b.id];
+    if(!v) return `<td class="n" style="color:var(--mute2)">—</td>`;
+    const col=v.polarity>0.3?'var(--ok)':v.polarity<-0.3?'var(--bad)':'var(--fg2)';
+    const sign=v.polarity>0.3?'+':v.polarity<-0.3?'−':'·';
+    return `<td class="n"><b class="mono" style="color:${col}">${v.n}</b>
+      <span style="color:var(--mute2);font-size:11px"> ${sign}</span></td>`;
+  };
+
+  return `
+  <p style="font-size:12.5px;color:var(--mute);margin-bottom:12px">
+    ${T('Ordered by the widest gap. A quality a rival owns and you do not is a positioning gap, not a technical one.')}
+    ${c.done<c.total?`<span class="chip" style="margin-left:6px">${c.done}/${c.total} ${T('answers read')}</span>`:''}</p>
+  <div class="tw"><table>
+    <thead><tr><th>${T('Quality')}</th>
+      ${brands.map(b=>`<th class="n"${b.you?' style="color:#93B4FF"':''}>${esc(b.n)}</th>`).join('')}
+      <th class="n">${T('Gap')}</th></tr></thead>
+    <tbody>${rows.map(a=>`
+      <tr><td>${esc(a.label)}</td>
+        ${brands.map(b=>cell(a,b)).join('')}
+        <td class="n">${a.gap>0
+          ? `<span class="chip bad">−${a.gap}</span>`
+          : a.gap<0 ? `<span class="chip ok">+${-a.gap}</span>`
+          : `<span class="chip">0</span>`}</td></tr>`).join('')}
+    </tbody></table></div>
+  <p style="font-size:11.5px;color:var(--mute2);margin-top:10px">
+    ${T('Numbers are how many answers attached that quality to that brand. + and − show whether it was said favourably.')}</p>`;
+}
+
+/**
+ * What moved since the last scan.
+ *
+ * This is the panel that makes the product worth paying for month after month.
+ * A customer who fixes the audit once and never hears from us again cancels;
+ * one who sees "you fell from second to fifth and Klasgame passed you" cannot
+ * afford to. It sits at the top of the dashboard for exactly that reason.
+ */
+function changesPanel(){
+  const c=S.changes;
+  if(!c || c.error || !c.digest) return '';
+  const d=c.digest;
+  const urgent=d.urgent||[], wins=d.wins||[];
+  if(!urgent.length && !wins.length) return '';
+
+  const open=S.changesOpen!==false;
+  const icon=k=>({score_drop:'▼',rank_loss:'▼',lost_mention:'✕',rival_overtake:'⚑',
+                  rival_surge:'▲',citation_lost:'✕',score_rise:'▲',rank_gain:'▲',
+                  new_mention:'✓',citation_gained:'✓'})[k]||'·';
+
+  const line=(e,bad)=>`
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)">
+      <span style="color:${bad?'var(--bad)':'var(--ok)'};font-size:12px;line-height:1.5;flex:none">${icon(e.kind)}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px">${esc(e.detail)}</div>
+        ${e.promptText?`<div style="font-size:11.5px;color:var(--mute2);margin-top:2px">“${esc(e.promptText)}”</div>`:''}
+      </div>
+      ${e.promptId?`<button class="btn b-gh b-sm" style="flex:none"
+         onclick="go('mentions')">${T('Inspect')}</button>`:''}
+    </div>`;
+
+  return `
+  <div class="card" style="margin-bottom:14px;${urgent.length?'border-color:rgba(239,68,68,.28)':''}">
+    <div class="cb">
+      <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;cursor:pointer"
+           onclick="S.changesOpen=${open?'false':'true'};render()">
+        <b style="font-size:14.5px">${urgent.length?'⚠ ':''}${T('What changed since the last scan')}</b>
+        ${urgent.length?`<span class="chip bad">${urgent.length} ${T('need attention')}</span>`:''}
+        ${wins.length?`<span class="chip ok">${wins.length} ${T('improvements')}</span>`:''}
+        <span style="margin-left:auto;color:var(--mute2);font-size:12px">${open?'▴':'▾'}</span>
+      </div>
+      ${open?`
+        <div style="margin-top:8px">
+          ${urgent.map(e=>line(e,true)).join('')}
+          ${wins.map(e=>line(e,false)).join('')}
+        </div>
+        ${(d.contentTargets||[]).length?`
+          <div style="margin-top:14px;padding:13px 15px;background:var(--muted);border-radius:var(--r);
+                      border:1px solid var(--border)">
+            <b style="font-size:13px">${T('Where to spend this month')}</b>
+            <p style="font-size:12px;color:var(--mute);margin:4px 0 9px">
+              ${T('Highest volume, lowest coverage — content here moves the score most.')}</p>
+            ${d.contentTargets.map(t=>`
+              <div style="display:flex;gap:10px;align-items:center;padding:6px 0;font-size:12.5px">
+                <span style="flex:1;min-width:0">“${esc(t.text)}”</span>
+                <span class="chip">%${Math.round(t.coverage*100)} ${T('coverage')}</span>
+                <button class="btn b-gh b-sm" onclick="writeFor('${esc(t.text).replace(/'/g,"\\'")}')">
+                  ${T('Write content')}</button>
+              </div>`).join('')}
+          </div>`:''}
+        <p style="font-size:11.5px;color:var(--mute2);margin-top:12px">
+          ${T('A weekly summary of this goes to your inbox. Turn it off in Settings → Profile.')}</p>
+      `:''}
+    </div></div>`;
+}
+
+/** Jumps to the writer with the prompt pre-filled. */
+function writeFor(text){
+  S.writerTopic=text;
+  go('tools');
+  setTimeout(()=>{ toolOpen('writer');
+    const el=$('#wTopic'); if(el){ el.value=text; el.focus(); } },60);
+}
 
 function sovBars(rows){
   const max=Math.max(...rows.map(r=>r.mentions),1);
@@ -2407,36 +2627,146 @@ async function addPrompt2(){
 VIEWS.plan=()=>{
   const d=S.data,A=d.actions;
   const gain=A.reduce((a,x)=>a+parseFloat(x.im),0);
+  const tab=S.planTab||'platform';
+
   return head(T('Action Plan'),T('A task list built from audit findings, citation gaps and the opportunity engine, sorted by impact and effort.'),
     `<button class="btn b-gh b-sm" onclick="exportPlan()">⭳ ${T('Download plan')}</button>`)+
   `<div class="g3">
-    <div class="kpi"><div class="t">${T('Projected score if completed')}</div><div class="v ok">${Math.min(100,d.total+gain).toFixed(1)}</div>
-      <div class="d">now ${d.total.toFixed(1)} · +${gain.toFixed(1)} points</div></div>
-    <div class="kpi"><div class="t">${T('Tasks')}</div><div class="v">${A.length}</div><div class="d">split into 3 phases</div></div>
-    <div class="kpi"><div class="t">${T('Estimated timeline')}</div><div class="v">90 days</div><div class="d">first wins in 1–2 weeks</div></div>
+    <div class="kpi"><div class="t">${T('Projected score if completed')}</div>
+      <div class="v ok">${Math.min(100,d.total+gain).toFixed(1)}</div>
+      <div class="d">${T('now')} ${d.total.toFixed(1)} · +${gain.toFixed(1)} ${T('pts')}</div></div>
+    <div class="kpi"><div class="t">${T('Tasks')}</div><div class="v">${A.length}</div>
+      <div class="d">${T('split into 3 phases')}</div></div>
+    <div class="kpi"><div class="t">${T('Estimated timeline')}</div><div class="v">90 ${T('days')}</div>
+      <div class="d">${T('first wins in 1–2 weeks')}</div></div>
   </div>
-  <div>${A.map((a,i)=>`<div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">
-    <div class="i">${String(i+1).padStart(2,'0')}</div>
-    <div><h5>${esc(a.t)}</h5><div class="sb2">${esc(a.sub)}</div></div>
-    <div class="m"><span class="chip ok">${a.im} pts</span><span class="chip pri">${a.q}</span><span class="chip">${a.ef}</span></div></div>
-    <div class="acc-b"><p>${esc(a.desc)}</p><ol>${a.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
-      ${a.code?`<pre id="code${i}">${esc(a.code)}</pre>
-        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn b-gh b-sm" onclick="copy('code${i}')">${T('Copy')}</button>
-        <button class="btn b-gh b-sm" onclick="dl('fix-${i+1}.txt',document.getElementById('code${i}').textContent)">${T('Download')}</button></div>`:''}
-    </div></div>`).join('')}</div>
 
-  <div class="card"><div class="ch"><div><h3>${T('90-day roadmap')}</h3>
-    <div class="sub">${T('Expected cumulative gain at the end of each phase')}</div></div></div>
-  <div class="cb"><div class="road">
+  <div class="pills" style="margin:18px 0 14px">
+    <button class="${tab==='platform'?'on':''}" onclick="S.planTab='platform';render()">${T('By platform')}</button>
+    <button class="${tab==='tasks'?'on':''}" onclick="S.planTab='tasks';render()">${T('Task list')}</button>
+    <button class="${tab==='road'?'on':''}" onclick="S.planTab='road';render()">${T('90-day roadmap')}</button>
+  </div>
+
+  ${tab==='platform'?planPlatforms():tab==='tasks'?planTasks(A):planRoad(A,gain)}`;
+};
+
+/**
+ * Platform-by-platform advice.
+ *
+ * A single ranked list quietly assumes every engine works the same way. They
+ * do not: Perplexity cites what it just fetched, AI Overviews is fed by the
+ * Google index, ChatGPT leans on what the open web says about you. The same
+ * score can need three different fixes, so the advice is split by engine.
+ */
+function planPlatforms(){
+  const ins=S.insights;
+  if(!ins) return `<div class="empty" style="padding:44px"><div class="ic">◎</div>
+    <b style="color:var(--fg);font-size:15px">${T('Reading your platform data…')}</b></div>`;
+  if(ins.error) return `<div class="empty" style="padding:44px"><div class="ic">⚠</div>
+    <b style="color:var(--fg);font-size:15px">${T('Could not load your data')}</b>
+    <p style="margin-top:8px">${esc(ins.error)}</p></div>`;
+
+  const live=ins.filter(p=>p.measured);
+  const idle=ins.filter(p=>!p.measured);
+  if(!live.length) return `<div class="empty" style="padding:44px"><div class="ic">🔑</div>
+    <b style="color:var(--fg);font-size:15px">${T('No platform has been measured yet')}</b>
+    <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${T('Add a provider key and run a scan; the advice below is generated from your own results, not from a template.')}</p>
+    <div style="margin-top:16px"><button class="btn b-pri b-sm"
+      onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">${T('Check keys')}</button></div></div>`;
+
+  // Worst first: that is the order a marketer should work in.
+  const ordered=[...live].sort((a,b)=>b.impact-a.impact);
+  const tone=dg=>dg==='healthy'?'ok':dg==='absent'||dg==='losing_to_rival'?'bad':'warn';
+
+  return `
+  <p style="font-size:12.5px;color:var(--mute);margin-bottom:14px">
+    ${T('Each platform picks its sources differently, so the same score can need different work. Ordered by how much score is unclaimed.')}</p>
+
+  ${ordered.map(p=>`
+  <div class="card" style="margin-bottom:14px"><div class="cb">
+    <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <span class="d" style="width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+        background:${(d=>d)(ENGINE_COLOR[p.engineKey]||'#3B82F6')}22;
+        border:1px solid ${(ENGINE_COLOR[p.engineKey]||'#3B82F6')}55;font-size:12px;flex:none">
+        ${ENGINE_GLYPH[p.engineKey]||'◆'}</span>
+      <div style="flex:1;min-width:220px">
+        <b style="font-size:15px">${esc(p.engineLabel)}</b>
+        <span class="chip ${tone(p.diagnosis)}" style="margin-left:8px">${esc(p.headline)}</span>
+        <p style="font-size:13px;color:var(--mute);margin-top:7px;max-width:74ch;line-height:1.6">${esc(p.why)}</p>
+      </div>
+      <div style="text-align:right;flex:none">
+        <div class="mono" style="font-size:19px;font-weight:600">${p.score.toFixed(1)}</div>
+        <div style="font-size:11px;color:var(--mute2)">${T('unclaimed')}: ${p.impact.toFixed(1)} ${T('pts')}</div>
+      </div>
+    </div>
+
+    <div class="g4" style="margin:14px 0 4px">
+      <div><div class="mut" style="font-size:11px">${T('Mention rate')}</div>
+        <b class="mono">${(p.mentionRate*100).toFixed(0)}%</b></div>
+      <div><div class="mut" style="font-size:11px">${T('Citation rate')}</div>
+        <b class="mono">${(p.citationRate*100).toFixed(0)}%</b></div>
+      <div><div class="mut" style="font-size:11px">${T('Average rank')}</div>
+        <b class="mono">${p.meanRank?p.meanRank.toFixed(1):'—'}</b></div>
+      <div><div class="mut" style="font-size:11px">${T('Total checks')}</div>
+        <b class="mono">${p.checks}</b></div>
+    </div>
+
+    ${p.actions.map(a=>`
+      <div style="margin-top:14px;padding:13px 15px;background:var(--muted);border-radius:var(--r);
+                  border:1px solid var(--border)">
+        <b style="font-size:13.5px">${esc(a.title)}</b>
+        <p style="font-size:12.5px;color:var(--mute);margin-top:4px">${esc(a.detail)}</p>
+        <ol style="margin:9px 0 0 18px;padding:0;font-size:12.5px;color:var(--fg2);line-height:1.85">
+          ${a.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
+      </div>`).join('')}
+
+    ${p.topSources.length?`
+      <div style="margin-top:13px">
+        <div class="mut" style="font-size:11px;margin-bottom:6px">
+          ${T('Sources this platform cited most')}</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          ${p.topSources.slice(0,6).map(x=>
+            `<span class="chip ${x.ours?'ok':''}">${esc(x.domain)} · ${x.count}${x.ours?' · '+T('yours'):''}</span>`).join('')}
+        </div></div>`:''}
+  </div></div>`).join('')}
+
+  ${idle.length?`<div class="banner" style="margin-top:16px"><span>🔑</span>
+    <span>${idle.length} ${T('platforms are not being measured, so no advice can be given for them')}:
+      ${idle.map(p=>esc(p.engineLabel)).join(', ')}</span></div>`:''}`;
+}
+
+function planTasks(A){
+  return `<div class="card"><div class="cb">
+    ${A.map((a,i)=>`
+      <div class="task" onclick="taskModal(${i})">
+        <div class="tn">${i+1}</div>
+        <div style="flex:1;min-width:0"><b style="font-size:14px">${esc(a.t)}</b>
+          <p style="font-size:12.5px;color:var(--mute);margin-top:3px">${esc(a.sub)}</p></div>
+        <div style="text-align:right;flex:none">
+          <span class="chip ok">${T('Impact')} ${a.im}</span>
+          <div style="font-size:11.5px;color:var(--mute2);margin-top:5px">${esc(a.ef)} · ${esc(a.q)}</div>
+        </div></div>`).join('')}
+  </div></div>`;
+}
+
+function planRoad(A,gain){
+  return `<div class="card"><div class="cb">
+    <div class="ch"><div><h3>${T('90-day roadmap')}</h3>
+      <div class="sub">${T('Expected cumulative gain at the end of each phase')}</div></div></div>
     ${[[`0–30 ${T('days')}`,T('Open the door'),A.slice(0,2),(gain*.33)],
        [`30–60 ${T('days')}`,T('Fill the gaps'),A.slice(2,5),(gain*.38)],
-       [`60–90 ${T('days')}`,T('Grow authority'),A.slice(5),(gain*.29)]].map(([t,h,items,g])=>`
-      <div class="card" style="background:var(--card2)"><div class="cb">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px"><span class="chip pri">${t}</span><b>${h}</b></div>
-        <ul style="margin:0;padding:0">${items.map(x=>`<li><span>›</span>${esc(x.t)}</li>`).join('')||'<li><span>›</span>No further tasks</li>'}</ul>
-        <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font-size:12.5px;color:var(--mute)">
-          ${T('Expected gain')} <b class="ok mono" style="font-size:15px">+${g.toFixed(1)} pts</b></div></div></div>`).join('')}
-  </div></div></div>`;
+       [`60–90 ${T('days')}`,T('Grow authority'),A.slice(5),(gain*.29)]]
+      .map(([win,name,items,g])=>`
+      <div style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <b style="font-size:14px">${name}</b><span class="chip">${win}</span>
+          <span class="chip ok" style="margin-left:auto">${T('Expected gain')} +${g.toFixed(1)}</span></div>
+        ${items.length?items.map(a=>`
+          <div style="padding:9px 13px;background:var(--muted);border-radius:9px;margin-bottom:7px;font-size:13px">
+            ${esc(a.t)}</div>`).join('')
+          :`<div style="padding:9px 13px;color:var(--mute2);font-size:12.5px">${T('Nothing queued for this phase')}</div>`}
+      </div>`).join('')}
+  </div></div>`;
 };
 function exportPlan(){
   const t=S.data.actions.map((a,i)=>`${i+1}. ${a.t}\n   ${a.sub}\n   Impact ${a.im} · Effort ${a.ef} · ${a.q}\n   ${a.desc}\n`+
@@ -2842,6 +3172,15 @@ async function loadEngines(probe){
   localise(box);
 }
 
+async function saveNotify(){
+  const weekly=$('#nWeekly').checked, alerts=$('#nAlerts').checked;
+  try{
+    const r=await api.post('/api/notify',{weekly,alerts});
+    S.notify={weekly:r.weekly,alerts:r.alerts,mailerConfigured:r.mailerConfigured};
+    toast(T('Notification preferences saved'));
+  }catch(e){ toast(e.message,'error'); }
+}
+
 async function changePassword(){
   const cur=$('#pwCur').value, next=$('#pwNew').value;
   if(!cur||!next) return toast(T('Fill in both fields'),'error');
@@ -2938,6 +3277,7 @@ async function boot(){
   // is written back to the account.
   const urlLang=new URLSearchParams(location.search).get('lang');
   S.lang = (urlLang==='en'||urlLang==='tr') ? urlLang : (me.user.locale==='en'?'en':'tr');
+  if(me.user.notify) S.notify={...S.notify,...me.user.notify};
   if(urlLang && urlLang!==me.user.locale){
     api.post('/api/auth/locale',{locale:S.lang}).catch(()=>{});
   }
