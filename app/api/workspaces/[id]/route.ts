@@ -3,6 +3,7 @@ import { sql } from '@/lib/db';
 import { requireSession, requireWorkspace, handler, HttpError } from '@/lib/auth';
 import { sectorByLabel, normaliseDomain, COUNTRIES } from '@/lib/sectors';
 import { buildAliases } from '@/lib/entity';
+import { backfillBrands } from '@/lib/scan';
 
 export const dynamic = 'force-dynamic';
 
@@ -109,5 +110,35 @@ export const PATCH = handler(async (req) => {
   if (!Object.keys(patch).length) return Response.json({ ok: true, unchanged: true });
 
   const [ws] = await sql`update workspaces set ${sql(patch)} where id = ${id} returning *`;
-  return Response.json({ workspace: ws, rebranded: renaming || redomaining });
+
+  // Changing who the brand is invalidates every stored measurement about it.
+  // Re-read the answers we already hold against the new name, domain and
+  // aliases and rebuild the rollups, so the dashboard is not left showing one
+  // company's history under another company's name.
+  //
+  // Widening the alias set has the same effect for a different reason: the
+  // mentions were always there, we simply could not see them. Recomputing is
+  // the whole point of adding a variant, and making the operator wait a day
+  // for the next scan to find out whether it worked is not a real feedback
+  // loop.
+  let recomputed: { runs: number; rows: number } | null = null;
+  const aliasesChanged =
+    patch.aliases !== undefined &&
+    JSON.stringify([...(patch.aliases as string[])].sort()) !==
+      JSON.stringify([...((current.aliases as string[]) ?? [])].sort());
+
+  if (renaming || redomaining || aliasesChanged) {
+    try {
+      recomputed = await backfillBrands(id, { resetJudgement: renaming || redomaining });
+    } catch {
+      // A failed recompute must not fail the save. The settings change is
+      // already committed and correct; the numbers catch up on the next scan.
+    }
+  }
+
+  return Response.json({
+    workspace: ws,
+    rebranded: renaming || redomaining,
+    recomputed,
+  });
 });
