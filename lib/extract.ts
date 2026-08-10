@@ -12,6 +12,7 @@
  */
 
 import { buildAliases, findMentions, rankBrands, extractDomains, key, type BrandInput } from './entity';
+import { llmJson, llmProvider } from './llm';
 import type { Run, Recommendation } from './score';
 
 export interface BrandRef extends BrandInput { id: string }
@@ -63,40 +64,19 @@ type JudgeVerdict = {
 };
 
 async function judge(answer: string, candidates: { id: string; surface: string; context: string }[]) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || !candidates.length) return null;
+  if (!llmProvider() || !candidates.length) return null;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: process.env.JUDGE_MODEL || 'claude-haiku-4-5-20251001',
-      max_tokens: 900,
-      temperature: 0,
-      system: JUDGE_SYSTEM,
-      messages: [{
-        role: 'user',
-        content:
-          `ANSWER:\n${answer.slice(0, 6000)}\n\n` +
-          `CANDIDATES:\n${candidates.map(c => `- id=${c.id} matched="${c.surface}" context="${c.context.slice(0, 200)}"`).join('\n')}`,
-      }],
-    }),
+  const parsed = await llmJson<{ brands: JudgeVerdict[] }>({
+    system: JUDGE_SYSTEM,
+    maxTokens: 900,
+    temperature: 0,
+    model: process.env.JUDGE_MODEL,
+    user:
+      `ANSWER:\n${answer.slice(0, 6000)}\n\n` +
+      `CANDIDATES:\n${candidates.map(c => `- id=${c.id} matched="${c.surface}" context="${c.context.slice(0, 200)}"`).join('\n')}`,
   });
-  if (!res.ok) return null;
 
-  const json: any = await res.json();
-  const text = (json.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('');
-  const cleaned = text.replace(/^```(?:json)?|```$/gm, '').trim();
-  try {
-    const parsed = JSON.parse(cleaned) as { brands: JudgeVerdict[] };
-    return Array.isArray(parsed.brands) ? parsed.brands : null;
-  } catch {
-    return null; // malformed → fall back to regex-only, flagged as degraded
-  }
+  return parsed && Array.isArray(parsed.brands) ? parsed.brands : null;
 }
 
 export async function extract(input: ExtractInput): Promise<ExtractResult> {
