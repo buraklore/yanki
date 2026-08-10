@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { llmText, llmAvailable } from './llm';
 import type { Intent, GeneratedPrompt, PromptContext } from './prompts';
 import { TARGET_MIX } from './prompts';
 
@@ -76,54 +77,19 @@ const normalise = (t: string) =>
   t.toLocaleLowerCase('tr').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
 export function aiPromptsAvailable(): boolean {
-  return !!process.env.ANTHROPIC_API_KEY || !!process.env.OPENAI_API_KEY;
+  return llmAvailable();
 }
 
 async function callModel(user: string): Promise<string | null> {
-  // Anthropic first because the judge already uses it; OpenAI as a fallback so
-  // a workspace with only one key still gets tailored prompts.
-  if (process.env.ANTHROPIC_API_KEY) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: process.env.PROMPT_MODEL || process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5',
-        max_tokens: 2000,
-        temperature: 0.7,
-        system: SYSTEM,
-        messages: [{ role: 'user', content: user }],
-      }),
-    });
-    if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 200)}`);
-    const json = await res.json() as { content?: { type: string; text?: string }[] };
-    return (json.content ?? []).filter(c => c.type === 'text').map(c => c.text).join('');
-  }
-
-  if (process.env.OPENAI_API_KEY) {
-    const res = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-      body: JSON.stringify({
-        model: process.env.PROMPT_MODEL || process.env.OPENAI_MODEL || 'gpt-5.6-luna',
-        instructions: SYSTEM,
-        input: user,
-        max_output_tokens: 4096,
-      }),
-    });
-    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 200)}`);
-    const json = await res.json() as {
-      output_text?: string;
-      output?: { content?: { type: string; text?: string }[] }[];
-    };
-    return json.output_text ??
-      (json.output ?? []).flatMap(o => o.content ?? [])
-        .filter(c => c.type === 'output_text').map(c => c.text).join('');
-  }
-  return null;
+  // Prompt writing wants some variety, unlike the judge which must be
+  // reproducible — hence a non-zero temperature here and zero there.
+  return llmText({
+    system: SYSTEM,
+    user,
+    maxTokens: 2000,
+    temperature: 0.7,
+    model: process.env.PROMPT_MODEL,
+  });
 }
 
 export async function generatePromptsWithAI(
