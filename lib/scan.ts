@@ -388,12 +388,17 @@ export async function rollUp(scanId: string, workspaceId: string, opts: { finali
  * new one. Inserting a brand changes the order of the others, and leaving
  * stale ranks behind would quietly corrupt the prominence term of the score.
  */
-export async function backfillBrands(workspaceId: string, opts: { days?: number; limit?: number } = {}) {
+export async function backfillBrands(
+  workspaceId: string,
+  opts: { days?: number; limit?: number; resetJudgement?: boolean } = {},
+) {
   const days = opts.days ?? 90;
   const limit = opts.limit ?? 4000;
 
   const [ws] = await sql`select brand_name, domain, aliases from workspaces where id = ${workspaceId}`;
   if (!ws) return { runs: 0, rows: 0 };
+
+  const ownHost = String(ws.domain).replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
 
   const rivals = await sql`
     select id, name, domain, aliases from competitors
@@ -431,12 +436,55 @@ export async function backfillBrands(workspaceId: string, opts: { days?: number;
       await sql`insert into run_brands ${sql(present)} on conflict do nothing`;
       rows += present.length;
     }
+
+    // run_brands alone only fixes share of voice. The score is computed from
+    // answer_runs.mentioned / rank / cited, so leaving those untouched means
+    // the dashboard keeps showing the old brand's numbers under the new
+    // brand's name — the exact failure this function exists to prevent. The
+    // same applies when a competitor is added: inserting a brand shifts every
+    // rank below it, including ours.
+    const selfRank = ranks['self'] ?? 0;
+    const cited = ownHost
+      ? (await sql`
+          select 1 from run_citations
+           where run_id = ${run.id}
+             and (domain = ${ownHost} or domain like ${'%.' + ownHost})
+           limit 1`).length > 0
+      : false;
+
+    if (opts.resetJudgement) {
+      // Recommendation and sentiment came from a judge reading the previous
+      // brand. They cannot be recomputed from stored text without paying for
+      // the judge again, and carrying them over would attribute one company's
+      // reception to another. Clearing them costs score (rho and sigma fall to
+      // zero) but keeps every number honest until the next scan.
+      await sql`
+        update answer_runs
+           set mentioned = ${selfRank > 0}, rank = ${selfRank}, cited = ${cited},
+               recommendation = null, sentiment = null,
+               attributes_at = null, degraded = 'rebranded'
+         where id = ${run.id}`;
+    } else {
+      await sql`
+        update answer_runs
+           set mentioned = ${selfRank > 0}, rank = ${selfRank}, cited = ${cited}
+         where id = ${run.id}`;
+    }
   }
 
-  // Share of voice is derived from these rows, so the rollup has to follow.
-  const [scan] = await sql`
-    select id from scans where workspace_id = ${workspaceId} order by scan_date desc limit 1`;
-  if (scan) {
+  if (opts.resetJudgement) {
+    // Attribute rows describe the old brand by name. Delete rather than keep.
+    await sql`delete from run_attributes where workspace_id = ${workspaceId}`;
+  }
+
+  // Every rollup derived from these runs has to follow, not just the latest
+  // one: a rebrand invalidates the whole series, and a chart that is correct
+  // only at its right-hand edge is worse than one that is wrong everywhere,
+  // because nobody can tell which part to trust.
+  const scans = await sql`
+    select id from scans where workspace_id = ${workspaceId}
+     order by scan_date desc limit ${opts.resetJudgement ? 90 : 1}`;
+  for (const scan of scans) {
     try { await rollUp(scan.id, workspaceId, { finalize: false }); } catch { /* best effort */ }
   }
 
