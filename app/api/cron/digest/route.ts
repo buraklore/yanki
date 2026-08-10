@@ -71,7 +71,7 @@ export const GET = handler(async (req) => {
           from memberships m
           join users u on u.id = m.user_id
          where m.org_id = ${ws.org_id} and u.notify_weekly
-           and m.role in ('owner','analyst')`;
+           and m.role in ('owner','admin','analyst')`;
 
       const base = process.env.APP_URL || new URL(req.url).origin;
       let sent = 0, failed: string | null = null;
