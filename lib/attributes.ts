@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { llmText, llmAvailable } from './llm';
 import { sql } from './db';
 
 /**
@@ -45,8 +46,7 @@ const Payload = z.object({
   })).max(80),
 });
 
-export const attributesAvailable = () =>
-  !!process.env.ANTHROPIC_API_KEY || !!process.env.OPENAI_API_KEY;
+export const attributesAvailable = () => llmAvailable();
 
 /** Lower-cases with Turkish rules and strips punctuation, for grouping. */
 export function normaliseAttribute(s: string): string {
@@ -58,47 +58,13 @@ export function normaliseAttribute(s: string): string {
 }
 
 async function callJudge(user: string): Promise<string | null> {
-  if (process.env.ANTHROPIC_API_KEY) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: process.env.ATTRIBUTE_MODEL || process.env.JUDGE_MODEL || 'claude-haiku-4-5',
-        max_tokens: 1500,
-        temperature: 0,
-        system: SYSTEM,
-        messages: [{ role: 'user', content: user }],
-      }),
-    });
-    if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 160)}`);
-    const j = await res.json() as { content?: { type: string; text?: string }[] };
-    return (j.content ?? []).filter(c => c.type === 'text').map(c => c.text).join('');
-  }
-  if (process.env.OPENAI_API_KEY) {
-    const res = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-      body: JSON.stringify({
-        model: process.env.ATTRIBUTE_MODEL || process.env.OPENAI_MODEL || 'gpt-5.6-luna',
-        instructions: SYSTEM,
-        input: user,
-        max_output_tokens: 3000,
-      }),
-    });
-    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 160)}`);
-    const j = await res.json() as {
-      output_text?: string;
-      output?: { content?: { type: string; text?: string }[] }[];
-    };
-    return j.output_text ??
-      (j.output ?? []).flatMap(o => o.content ?? [])
-        .filter(c => c.type === 'output_text').map(c => c.text).join('');
-  }
-  return null;
+  return llmText({
+    system: SYSTEM,
+    user,
+    maxTokens: 1500,
+    temperature: 0,
+    model: process.env.ATTRIBUTE_MODEL || process.env.JUDGE_MODEL,
+  });
 }
 
 interface RunRow {
