@@ -18,6 +18,12 @@ const Body = z.object({
     volume: z.number().int().min(1).max(1_000_000).default(100),
     source: z.enum(['ai', 'custom']).default('ai'),
   })).min(1).max(600),
+  /**
+   * Variants collected in step 3. They were previously dropped on the floor:
+   * the client held them in memory and no request ever carried them, so the
+   * first scan ran with whatever the automatic builder had guessed.
+   */
+  aliases: z.array(z.string().max(80)).max(30).optional(),
 });
 
 /**
@@ -54,6 +60,9 @@ export const POST = handler(async (req) => {
       volume: p.volume,
       source: p.source,
     })))} on conflict (workspace_id, text) do nothing`;
+    if (b.aliases) {
+      await tx`update workspaces set aliases = ${b.aliases} where id = ${id}`;
+    }
     await tx`update workspaces set onboarded = true where id = ${id}`;
   });
 
