@@ -788,6 +788,7 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Henüz veri yok',
   'Rescan':'Yeniden tara',
+  'platform error(s)':'platform hatası',
   'Collecting answers':'Cevaplar toplanıyor',
   'We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.':'Sorularınızı her yapay zeka platformuna soruyoruz. Tüm kontroller tamamlanır tamamlanmaz panel açılacak.',
   'checks completed':'kontrol tamamlandı',
@@ -841,7 +842,6 @@ const I18N = {
   'Scanning':'Taranıyor',
   'Scanning…':'Taranıyor…',
   'Starting…':'Başlatılıyor…',
-  'Last scan had errors':'Son taramada hata var',
   'Updated':'Güncellendi',
   'No scan yet':'Henüz tarama yok',
   'just now':'az önce',
@@ -2082,13 +2082,17 @@ function renderNav(){
   const sp=$('#scanPill');
   if(sp){
     const sc=S.scanState, pending=sc?sc.pending:0;
-    const failing=sc&&(sc.failures||[]).length;
+    // Failures here are provider-side: a spent credit balance, a rejected key.
+    // They belong to accounts the customer does not hold, so for them a scan
+    // that collected what it could is simply a finished scan. The operator
+    // gets the count, because for the operator it is a work item.
+    const failing=(sc&&(sc.failures||[]).length)||0;
     sp.innerHTML = S.scanBusy
       ? `<span class="dot run"></span>${T('Starting…')}`
       : pending>0
         ? `<span class="dot run"></span>${T('Scanning')} · ${pending}`
-        : failing
-          ? `<span class="dot bad"></span>${T('Last scan had errors')}`
+        : (failing && S.isAdmin)
+          ? `<span class="dot bad"></span>${T('Operator')} · ${failing} ${T('platform error(s)')}`
           : sc&&sc.finished_at
             ? `<span class="dot ok"></span>${T('Updated')} ${relTime(sc.finished_at)}`
             : `<span class="dot idle"></span>${T('No scan yet')}`;
