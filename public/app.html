@@ -191,6 +191,16 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .nav .sub a.on{background:rgba(59,130,246,.1)}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
+.apphead{display:flex;align-items:center;gap:14px;padding:14px 26px 0;justify-content:flex-end}
+.apphead .hs{font-size:12.5px;color:var(--mute)}
+.apphead .hs b{color:var(--fg);font-weight:600}
+.apphead .btn{padding:9px 16px;font-size:13px}
+.apphead .btn:disabled{opacity:.55}
+@media(max-width:720px){.apphead{padding:10px 16px 0}}
+.qm{width:15px;height:15px;border-radius:50%;border:1px solid var(--border);background:var(--card2);
+  color:var(--mute2);font-size:10px;line-height:1;display:inline-grid;place-items:center;margin-left:5px;
+  vertical-align:middle;padding:0}
+.qm:hover{color:var(--fg);border-color:var(--mute2)}
 .sb-wswrap{position:relative}
 .wsmenu{display:none}
 .wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
@@ -396,7 +406,6 @@ svg{display:block;max-width:100%}
     </div>
     <div class="sb-scan">
       <span class="pill" id="scanPill"></span>
-      <button class="btn b-gh b-sm" id="rescanBtn" onclick="rescan()">↻ Rescan</button>
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sb-foot">
@@ -410,6 +419,10 @@ svg{display:block;max-width:100%}
     <div class="mobbar">
       <button class="btn b-gh b-sm" onclick="toggleSb()" aria-label="Menu">☰</button>
       <span class="sb-logo" style="border:0;padding:0;font-size:16px"><span class="mk">Y</span>YANKI</span>
+    </div>
+    <div class="apphead">
+      <div class="hs" id="headScan"></div>
+      <button class="btn b-pri" id="headRescan" onclick="rescan()">↻ Yeniden tara</button>
     </div>
     <div class="page" id="page"></div>
   </div>
@@ -558,11 +571,14 @@ const I18N = {
   'platforms are not being measured, so no advice can be given for them':'platform ölçülmüyor, bu yüzden onlar için tavsiye verilemez',
   'Reading your platform data…':'Platform verileriniz okunuyor…',
   'No platform has been measured yet':'Henüz hiçbir platform ölçülmedi',
+  'Run a scan first. Everything on this screen is generated from your own results, never from a template — so there is nothing to show until answers exist.':'Önce bir tarama çalıştırın. Bu ekrandaki her şey sizin kendi sonuçlarınızdan üretilir, şablondan değil — dolayısıyla cevap oluşmadan gösterilecek bir şey yok.',
   'Add a provider key and run a scan; the advice below is generated from your own results, not from a template.':'Bir sağlayıcı anahtarı ekleyip tarama çalıştırın; buradaki tavsiye şablondan değil kendi sonuçlarınızdan üretilir.',
   'Nothing queued for this phase':'Bu faza atanmış iş yok',
   'Impact':'Etki',
   'Reading answers…':'Cevaplar okunuyor…',
-  'Attribute analysis needs a judge model':'Nitelik analizi bir hakem modeli gerektirir',
+  'Attribute analysis is not available yet':'Nitelik analizi henüz kullanılamıyor',
+  'This feature reads the answers already collected and reports which qualities each brand is associated with. It will appear here once enabled for your account.':'Bu özellik, toplanmış cevapları okuyup hangi markanın hangi niteliklerle anıldığını raporlar. Hesabınız için etkinleştirildiğinde burada görünecek.',
+  'no provider key configured for the extraction pass':'çıkarım geçişi için sağlayıcı anahtarı tanımlı değil',
   'Add an OpenAI or Anthropic key. The pass reads answers already collected, so it costs nothing extra in scans.':'Bir OpenAI veya Anthropic anahtarı ekleyin. Bu geçiş, zaten toplanmış cevapları okur; taramalarda ek maliyeti yoktur.',
   'Reading your answers':'Cevaplarınız okunuyor',
   'An attribute has to appear at least twice before it means anything. Keep this page open while the pass runs.':'Bir nitelik anlam taşıması için en az iki kez geçmelidir. Geçiş sürerken bu sayfayı açık tutun.',
@@ -772,6 +788,49 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Henüz veri yok',
   'Rescan':'Yeniden tara',
+  'Collecting answers':'Cevaplar toplanıyor',
+  'We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.':'Sorularınızı her yapay zeka platformuna soruyoruz. Tüm kontroller tamamlanır tamamlanmaz panel açılacak.',
+  'checks completed':'kontrol tamamlandı',
+  'checks remaining':'kontrol kaldı',
+  'remaining':'kaldı',
+  'checks done':'kontrol tamam',
+  'Last updated':'Son güncelleme',
+  'you can close this page; the scan continues':'bu sayfayı kapatabilirsiniz, tarama devam eder',
+  'Each prompt is asked several times per platform, because AI answers vary between runs. Averaging them is what makes the score stable.':'Her soru, her platformda birkaç kez sorulur — çünkü yapay zeka aynı soruya her seferinde aynı cevabı vermez. Ortalamasını almak skoru istikrarlı kılan şeydir.',
+  'What does this mean?':'Bu ne anlama geliyor?',
+  'margin of error':'hata payı',
+  'points':'puan',
+  'named in':'anıldığı',
+  'question-platform pairs':'soru-platform çiftinde',
+  'ranked':'sıralamada',
+  'among':'/',
+  'brands, by how often each is named':'marka arasında, anılma sıklığına göre',
+  '58 checks on your website':'sitenizde 58 kontrol',
+  'The last scan collected nothing yet.':'Son tarama henüz sonuç toplamadı.',
+  'Operator':'Yönetici',
+  'platform errors, hidden from customers':'platform hataları, müşteriye gösterilmiyor',
+  'runs had no adjudication model, so tone and recommendation scored zero — the score is capped near 72.':'koşuda değerlendirme modeli çalışmadı; ton ve tavsiye sıfır puanlandı — skor tavanı 72 civarında kalıyor.',
+  'Brand details changed, so earlier results were recalculated. Tone and recommendation data fills in on the next scan.':'Marka bilgileri değişti, önceki sonuçlar yeniden hesaplandı. Ton ve tavsiye verileri bir sonraki taramada tamamlanacak.',
+  'Not measured':'Ölçülmedi',
+  'Not included in this measurement':'Bu ölçüme dahil edilmedi',
+  'No answers collected yet':'Henüz cevap toplanmadı',
+  'Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.':'“Ölçülmedi” işaretli platformlar bu ölçümün parçası değildir ve skorunuzu düşürmez. Sıfır sayılmazlar, hesaba hiç katılmazlar.',
+  'Your brand is named':'Markanız anılıyor',
+  'Your brand is not named':'Markanız anılmıyor',
+  'brand named':'anılan marka',
+  'Your site is cited':'Siteniz kaynak gösterilmiş',
+  'Your site is not cited':'Siteniz kaynak gösterilmemiş',
+  'Tone':'Ton',
+  'positive':'olumlu',
+  'negative':'olumsuz',
+  'neutral':'nötr',
+  'Collected':'Toplandı',
+  'REC_primary':'ilk sırada tavsiye',
+  'REC_listed':'seçenekler arasında',
+  'REC_neutral':'yalnızca anılmış',
+  'REC_conditional':'koşullu tavsiye',
+  'REC_negative':'olumsuz anılmış',
+  'Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.':'Dikey eksen: 100 üzerinden skorunuz. Yatay eksen: zaman, bugün en sağda. Günlük oynama olağandır — dört haftalık yöne bakın.',
   'Steps':'Adımlar',
   'Ready-to-paste fix':'Kopyala-yapıştır düzeltme',
   'Copied':'Kopyalandı',
@@ -794,7 +853,7 @@ const I18N = {
   'brands':'marka',
   'brand':'marka',
   'Upgrade to add another.':'Bir tane daha eklemek için yükseltin.',
-  'answers were scored without the judge':'cevap hakem olmadan puanlandı',
+
   'tone and recommendation are counted as zero, so the score is a floor rather than a measurement.':'ton ve tavsiye sıfır sayıldı, yani skor bir ölçüm değil alt sınır.',
   'they were recomputed after a brand change, so tone and recommendation are missing until the next scan.':'marka değişikliğinden sonra yeniden hesaplandı; ton ve tavsiye bir sonraki taramaya kadar eksik.',
   'Suggested — models often use the short form':'Öneri — modeller çoğunlukla kısa adı kullanır',
@@ -884,7 +943,7 @@ const I18N = {
   'Which qualities models associate with each brand':'Modellerin her markayla ilişkilendirdiği nitelikler',
   'Not enough answers yet':'Henüz yeterli cevap yok',
   'The denominator is the tracked brand set only. Adding a competitor changes every share, which is why comparisons stay inside one set.':'Payda yalnızca takip edilen marka kümesidir. Rakip eklemek her payı değiştirir; karşılaştırmalar bu yüzden tek küme içinde kalır.',
-  'Attribute extraction needs the judge model and a few hundred answers before it says anything meaningful. It appears once the corpus is large enough.':'Nitelik çıkarımı anlamlı bir şey söyleyebilmek için hakem modeline ve birkaç yüz cevaba ihtiyaç duyar. Külliyat yeterince büyüdüğünde görünür.',
+  'Attribute extraction needs the judge model and a few hundred answers before it says anything meaningful. It appears once the corpus is large enough.':'Nitelik analizi anlamlı bir sonuç verebilmek için birkaç yüz cevaba ihtiyaç duyar. Yeterince veri biriktiğinde burada görünür.',
   'The search prompts you track across AI platforms. See which prompts mention your brand and add new ones.':'AI platformlarında takip ettiğiniz arama sorguları. Hangi sorgularda markanızın geçtiğini görün, yenilerini ekleyin.',
   'All':'Tümü',
   'Active':'Aktif',
@@ -1272,7 +1331,7 @@ const S = {
   workspaceId: null, plan: 'trial', planLimits: null, org: null, role: 'owner',
   user: { name: '', mail: '' },
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
-  workspaces: [], wsMenu: false, scanBusy: false, quality: null,
+  workspaces: [], wsMenu: false, scanBusy: false, quality: null, isAdmin: false,
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
   scanState: null, firstScan: null, loadError: null,
@@ -2034,11 +2093,21 @@ function renderNav(){
             ? `<span class="dot ok"></span>${T('Updated')} ${relTime(sc.finished_at)}`
             : `<span class="dot idle"></span>${T('No scan yet')}`;
   }
-  const rb=$('#rescanBtn');
-  if(rb){
-    const busy=S.scanBusy||(S.scanState&&S.scanState.pending>0);
-    rb.disabled=!!busy;
-    rb.textContent=busy?T('Scanning…'):'↻ '+T('Rescan');
+  // Header scan control. The sidebar keeps the freshness indicator; the action
+  // itself belongs where the eye lands, not in a 11px button below the nav.
+  const hr=$('#headRescan'), hs=$('#headScan');
+  const prog=scanProgress();
+  const busy=S.scanBusy||!!prog;
+  if(hr){
+    hr.disabled=busy;
+    hr.textContent=busy ? T('Scanning…') : '↻ '+T('Rescan');
+  }
+  if(hs){
+    hs.innerHTML = prog
+      ? `<b>${prog.total?`${prog.done} / ${prog.total}`:prog.pending}</b> ${T('checks done')}`
+      : S.scanState&&S.scanState.finished_at
+        ? `${T('Last updated')} <b>${relTime(S.scanState.finished_at)}</b>`
+        : T('No scan yet');
   }
   // These two sit in the static shell rather than a rendered template, so they
   // need filling in on every repaint — including after a language switch.
@@ -2105,8 +2174,128 @@ function rangeSel(){return `<select class="in" aria-label="Date range" style="wi
 function upsell(txt){return `<div class="banner"><span>🔒</span><span>${txt}</span>
   <span class="r"><button class="btn b-pri b-sm" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button></span></div>`}
 
+/* =====================================================================
+   KPI EXPLANATIONS
+   =====================================================================
+   Every number on this dashboard is a composite, and a composite without a
+   denominator is not information. "5.1" tells the reader nothing; "5.1 out of
+   100, where 100 means named first with your site cited on every question"
+   tells them where they stand and what moving it would take.
+   =================================================================== */
+const KPI_HELP = {
+  visibility: {
+    t: 'Görünürlük skoru',
+    b: [
+      ['Neyi ölçer', '0 ile 100 arası bir puan. 100 demek: sorduğumuz her soruda, her platformda, ilk sırada anılıyorsunuz ve kaynak olarak siteniz gösteriliyor. 0 demek: hiçbir cevapta adınız geçmiyor.'],
+      ['Nasıl hesaplanır', 'Beş şeyin ağırlıklı ortalaması: adınızın anılması (%30), cevabın neresinde anıldığınız (%22), sitenizin kaynak gösterilmesi (%20), tavsiye edilme biçiminiz (%18) ve anılma tonu (%10).'],
+      ['Hata payı nedir', 'Yapay zeka aynı soruya her seferinde birebir aynı cevabı vermez. Bu yüzden her soruyu birkaç kez soruyoruz. ± işaretinin yanındaki sayı, sonuçların ne kadar oynadığını gösterir. Küçük olması ölçümün oturduğu anlamına gelir; büyük olması cevapların istikrarsız olduğu.'],
+      ['Ne iyidir', 'Sektörünüze göre değişir. Önemli olan tek bir günün puanı değil, dört haftalık yön. Bir günlük 2-3 puanlık oynama gürültüdür.'],
+    ],
+  },
+  mention: {
+    t: 'Anılma oranı',
+    b: [
+      ['Neyi ölçer', 'Takip ettiğiniz soruların yüzde kaçında markanızın adı geçti. Her soru her platformda ayrı bir kontrol sayılır.'],
+      ['Görünürlük skorundan farkı', 'Bu sadece "adım geçti mi" sorusunu yanıtlar. Nerede geçtiği, olumlu mu anıldığı, siteniz gösterildi mi — hiçbiri buraya girmez. Ham erişim ölçüsüdür.'],
+      ['Neden önce buna bakılır', 'Adınız hiç geçmiyorsa sıralamayı ya da tonu iyileştirmenin anlamı yok. Önce cevaba girmek gerekir.'],
+    ],
+  },
+  sov: {
+    t: 'Ses payı',
+    b: [
+      ['Neyi ölçer', 'Aynı sorularda anılan tüm markalar arasında sizin payınız. Siz ve takip ettiğiniz rakipler toplam %100 eder.'],
+      ['Sıralama ne anlama gelir', 'Kaçıncı sırada olduğunuz, kaç marka arasında. Bu liste yalnızca sizin eklediğiniz rakipleri içerir — piyasanın tamamını değil. Rakip eklemek ya da çıkarmak bu sayıyı değiştirir.'],
+      ['Görünürlük skorundan farkı', 'Görünürlük skoru sizi tek başına ölçer; ses payı rakiplerinize göre ölçer. Skorunuz sabit kalırken rakibiniz hızlandıysa ses payınız düşer.'],
+    ],
+  },
+  audit: {
+    t: 'Denetim skoru',
+    b: [
+      ['Neyi ölçer', 'Web sitenizin, yapay zeka tarafından okunmaya ve alıntılanmaya ne kadar hazır olduğu. 0 ile 100 arası.'],
+      ['Nasıl hesaplanır', 'Sitenizde 58 teknik kontrol çalıştırılır: yapılandırılmış veri, başlık düzeni, içerik netliği, sayfa hızı, yazar bilgisi, taranabilirlik gibi. Her başarısız kontrol puan düşürür.'],
+      ['Görünürlük skorundan farkı', 'Görünürlük skoru yapay zekanın ne söylediğini ölçer — sonuç. Denetim skoru sitenizin kendi durumunu ölçer — sebep. Denetimi düzeltmek görünürlüğü zamanla yukarı çeker, tersi olmaz.'],
+      ['Ne iyidir', '80 üzeri iyi, 60 altı ciddi eksik var demektir. Aksiyon Planı hangi kontrolün başarısız olduğunu ve nasıl düzeltileceğini gösterir.'],
+    ],
+  },
+  trend: {
+    t: 'Görünürlük trendi',
+    b: [
+      ['Grafik neyi gösterir', 'Dikey eksen görünürlük skorunuz, 0 ile 100 arası. Yatay eksen zaman: en sağdaki nokta bugün, sola gidildikçe geçmiş günler.'],
+      ['Neden dalgalanır', 'Yapay zeka cevapları gün gün değişir. Aynı soruya bugün adınızı anıp yarın anmaması olağandır. Bu yüzden tek günlük düşüşe tepki vermeyin.'],
+      ['Nasıl okunmalı', 'Dört haftalık eğime bakın. Üç gün üst üste düşüş bir sinyal değildir; üç hafta üst üste düşüş sinyaldir.'],
+    ],
+  },
+};
+
+function kpiHelp(k){
+  return `<button class="qm" title="${esc(T('What does this mean?'))}"
+    aria-label="${esc(T('What does this mean?'))}" onclick="showKpiHelp('${k}')">?</button>`;
+}
+function showKpiHelp(k){
+  const h=KPI_HELP[k]; if(!h) return;
+  openModal(h.t, h.b.map(([q,a])=>
+    `<div style="margin-bottom:18px">
+       <div style="font-size:13px;font-weight:600;margin-bottom:5px">${esc(q)}</div>
+       <div style="font-size:13.5px;color:var(--mute);line-height:1.7">${esc(a)}</div></div>`).join(''));
+}
+
+/* =====================================================================
+   SCAN PROGRESS
+   ===================================================================== */
+/**
+ * A scan is not a background nicety — until it finishes, every number on the
+ * dashboard is a partial sum. Showing 5.1 while two thirds of the checks are
+ * still queued is not "live data", it is a wrong answer that will be replaced
+ * by a different wrong answer a minute later, and the customer has no way to
+ * tell which reading to trust.
+ *
+ * So the dashboard waits, and says what it is waiting for.
+ */
+function scanProgress(){
+  const sc=S.scanState;
+  if(!sc) return null;
+  const pending=Number(sc.pending||0);
+  const total=Number(sc.queued_jobs||0) || null;
+  if(pending<=0) return null;
+  const done=total ? Math.max(0,total-pending) : null;
+  return { pending, total, done, pct: total ? Math.round(done/total*100) : null };
+}
+
+function scanningScreen(){
+  const p=scanProgress();
+  const pct=p.pct===null?null:Math.min(99,Math.max(2,p.pct));
+  return head(T('Collecting answers'),
+    T('We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.'))+
+  `<div class="card"><div class="cb" style="padding:34px 26px;text-align:center">
+    <div style="font-size:34px;margin-bottom:6px">◐</div>
+    <div style="font-size:30px;font-weight:600;letter-spacing:-.5px">
+      ${p.total ? `${p.done} <span style="color:var(--mute2);font-weight:400">/ ${p.total}</span>` : p.pending}
+    </div>
+    <div style="font-size:13.5px;color:var(--mute);margin-top:5px">
+      ${p.total ? T('checks completed') : `${p.pending} ${T('checks remaining')}`}</div>
+
+    ${pct===null?'':`<div style="height:8px;border-radius:99px;background:var(--card2);border:1px solid var(--border);
+      margin:22px auto 10px;max-width:460px;overflow:hidden">
+      <i style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,#3B82F6,#8B5CF6);
+        transition:width .5s ease"></i></div>`}
+
+    <div style="font-size:12.5px;color:var(--mute2);margin-top:14px;max-width:430px;margin-inline:auto;line-height:1.65">
+      ${T('Each prompt is asked several times per platform, because AI answers vary between runs. Averaging them is what makes the score stable.')}
+    </div>
+    <div style="font-size:12.5px;color:var(--mute);margin-top:16px">
+      ${p.pending} ${T('remaining')} · ${T('you can close this page; the scan continues')}
+    </div>
+  </div></div>`;
+}
+
 /* ---------- DASHBOARD ---------- */
 VIEWS.dashboard=()=>{
+  // Nothing partial. While checks are outstanding the dashboard is a progress
+  // screen, because a half-summed average is not a smaller truth — it is a
+  // different number that happens to look like the real one.
+  const prog=scanProgress();
+  if(prog) return scanningScreen();
+
   const d=S.data,allowed=d.plats.filter(p=>!p.locked).length;
   const ins=insightText();
   // One row per prompt+engine. The same prompt is asked several times, and
@@ -2118,45 +2307,47 @@ VIEWS.dashboard=()=>{
     seenKey.add(k); return true;
   }).slice(0,6);
   const sc=S.scanState;
-  const scanning = !!(sc && sc.pending>0);
-  const scanBanner = sc && sc.pending>0
-    ? `<div class="banner" style="margin-bottom:14px"><span>◐</span>
-        <span>${T('Scan in progress')} — ${sc.pending} ${T('checks left. Keep this page open; results appear as they arrive.')}</span></div>`
-    : '';
 
-  // A platform that errored must say so. Silently dropping the failures turns
-  // a provider outage into what looks like zero visibility.
-  const emptyBanner = sc && sc.error && !sc.pending && !d.cells.length
+  const emptyBanner = sc && sc.error && !d.cells.length
     ? `<div class="banner" style="margin-bottom:14px"><span>ℹ</span>
-        <span>The last scan queued nothing — ${esc(sc.error)}.</span>
+        <span>${T('The last scan collected nothing yet.')}</span>
         <span class="r"><button class="btn b-gh b-sm" onclick="rescan()">${T('Run a scan now')}</button></span></div>`
     : '';
 
-  // Measurement quality. Runs marked degraded had no judge, so tone and
-  // recommendation fell to their floor values. Showing the score without
-  // saying this presents a lower bound as a measurement.
-  const q=S.quality;
-  const qualityBanner = q && q.degraded>0 && q.total>0
-    ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07)">
-        <span>◍</span><span>${q.degraded}/${q.total} ${T('answers were scored without the judge')} —
-          ${q.reason==='rebranded'
-            ? T('they were recomputed after a brand change, so tone and recommendation are missing until the next scan.')
-            : T('tone and recommendation are counted as zero, so the score is a floor rather than a measurement.')}</span>
-        </div>`
-    : '';
-
-  const failBanner = sc && (sc.failures||[]).length
+  /* ---- Diagnostics: operator only -------------------------------------
+     Provider keys, credit balances and adjudication models are our
+     infrastructure. A customer pays a monthly fee and uses our keys; telling
+     them "ChatGPT — HTTP 429, add credits at platform.openai.com" hands them
+     an invoice for a fault they cannot even see the account for. Shown to the
+     platform operator, hidden from everyone else. -------------------------- */
+  const failBanner = S.isAdmin && sc && (sc.failures||[]).length
     ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07)">
-        <span>⚠</span><span>Some checks are failing and will not be counted:
+        <span>⚠</span><span><b>${T('Operator')}</b> · ${T('platform errors, hidden from customers')}:
           ${(sc.failures||[]).slice(0,3).map(f=>
             `<b>${esc((d.plats.find(p=>p.id===f.engine)||{n:f.engine}).n)}</b> — ${esc(String(f.error||'').replace(/\s+/g,' ').slice(0,140))}`
-          ).join(' · ')}</span>
-        <span class="r"><button class="btn b-gh b-sm" onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">${T('Check keys')}</button></span></div>`
+          ).join(' · ')}</span></div>`
     : '';
+
+  // The one quality note a customer should see, because their own action caused
+  // it and it resolves on its own. Everything else about measurement quality is
+  // an operator concern.
+  const q=S.quality;
+  const rebrandNote = q && q.degraded>0 && q.reason==='rebranded'
+    ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07)">
+        <span>◍</span><span>${T('Brand details changed, so earlier results were recalculated. Tone and recommendation data fills in on the next scan.')}</span></div>`
+    : '';
+  const qualityBanner = S.isAdmin && q && q.degraded>0 && q.reason!=='rebranded'
+    ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07)">
+        <span>◍</span><span><b>${T('Operator')}</b> · ${q.degraded}/${q.total} ${T('runs had no adjudication model, so tone and recommendation scored zero — the score is capped near 72.')}</span></div>`
+    : '';
+
+  const sov=d.sov.slice().sort((a,b)=>b.pct-a.pct);
+  const myPos=sov.findIndex(x=>x.you)+1;
+
   return `
-  ${scanBanner}
   ${failBanner}
   ${qualityBanner}
+  ${rebrandNote}
   ${emptyBanner}
   ${changesPanel()}
   ${S.plan==='trial'&&d.plats.length>allowed
@@ -2169,33 +2360,36 @@ VIEWS.dashboard=()=>{
     <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
   <div class="g4">
-    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Visibility score')}</div>
+    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Visibility score')}
+      ${kpiHelp('visibility')}</div>
       ${d.ready
-        ? `<div class="v"${scanning?' style="color:var(--fg2)"':''}>${d.total.toFixed(1)}</div>
-           <div class="d">${scanning
-              ? `${T('Partial')} — ${d.cells.length} ${T('checks in')}, ${sc.pending} ${T('still running')}`
-              : `±${d.ciAvg.toFixed(1)} ${T('confidence')}`}</div>`
+        ? `<div class="v">${d.total.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
+           <div class="d">${T('margin of error')} ±${d.ciAvg.toFixed(1)} ${T('points')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">${scanning?T('Counting — appears as answers arrive'):T('No scan yet')}</div>`}</div>
+           <div class="d">${T('No scan yet')}</div>`}</div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Mention rate')}</div>
+    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Mention rate')}
+      ${kpiHelp('mention')}</div>
       ${d.cells.length
-        ? `<div class="v">${d.mentionRate.toFixed(1)}%</div>
-           <div class="d">${d.cells.filter(c=>c.m>0).length}/${d.cells.length} ${T('prompt-platform')}${scanning?' '+T('so far'):''}</div>`
+        ? `<div class="v">${d.mentionRate.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
+           <div class="d">${T('named in')} ${d.cells.filter(c=>c.m>0).length} ${T('of')} ${d.cells.length} ${T('question-platform pairs')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d">${T('Waiting for the first results')}</div>`}</div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>${T('Share of voice')}</div>
+    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>${T('Share of voice')}
+      ${kpiHelp('sov')}</div>
       ${S.rivals.length
-        ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}%</div>
-           <div class="d">#${d.sov.slice().sort((a,b)=>b.pct-a.pct).findIndex(x=>x.you)+1} ${T('of')} ${d.sov.length} ${T('brands')}</div>`
+        ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
+           <div class="d">${T('ranked')} ${myPos}${T('.')} ${T('among')} ${sov.length} ${T('brands, by how often each is named')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d"><a href="#" onclick="go('rivals');return false"
              style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}</div>
+    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}
+      ${kpiHelp('audit')}</div>
       ${d.auditRanAt
-        ? `<div class="v">${d.auditScore.toFixed(0)}</div><div class="d">58 ${T('factors')} · ${new Date(d.auditRanAt).toLocaleDateString('en-GB')}</div>`
+        ? `<div class="v">${d.auditScore.toFixed(0)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
+           <div class="d">${T('58 checks on your website')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d"><a href="#" onclick="go('audit');return false"
              style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Run your first audit →')}</a></div>`}</div>
@@ -2208,8 +2402,8 @@ VIEWS.dashboard=()=>{
         <button class="btn b-gh b-sm" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff"
           onclick="go('plan')">${T('Go to action plan →')}</button></div></div>
 
-    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')}</h3>
-      <div class="sub">${T('Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.')}</div></div>
+    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
+      <div class="sub">${T('Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.')}</div></div>
       <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
       <div class="cb">${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','-'+Math.round(S.range/2)+'d','today']})}</div></div>
 
@@ -2231,17 +2425,26 @@ VIEWS.dashboard=()=>{
         <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
           <span class="v" style="font-size:11px;color:${state==='failing'?'#FCA5A5':'var(--mute2)'}">${
               state==='locked' ? '🔒 '+T('Upgrade')
-            : state==='nokey'  ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
-            : state==='failing'? `<span title="Every call to this platform returned an error">⚠ ${T('Failing')}</span>`
-            : `<span title="No answers collected yet">◌ ${T('No data yet')}</span>`}</span></div>
+            // A customer cannot fix a missing key or a spent credit balance —
+            // those are our accounts. They see one honest fact: this platform
+            // was not measured, and it is not counted as a zero. The reason is
+            // an operator concern and stays on the operator's screen.
+            : state==='nokey'  ? (S.isAdmin
+                ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
+                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
+            : state==='failing'? (S.isAdmin
+                ? `<span title="Every call to this platform returned an error">⚠ ${T('Failing')}</span>`
+                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
+            : `<span title="${esc(T('No answers collected yet'))}">◌ ${T('No data yet')}</span>`}</span></div>
           <div class="bar"></div></div>`;
       }).join('')}
-      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
+      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?(S.isAdmin?`
         <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
-        <b>No key</b> and <b>Failing</b> platforms were never measured — neither is a zero score,
-        and neither counts towards your visibility score.
-        Check them in <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
-        style="color:#93B4FF">Settings → Integrations</a>.</p>`:''}</div></div>
+        <b>${T('Operator')}</b> · <b>No key</b> / <b>Failing</b> platforms were never measured and do not
+        count towards the score. <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
+        style="color:#93B4FF">Settings → Integrations</a>.</p>`:`
+        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
+        ${T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`):''}</div></div>
   </div>
   <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
 
@@ -2347,21 +2550,24 @@ async function answerModal(runId){
    <div style="font-size:14.5px;font-weight:500;margin-bottom:16px">${esc(d.prompt)}</div>
    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
      <span class="chip">${esc(d.engine)}</span>
-     <span class="chip ${d.mentioned?'ok':'bad'}">${d.mentioned?'Mentioned':'Not mentioned'}</span>
-     ${d.rank?`<span class="chip">rank ${d.rank}</span>`:''}
-     <span class="chip ${d.cited?'ok':''}">${d.cited?'Cited as source':'No citation'}</span>
-     <span class="chip">sentiment ${sent}</span>
-     ${d.recommendation?`<span class="chip pri">${esc(d.recommendation)}</span>`:''}
-     <span class="chip">run ${d.runIndex+1}</span>
+     <span class="chip ${d.mentioned?'ok':'bad'}">${d.mentioned?T('Your brand is named'):T('Your brand is not named')}</span>
+     ${d.rank?`<span class="chip">${d.rank}${T('.')} ${T('brand named')}</span>`:''}
+     <span class="chip ${d.cited?'ok':''}">${d.cited?T('Your site is cited'):T('Your site is not cited')}</span>
+     ${d.mentioned&&d.sentiment!==null
+        ? `<span class="chip">${T('Tone')}: ${d.sentiment>0.15?T('positive'):d.sentiment<-0.15?T('negative'):T('neutral')}</span>`
+        : ''}
+     ${d.recommendation?`<span class="chip pri">${T('REC_'+d.recommendation)}</span>`:''}
+     ${S.isAdmin?`<span class="chip">run ${d.runIndex+1} · sentiment ${sent}</span>`:''}
    </div>
    <div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:#0D0F15;
         font-size:14px;line-height:1.75;white-space:pre-wrap">${html}</div>
    ${d.citations&&d.citations.length?`<div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
      ${d.citations.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`:''}
    <p style="font-size:12px;color:var(--mute);margin-top:14px">
-     ${esc(d.modelVersion||'unknown model')} · collected via ${d.method==='official_api'?'the official API':'a licensed SERP provider'}
-     · ${new Date(d.askedAt).toLocaleString('en-GB')}
-     ${d.degraded?`<br><span class="warn">Extraction ran without the judge model (${esc(d.degraded)}), so recommendation and sentiment are defaults.</span>`:''}
+     ${T('Collected')} ${new Date(d.askedAt).toLocaleString('tr-TR')}
+     ${S.isAdmin?`<br><span style="color:var(--mute2)">${T('Operator')} · ${esc(d.modelVersion||'unknown model')} ·
+       ${d.method==='official_api'?'official API':'licensed SERP provider'}
+       ${d.degraded?` · degraded=${esc(d.degraded)}`:''}</span>`:''}
    </p>`;
 }
 
@@ -2596,11 +2802,11 @@ function attributePanel(){
     <p>${esc(A.error)}</p></div>`;
 
   const c=A.coverage||{};
-  if(!c.available) return `<div class="empty" style="padding:30px"><div class="ic">🔑</div>
-    <b style="color:var(--fg);font-size:14px">${T('Attribute analysis needs a judge model')}</b>
-    <p style="margin-top:8px;max-width:48ch;margin-inline:auto">${T('Add an OpenAI or Anthropic key. The pass reads answers already collected, so it costs nothing extra in scans.')}</p>
-    <div style="margin-top:14px"><button class="btn b-gh b-sm"
-      onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">${T('Check keys')}</button></div></div>`;
+  if(!c.available) return `<div class="empty" style="padding:30px"><div class="ic">◈</div>
+    <b style="color:var(--fg);font-size:14px">${T('Attribute analysis is not available yet')}</b>
+    <p style="margin-top:8px;max-width:48ch;margin-inline:auto">${T('This feature reads the answers already collected and reports which qualities each brand is associated with. It will appear here once enabled for your account.')}</p>
+    ${S.isAdmin?`<div style="margin-top:14px;font-size:11.5px;color:var(--mute2)">
+      ${T('Operator')} · ${T('no provider key configured for the extraction pass')}</div>`:''}</div>`;
 
   const rows=(A.matrix||[]).slice(0,14);
   if(!rows.length){
@@ -2875,11 +3081,13 @@ function planPlatforms(){
 
   const live=ins.filter(p=>p.measured);
   const idle=ins.filter(p=>!p.measured);
-  if(!live.length) return `<div class="empty" style="padding:44px"><div class="ic">🔑</div>
+  if(!live.length) return `<div class="empty" style="padding:44px"><div class="ic">◌</div>
     <b style="color:var(--fg);font-size:15px">${T('No platform has been measured yet')}</b>
-    <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${T('Add a provider key and run a scan; the advice below is generated from your own results, not from a template.')}</p>
-    <div style="margin-top:16px"><button class="btn b-pri b-sm"
-      onclick="go('settings');setTimeout(()=>setTab('integrations'),30)">${T('Check keys')}</button></div></div>`;
+    <p style="margin-top:8px;max-width:46ch;margin-inline:auto">${T('Run a scan first. Everything on this screen is generated from your own results, never from a template — so there is nothing to show until answers exist.')}</p>
+    <div style="margin-top:16px"><button class="btn b-pri b-sm" onclick="rescan()">↻ ${T('Rescan')}</button></div>
+    ${S.isAdmin?`<div style="margin-top:12px;font-size:11.5px;color:var(--mute2)">${T('Operator')} ·
+      <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
+      style="color:#93B4FF">${T('Check keys')}</a></div>`:''}</div>`;
 
   // Worst first: that is the order a marketer should work in.
   const ordered=[...live].sort((a,b)=>b.impact-a.impact);
@@ -2937,8 +3145,8 @@ function planPlatforms(){
         </div></div>`:''}
   </div></div>`).join('')}
 
-  ${idle.length?`<div class="banner" style="margin-top:16px"><span>🔑</span>
-    <span>${idle.length} ${T('platforms are not being measured, so no advice can be given for them')}:
+  ${idle.length&&S.isAdmin?`<div class="banner" style="margin-top:16px"><span>🔑</span>
+    <span><b>${T('Operator')}</b> · ${idle.length} ${T('platforms are not being measured, so no advice can be given for them')}:
       ${idle.map(p=>esc(p.engineLabel)).join(', ')}</span></div>`:''}`;
 }
 
@@ -3239,7 +3447,12 @@ let setTabV='profile';
 function setTab(t){setTabV=t;render()}
 VIEWS.settings=()=>{
   const b=S.brand;
-  const tabs=[['profile',T('Profile')],['brand',T('Brand')],['team',T('Team')],['integrations',T('Integrations')],['billing',T('Billing')]];
+  // Integrations lists provider keys, their status and the errors they return.
+  // A customer neither owns those accounts nor can change them — the tab would
+  // be a wall of things to worry about with no button that helps.
+  const tabs=[['profile',T('Profile')],['brand',T('Brand')],['team',T('Team')],
+    ...(S.isAdmin?[['integrations',T('Integrations')]]:[]),['billing',T('Billing')]];
+  if(setTabV==='integrations' && !S.isAdmin) setTabV='profile';
   let body='';
   if(setTabV==='profile'){
     body=`<div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">${T('Personal Details')}</h4>
@@ -3633,6 +3846,7 @@ async function boot(){
   S.user={name: me.user.fullName || me.user.email.split('@')[0], mail: me.user.email};
   S.plan=me.org.plan; S.planLimits=me.limits; S.org=me.org; S.role=me.role;
   S.workspaces=me.workspaces||[];
+  S.isAdmin=me.isAdmin===true;
   // A visitor who switched the marketing site to English arrives with ?lang=en
   // and expects the product in English too; that choice wins for this visit and
   // is written back to the account.
