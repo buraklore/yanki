@@ -7,6 +7,23 @@ import postgres from 'postgres';
  */
 let client: ReturnType<typeof postgres> | null = null;
 
+/**
+ * Supabase's transaction pooler (port 6543) is PgBouncer in transaction mode:
+ * a connection is handed back to the pool after every statement, so the named
+ * prepared statement created on one backend is gone by the time the next
+ * statement looks for it. postgres.js prepares by default, which produces a
+ * scattergun of unrelated-looking failures — "prepared statement ... does not
+ * exist", "malformed array literal", and buffer offset RangeErrors from a
+ * desynchronised protocol stream. All four are the same fault.
+ *
+ * Disabling prepare costs a little planning time per query and makes every
+ * pooler mode work. The direct connection and the session pooler are
+ * unaffected by the setting, so this is safe everywhere rather than a
+ * Supabase-specific hack.
+ */
+const usesTransactionPooler = (url: string) =>
+  /:6543\b/.test(url) || /pgbouncer=true/i.test(url) || process.env.PG_NO_PREPARE === '1';
+
 export function db() {
   if (!client) {
     const url = process.env.DATABASE_URL;
@@ -17,6 +34,7 @@ export function db() {
       connect_timeout: 15,
       // Neon and Supabase both require TLS; local dev usually does not.
       ssl: /localhost|127\.0\.0\.1/.test(url) ? false : 'require',
+      prepare: !usesTransactionPooler(url),
       transform: { undefined: null },
     });
   }
