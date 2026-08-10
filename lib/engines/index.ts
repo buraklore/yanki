@@ -372,6 +372,25 @@ export const deepseek = openAICompatible({
   envKey: 'DEEPSEEK_API_KEY', modelEnvKey: 'DEEPSEEK_MODEL', defaultModel: 'deepseek-chat',
 });
 
+/**
+ * Groq — not to be confused with Grok, which is xAI's model and lives above.
+ *
+ * Groq does not train models; it serves open ones (GPT-OSS, Qwen, Llama) on
+ * its own inference hardware. That matters for how this engine should be
+ * weighted: almost nobody asks Groq a shopping question, so a brand's standing
+ * here is a weak proxy for real visibility. It is included because some
+ * assistants and internal tools route through it, and because it is a cheap
+ * way to widen the sample — not because it is a consumer surface.
+ *
+ * Groq retires hosted models on short notice (llama-3.3-70b-versatile was
+ * deprecated in June 2026), so the default is a current production model and
+ * GROQ_MODEL exists to override it without a deploy.
+ */
+export const groq = openAICompatible({
+  key: 'groq', label: 'Groq', url: 'https://api.groq.com/openai/v1/chat/completions',
+  envKey: 'GROQ_API_KEY', modelEnvKey: 'GROQ_MODEL', defaultModel: 'openai/gpt-oss-120b',
+});
+
 /* ------------------------------------------------------------------ */
 /* Google AI Overviews — via a licensed SERP provider                  */
 /* ------------------------------------------------------------------ */
@@ -512,7 +531,7 @@ const MOCK_LABELS: Record<string, string> = {
 };
 const MOCKS: Engine[] = Object.entries(MOCK_LABELS).map(([k, l]) => mockEngine(k, l));
 
-export const REAL_ENGINES: Engine[] = [openai, gemini, perplexity, anthropic, aiOverviews, grok, deepseek];
+export const REAL_ENGINES: Engine[] = [openai, gemini, perplexity, anthropic, aiOverviews, grok, deepseek, groq];
 
 export const ENGINES: Engine[] = env('MOCK_ENGINES') === '1' ? MOCKS : REAL_ENGINES;
 
