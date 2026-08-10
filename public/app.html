@@ -189,6 +189,41 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .nav .sub.open{display:grid;gap:1px}
 .nav .sub a{font-size:12.8px;padding:7px 11px}
 .nav .sub a.on{background:rgba(59,130,246,.1)}
+/* Workspace switcher — anchored to the button so it reads as belonging to it
+   rather than floating over the nav. */
+.sb-wswrap{position:relative}
+.wsmenu{display:none}
+.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
+  background:var(--card);border:1px solid var(--border);border-radius:11px;padding:5px;
+  box-shadow:0 14px 34px rgba(0,0,0,.42);max-height:290px;overflow:auto}
+.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;border-radius:8px;padding:8px 9px;color:var(--fg);font-size:12.5px}
+.wsmenu button:hover{background:rgba(255,255,255,.04)}
+.wsmenu button.on{background:rgba(59,130,246,.12)}
+.wsmenu .sq{width:22px;height:22px;border-radius:6px;background:rgba(59,130,246,.16);
+  display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+.wsmenu .t{min-width:0;display:grid}
+.wsmenu .t b{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .t i{font-style:normal;font-size:10.5px;color:var(--mute2);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .ck{margin-left:auto;color:#7FB2FF;font-size:11px}
+.wsmenu .sep{height:1px;background:var(--border);margin:5px 2px}
+.wsmenu .add{color:var(--mute)}
+.wsmenu .cnt{margin-left:auto;font-size:10.5px;color:var(--mute2)}
+
+/* Scan strip. Freshness is the first question a returning user has, so it sits
+   above the nav rather than buried on the dashboard. */
+.sb-scan{display:flex;align-items:center;gap:8px;margin:10px 0 4px}
+.sb-scan .pill{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mute);
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.sb-scan .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--mute2)}
+.sb-scan .dot.ok{background:#4ADE80}
+.sb-scan .dot.bad{background:#F87171}
+.sb-scan .dot.run{background:#60A5FA;animation:pulse 1.4s ease-in-out infinite}
+.sb-scan .dot.idle{background:var(--mute2)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.sb-scan button{flex:none;font-size:11.5px;padding:5px 9px}
+.sb-scan button:disabled{opacity:.5}
 .sb-foot{margin-top:auto;display:grid;gap:10px;padding-top:10px}
 .trial{border:1px solid var(--border);border-radius:12px;padding:13px;background:linear-gradient(160deg,rgba(59,130,246,.1),var(--card2))}
 .trial b{font-size:12.5px;display:block;margin-bottom:3px}
@@ -354,12 +389,20 @@ svg{display:block;max-width:100%}
         <span class="ics"><button title="Theme" data-i18n-title>◐</button><button title="Language" data-i18n-title onclick="langMenu()">⊕</button><button title="Sign out" data-i18n-title onclick="signOut()">↪</button></span></div>
       <div class="lb" id="welcomeLb">WELCOME BACK,</div><div class="nm" id="uName">Demo Account</div>
     </div>
-    <button class="sb-ws" onclick="toast('Single workspace — add another from Settings › Brand')">
-      <span class="sq">⬢</span><span id="wsName">brand</span><span class="cv">⌄</span></button>
+    <div class="sb-wswrap">
+      <button class="sb-ws" onclick="toggleWsMenu()" aria-haspopup="true">
+        <span class="sq">⬢</span><span id="wsName">brand</span><span class="cv">⌄</span></button>
+      <div class="wsmenu" id="wsMenu"></div>
+    </div>
+    <div class="sb-scan">
+      <span class="pill" id="scanPill"></span>
+      <button class="btn b-gh b-sm" id="rescanBtn" onclick="rescan()">↻ Rescan</button>
+    </div>
     <nav class="nav" id="nav"></nav>
     <div class="sb-foot">
-      <button class="nav" style="font-size:12.5px;color:var(--mute2);background:none;border:0;text-align:left;padding:0 11px"
-        onclick="toast(T('Thanks for your feedback'))"><span id="fbLabel">▭ Feedback</span></button>
+      <!-- The old button thanked the user for feedback it never collected. -->
+      <a class="nav" style="font-size:12.5px;color:var(--mute2);text-decoration:none;padding:0 11px"
+        href="mailto:destek@yanki.app?subject=YANKI%20geri%20bildirim"><span id="fbLabel">▭ Feedback</span></a>
       <div class="trial" id="trialBox"></div>
     </div>
   </aside>
@@ -393,21 +436,80 @@ const nf=n=>Number(n).toLocaleString('tr-TR');
 // results payload, so there is no client-side engine list to drift out of sync.
 
 const SECTORS={
- 'Teknoloji & Bilişim':{k:'teknoloji ve IT'},
- 'Oyun & Dijital Kod':{k:'oyun ve e-pin'},
- 'E-ticaret & Perakende':{k:'e-ticaret'},
- 'Finans & Sigorta':{k:'finans ve sigorta'},
- 'Sağlık':{k:'sağlık'},
- 'Turizm & Konaklama':{k:'turizm ve konaklama'},
- 'Eğitim':{k:'eğitim'},
- 'Otomotiv':{k:'otomotiv'},
- 'Gayrimenkul & İnşaat':{k:'gayrimenkul'},
- 'Lojistik & Kargo':{k:'lojistik ve kargo'},
- 'Gıda & Restoran':{k:'gıda ve restoran'},
- 'Hukuk & Danışmanlık':{k:'hukuk ve danışmanlık'},
- 'Diğer':{k:'hizmet'}
+ 'Yazılım & SaaS':{k:'yazılım ve SaaS',g:'Teknoloji'},
+ 'Teknoloji & Bilişim':{k:'teknoloji ve IT',g:'Teknoloji'},
+ 'Dijital Ajans & Pazarlama':{k:'dijital pazarlama ajansı',g:'Teknoloji'},
+ 'Telekomünikasyon':{k:'telekomünikasyon',g:'Teknoloji'},
+ 'Hosting & Bulut':{k:'hosting ve bulut',g:'Teknoloji'},
+ 'Siber Güvenlik':{k:'siber güvenlik',g:'Teknoloji'},
+ 'Elektronik & Beyaz Eşya':{k:'elektronik ve beyaz eşya',g:'Teknoloji'},
+ 'Oyun & Dijital Kod':{k:'oyun ve e-pin',g:'Teknoloji'},
+ 'E-ticaret & Perakende':{k:'e-ticaret',g:'Ticaret'},
+ 'Pazaryeri':{k:'pazaryeri',g:'Ticaret'},
+ 'Moda & Giyim':{k:'moda ve giyim',g:'Ticaret'},
+ 'Kozmetik & Kişisel Bakım':{k:'kozmetik ve kişisel bakım',g:'Ticaret'},
+ 'Mücevher & Saat':{k:'mücevher ve saat',g:'Ticaret'},
+ 'Mobilya & Dekorasyon':{k:'mobilya ve dekorasyon',g:'Ticaret'},
+ 'Anne & Bebek':{k:'anne ve bebek ürünleri',g:'Ticaret'},
+ 'Evcil Hayvan':{k:'evcil hayvan ürünleri',g:'Ticaret'},
+ 'Spor & Outdoor':{k:'spor ve outdoor',g:'Ticaret'},
+ 'Finans & Sigorta':{k:'finans ve sigorta',g:'Finans'},
+ 'Bankacılık':{k:'bankacılık',g:'Finans'},
+ 'Fintek & Ödeme':{k:'fintek ve ödeme sistemleri',g:'Finans'},
+ 'Kripto & Borsa':{k:'kripto para ve yatırım',g:'Finans'},
+ 'Muhasebe & Mali Müşavirlik':{k:'muhasebe ve mali müşavirlik',g:'Finans'},
+ 'Sağlık':{k:'sağlık',g:'Sağlık'},
+ 'Hastane & Klinik':{k:'hastane ve klinik',g:'Sağlık'},
+ 'Diş Sağlığı':{k:'diş kliniği',g:'Sağlık'},
+ 'Estetik & Saç Ekimi':{k:'estetik ve saç ekimi',g:'Sağlık'},
+ 'İlaç & Medikal':{k:'ilaç ve medikal',g:'Sağlık'},
+ 'Fitness & Wellness':{k:'fitness ve wellness',g:'Sağlık'},
+ 'Gayrimenkul & İnşaat':{k:'gayrimenkul',g:'Gayrimenkul & yapı'},
+ 'Konut Geliştirme':{k:'konut projeleri',g:'Gayrimenkul & yapı'},
+ 'Gayrimenkul Değerleme':{k:'gayrimenkul değerleme',g:'Gayrimenkul & yapı'},
+ 'Mimarlık & Tasarım':{k:'mimarlık',g:'Gayrimenkul & yapı'},
+ 'Yapı Malzemeleri':{k:'yapı malzemeleri',g:'Gayrimenkul & yapı'},
+ 'Üretim & Sanayi':{k:'üretim ve sanayi',g:'Sanayi'},
+ 'Enerji & Yenilenebilir':{k:'enerji',g:'Sanayi'},
+ 'Kimya & Plastik':{k:'kimya ve plastik',g:'Sanayi'},
+ 'Tarım & Hayvancılık':{k:'tarım',g:'Sanayi'},
+ 'Tekstil & Konfeksiyon':{k:'tekstil',g:'Sanayi'},
+ 'Makine & Ekipman':{k:'makine ve ekipman',g:'Sanayi'},
+ 'Otomotiv':{k:'otomotiv',g:'Ulaşım'},
+ 'Araç Kiralama':{k:'araç kiralama',g:'Ulaşım'},
+ 'Lojistik & Kargo':{k:'lojistik ve kargo',g:'Ulaşım'},
+ 'Havacılık':{k:'havacılık',g:'Ulaşım'},
+ 'Turizm & Konaklama':{k:'turizm ve konaklama',g:'Hizmet'},
+ 'Otel & Tatil Köyü':{k:'otel',g:'Hizmet'},
+ 'Gıda & Restoran':{k:'gıda ve restoran',g:'Hizmet'},
+ 'Catering & Toplu Yemek':{k:'catering',g:'Hizmet'},
+ 'Eğitim':{k:'eğitim',g:'Hizmet'},
+ 'Üniversite & Yükseköğretim':{k:'üniversite',g:'Hizmet'},
+ 'Yurtdışı Eğitim & Dil':{k:'yurtdışı eğitim',g:'Hizmet'},
+ 'Hukuk & Danışmanlık':{k:'hukuk ve danışmanlık',g:'Hizmet'},
+ 'İnsan Kaynakları & İstihdam':{k:'insan kaynakları',g:'Hizmet'},
+ 'Güvenlik & Temizlik':{k:'güvenlik ve temizlik hizmetleri',g:'Hizmet'},
+ 'Etkinlik & Organizasyon':{k:'etkinlik ve organizasyon',g:'Hizmet'},
+ 'Medya & Yayıncılık':{k:'medya ve yayıncılık',g:'Hizmet'},
+ 'Eğlence & Prodüksiyon':{k:'eğlence ve prodüksiyon',g:'Hizmet'},
+ 'Dernek & Vakıf':{k:'sivil toplum',g:'Hizmet'},
+ 'Kamu & Belediye':{k:'kamu hizmetleri',g:'Hizmet'},
+ 'Diğer':{k:'hizmet',g:'Hizmet'}
 };
 const sectorTerm=k=>(SECTORS[k]||SECTORS['Diğer']).k;
+/**
+ * 59 sector in a flat <select> is a scroll-and-hope control. Grouping them
+ * turns picking into scanning: the operator finds the family first, then the
+ * row. The groups come from the same table the server uses, so the two lists
+ * cannot drift.
+ */
+function sectorOptions(selected){
+  const groups={};
+  for(const [label,v] of Object.entries(SECTORS)){ (groups[v.g]??=[]).push(label); }
+  return Object.entries(groups).map(([g,ls])=>
+    `<optgroup label="${esc(T(g))}">${ls.map(l=>
+      `<option ${selected===l?'selected':''}>${esc(l)}</option>`).join('')}</optgroup>`).join('');
+}
 
 // Intent keys match the database enum exactly. The multiplier is shown in the
 // UI so nobody has to guess why a prompt moves the score more than another.
@@ -670,6 +772,40 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Henüz veri yok',
   'Rescan':'Yeniden tara',
+  'Steps':'Adımlar',
+  'Ready-to-paste fix':'Kopyala-yapıştır düzeltme',
+  'Copied':'Kopyalandı',
+  'Copy':'Kopyala',
+  'Scan started':'Tarama başladı',
+  'checks queued':'kontrol kuyruğa alındı',
+  'Nothing to scan':'Taranacak bir şey yok',
+  'Scanning':'Taranıyor',
+  'Scanning…':'Taranıyor…',
+  'Starting…':'Başlatılıyor…',
+  'Last scan had errors':'Son taramada hata var',
+  'Updated':'Güncellendi',
+  'No scan yet':'Henüz tarama yok',
+  'just now':'az önce',
+  'min ago':'dk önce',
+  'h ago':'sa önce',
+  'd ago':'gün önce',
+  'Add brand':'Marka ekle',
+  'Your plan covers':'Planınız',
+  'brands':'marka',
+  'brand':'marka',
+  'Upgrade to add another.':'Bir tane daha eklemek için yükseltin.',
+  'answers were scored without the judge':'cevap hakem olmadan puanlandı',
+  'tone and recommendation are counted as zero, so the score is a floor rather than a measurement.':'ton ve tavsiye sıfır sayıldı, yani skor bir ölçüm değil alt sınır.',
+  'they were recomputed after a brand change, so tone and recommendation are missing until the next scan.':'marka değişikliğinden sonra yeniden hesaplandı; ton ve tavsiye bir sonraki taramaya kadar eksik.',
+  'Suggested — models often use the short form':'Öneri — modeller çoğunlukla kısa adı kullanır',
+  'Teknoloji':'Teknoloji',
+  'Ticaret':'Ticaret',
+  'Finans':'Finans',
+  'Sağlık':'Sağlık',
+  'Gayrimenkul & yapı':'Gayrimenkul & Yapı',
+  'Sanayi':'Sanayi',
+  'Ulaşım':'Ulaşım',
+  'Hizmet':'Hizmet',
   'Continue anyway?':'Yine de devam edilsin mi?',
   'Brand settings saved':'Marka ayarları kaydedildi',
   'Scanning…':'Taranıyor…',
@@ -1136,6 +1272,7 @@ const S = {
   workspaceId: null, plan: 'trial', planLimits: null, org: null, role: 'owner',
   user: { name: '', mail: '' },
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
+  workspaces: [], wsMenu: false, scanBusy: false, quality: null,
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
   scanState: null, firstScan: null, loadError: null,
@@ -1228,7 +1365,7 @@ function obS2(){
   <p class="lead">Help us understand your business so we can build better AI monitoring prompts</p>
   <div class="ob-form">
     <div class="fld"><label for="i3">Industry</label><select class="in" id="i3">
-      ${Object.keys(SECTORS).map(k=>`<option ${S.brand.sector===k?'selected':''}>${k}</option>`).join('')}</select></div>
+      ${sectorOptions(S.brand.sector)}</select></div>
     <div class="fld"><label for="i4">Country</label><select class="in" id="i4">
       ${['Türkiye','Almanya','Birleşik Krallık','ABD','Hollanda','BAE'].map(k=>`<option ${S.brand.country===k?'selected':''}>${k}</option>`).join('')}</select></div>
     <div class="fld"><label>City</label><input class="in" id="i5" value="${esc(S.brand.city)}" placeholder="e.g. Istanbul">
@@ -1301,11 +1438,23 @@ function obS3(){
     <div style="display:flex;gap:9px"><input class="in" id="iv" placeholder="e.g. THY, Turkish Air"
       onkeydown="if(event.key==='Enter')addVar()"><button class="btn b-pri" onclick="addVar()">+</button></div>
     <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=2;renderOb()">← Back</button>
-      <button class="btn b-pri b-lg" onclick="S.step=4;renderOb()">${S.variants.length?'Continue':'Skip'}</button></div>
+      <button class="btn b-pri b-lg" onclick="obNext3()">${S.variants.length?'Continue':'Skip'}</button></div>
   </div>`;
 }
 function addVar(){const v=$('#iv').value.trim();if(!v)return;
   if(!S.variants.includes(v))S.variants.push(v);renderOb()}
+/**
+ * Variants are what the scan matches a brand against, so they have to reach
+ * the database before the first scan runs. Advancing the step without saving
+ * used to lose every variant the operator typed — the detection stayed as
+ * narrow as it was, and the resulting zero looked like a real absence.
+ */
+async function obNext3(){
+  try{
+    if(S.workspaceId) await api.patch(`/api/workspaces/${S.workspaceId}`,{aliases:S.variants});
+    S.step=4; renderOb();
+  }catch(e){ toast(e.message,'error'); }
+}
 function obS4(){
   $('#obCard').innerHTML=`<div class="ob-ic">⚔</div><h2>Competitor Radar</h2>
   <p class="lead">Who are your main competitors? We'll track them too</p>
@@ -1475,6 +1624,7 @@ async function obFinish(){
     const res=await api.post(`/api/workspaces/${S.workspaceId}/complete`,{
       competitors:S.rivals.map(r=>({name:r.n,domain:r.d||null})),
       prompts:chosen.map(p=>({text:p.text,intent:p.intent,volume:p.vol,source:p.src})),
+      aliases:S.variants,
     });
     S.prompts=chosen;
     S.firstScan=res;
@@ -1569,6 +1719,7 @@ function adopt(r) {
   S.enginesMeta = r.engines;
   S.scanState = r.scan;
   S.auditRaw = r.audit;
+  S.quality = r.quality || null;
 
   const latest = r.latest;
   const allowed = r.engines.filter(e => !e.locked);
@@ -1850,13 +2001,53 @@ function renderNav(){
   }).join('');
   const av=(S.brand.name||'YK').slice(0,2).toLocaleUpperCase('tr');
   $('#uAv').textContent=av;$('#uName').textContent=S.user.name;$('#wsName').textContent=S.brand.name||'marka';
+
+  // Workspace switcher. The old control was a button that toasted "single
+  // workspace" whatever the plan allowed, so an Agency customer with 25 brands
+  // had no way to move between them.
+  const cap=(S.planLimits&&S.planLimits.workspaces)||1;
+  const wsBox=$('#wsMenu');
+  if(wsBox){
+    wsBox.className = S.wsMenu ? 'wsmenu open' : 'wsmenu';
+    wsBox.innerHTML = S.wsMenu ? `
+      ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
+         <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
+         <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
+         ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
+      <div class="sep"></div>
+      <button class="add" onclick="newBrand()">＋ ${T('Add brand')}
+        <span class="cnt">${S.workspaces.length}/${cap}</span></button>` : '';
+  }
+
+  // Scan state, visible from every screen rather than only the dashboard.
+  const sp=$('#scanPill');
+  if(sp){
+    const sc=S.scanState, pending=sc?sc.pending:0;
+    const failing=sc&&(sc.failures||[]).length;
+    sp.innerHTML = S.scanBusy
+      ? `<span class="dot run"></span>${T('Starting…')}`
+      : pending>0
+        ? `<span class="dot run"></span>${T('Scanning')} · ${pending}`
+        : failing
+          ? `<span class="dot bad"></span>${T('Last scan had errors')}`
+          : sc&&sc.finished_at
+            ? `<span class="dot ok"></span>${T('Updated')} ${relTime(sc.finished_at)}`
+            : `<span class="dot idle"></span>${T('No scan yet')}`;
+  }
+  const rb=$('#rescanBtn');
+  if(rb){
+    const busy=S.scanBusy||(S.scanState&&S.scanState.pending>0);
+    rb.disabled=!!busy;
+    rb.textContent=busy?T('Scanning…'):'↻ '+T('Rescan');
+  }
   // These two sit in the static shell rather than a rendered template, so they
   // need filling in on every repaint — including after a language switch.
   const wb=$('#welcomeLb'); if(wb) wb.textContent=T('WELCOME BACK,');
   const fb=$('#fbLabel');   if(fb) fb.textContent='▭ '+T('Feedback');
   const planName={trial:T('Trial'),starter:T('Starter'),growth:T('Growth'),pro:T('Growth'),business:T('Business'),agency:T('Agency')}[S.plan]||S.plan;
+  const dleft=trialDaysLeft();
   $('#trialBox').innerHTML=S.plan==='trial'
-    ? `<b>${T('Trial')} — 7 ${T('days left')}</b><p>${T('Pick a plan before your trial ends.')}</p>
+    ? `<b>${T('Trial')}${dleft===null?'':` — ${dleft} ${T('days left')}`}</b><p>${T('Pick a plan before your trial ends.')}</p>
        <button class="btn b-pri b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button>`
     : `<b>${planName} ${T('plan')}</b><p>${T('All platforms and modules unlocked.')}</p>
        <button class="btn b-gh b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Manage plan')}</button>`;
@@ -1941,6 +2132,19 @@ VIEWS.dashboard=()=>{
         <span class="r"><button class="btn b-gh b-sm" onclick="rescan()">${T('Run a scan now')}</button></span></div>`
     : '';
 
+  // Measurement quality. Runs marked degraded had no judge, so tone and
+  // recommendation fell to their floor values. Showing the score without
+  // saying this presents a lower bound as a measurement.
+  const q=S.quality;
+  const qualityBanner = q && q.degraded>0 && q.total>0
+    ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07)">
+        <span>◍</span><span>${q.degraded}/${q.total} ${T('answers were scored without the judge')} —
+          ${q.reason==='rebranded'
+            ? T('they were recomputed after a brand change, so tone and recommendation are missing until the next scan.')
+            : T('tone and recommendation are counted as zero, so the score is a floor rather than a measurement.')}</span>
+        </div>`
+    : '';
+
   const failBanner = sc && (sc.failures||[]).length
     ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07)">
         <span>⚠</span><span>Some checks are failing and will not be counted:
@@ -1952,6 +2156,7 @@ VIEWS.dashboard=()=>{
   return `
   ${scanBanner}
   ${failBanner}
+  ${qualityBanner}
   ${emptyBanner}
   ${changesPanel()}
   ${S.plan==='trial'&&d.plats.length>allowed
@@ -2737,6 +2942,34 @@ function planPlatforms(){
       ${idle.map(p=>esc(p.engineLabel)).join(', ')}</span></div>`:''}`;
 }
 
+/**
+ * Task detail. The row has had `onclick="taskModal(i)"` since the first build
+ * but the function was never written, so every task in the action plan threw a
+ * ReferenceError on click — the plan looked interactive and was not. The data
+ * it needs (desc, steps, code) has always been on the item.
+ */
+function taskModal(i){
+  const a=(S.data&&S.data.actions||[])[i];
+  if(!a) return;
+  const steps=(a.steps||[]).map((x,n)=>
+    `<div style="display:flex;gap:10px;margin-bottom:8px">
+       <span style="width:20px;height:20px;border-radius:6px;background:rgba(59,130,246,.15);
+         color:#93B4FF;display:grid;place-items:center;font-size:11px;flex:none">${n+1}</span>
+       <span style="font-size:13px">${esc(x)}</span></div>`).join('');
+  openModal(a.t, `
+    <p style="font-size:13px;color:var(--mute);margin-bottom:16px">${esc(a.desc||a.sub||'')}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="chip ok">${T('Impact')} ${esc(a.im)}</span>
+      <span class="chip">${esc(a.ef||'')}</span>
+      <span class="chip">${esc(a.q||'')}</span></div>
+    ${steps?`<h4 style="font-size:13px;margin-bottom:10px">${T('Steps')}</h4>${steps}`:''}
+    ${a.code?`<h4 style="font-size:13px;margin:16px 0 8px">${T('Ready-to-paste fix')}</h4>
+      <pre style="background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:12px;
+        font-size:11.5px;overflow:auto;max-height:240px;white-space:pre-wrap">${esc(a.code)}</pre>
+      <button class="btn b-gh b-sm" style="margin-top:9px"
+        onclick="navigator.clipboard.writeText(${JSON.stringify(a.code)}).then(()=>toast(T('Copied')))">⧉ ${T('Copy')}</button>`:''}`);
+}
+
 function planTasks(A){
   return `<div class="card"><div class="cb">
     ${A.map((a,i)=>`
@@ -3032,7 +3265,7 @@ VIEWS.settings=()=>{
       <div><div class="fld"><label>Brand name</label><input class="in" aria-label="Brand name" value="${esc(b.name)}" onchange="S.brand.name=this.value"></div>
       <div class="fld"><label>Website</label><input class="in" aria-label="Website" value="${esc(b.site)}" onchange="S.brand.site=this.value"></div>
       <div class="fld"><label>Industry *</label><select class="in" aria-label="Industry" onchange="S.brand.sector=this.value">
-        ${Object.keys(SECTORS).map(k=>`<option ${b.sector===k?'selected':''}>${k}</option>`).join('')}</select></div>
+        ${sectorOptions(b.sector)}</select></div>
       <button class="btn b-pri" onclick="saveBrand()">✓ Save Brand Settings</button></div></div>
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
       <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">Location</h4>
@@ -3048,7 +3281,12 @@ VIEWS.settings=()=>{
           `<span class="tagx">${esc(v)}<button onclick="S.variants.splice(${i},1);render()">×</button></span>`).join('')
           :'<span class="mut" style="font-size:13px">No variants yet. Add variants to improve detection quality.</span>'}</div>
         <div style="display:flex;gap:9px"><input class="in" id="vv" placeholder="e.g. THY, Turkish Air"
-          onkeydown="if(event.key==='Enter'){addVar2()}"><button class="btn b-pri" onclick="addVar2()">+</button></div></div></div>`;
+          onkeydown="if(event.key==='Enter'){addVar2()}"><button class="btn b-pri" onclick="addVar2()">+</button></div>
+        ${suggestedVariants().length?`<div style="margin-top:11px">
+          <div style="font-size:11.5px;color:var(--mute2);margin-bottom:6px">${T('Suggested — models often use the short form')}</div>
+          <div class="taglist">${suggestedVariants().map(v=>
+            `<button class="btn b-gh b-sm" onclick="S.variants.push('${esc(v)}');render()">+ ${esc(v)}</button>`).join('')}</div></div>`:''}
+        </div></div>`;
   }else if(setTabV==='team'){
     body=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
       <div><h4 style="font-size:15px">Team Members</h4>
@@ -3119,7 +3357,37 @@ VIEWS.settings=()=>{
   `<div class="tabs">${tabs.map(t=>`<button class="${setTabV===t[0]?'on':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
    <div>${body}</div>`;
 };
-function addVar2(){const v=$('#vv').value.trim();if(!v)return;if(!S.variants.includes(v))S.variants.push(v);render();toast('Variant added')}
+/**
+ * Suggests the forms the automatic alias builder deliberately will not add on
+ * its own. "RAMS Türkiye" generates no bare "RAMS", because a short head word
+ * is exactly what produces false positives on a common noun — but for a brand
+ * whose models say "RAMS" in four answers out of five, the omission reads as
+ * zero visibility. So: propose, never assume. The operator decides.
+ */
+function suggestedVariants(){
+  const name=(S.brand.name||'').trim();
+  if(!name) return [];
+  const out=new Set();
+  const words=name.split(/\s+/).filter(Boolean);
+  const GENERIC=new Set(['türkiye','turkiye','global','group','grup','holding','a.ş.','as','ltd',
+    'şirketi','sirketi','company','co','inc','international','turkey']);
+  if(words.length>1){
+    // Head word, when the rest is a generic qualifier.
+    const head=words[0];
+    if(head.length>=3 && words.slice(1).every(w=>GENERIC.has(w.toLocaleLowerCase('tr')))) out.add(head);
+    else if(head.length>=4) out.add(head);
+    // Acronym for three or more words: "Rams Gayrimenkul Yatırım" -> "RGY"
+    if(words.length>=3) out.add(words.map(w=>w[0]).join('').toLocaleUpperCase('tr'));
+  }
+  return [...out].filter(v=>v.length>=3 && !S.variants.includes(v));
+}
+
+function addVar2(){const v=$('#vv').value.trim();if(!v)return;
+  if(!S.variants.includes(v))S.variants.push(v);
+  render();
+  // Deliberately not "Variant added": nothing is stored until Save runs, and
+  // telling the user otherwise is how the old build lost every variant.
+  toast(T('Variant added — press Save to apply'));}
 /**
  * Provider status. `probe` runs a real one-token call against every configured
  * key, which is the only way to distinguish "key present" from "key works".
@@ -3196,7 +3464,10 @@ async function changePassword(){
 async function saveBrand(){
   const body={
     brandName:S.brand.name, domain:S.brand.site, sector:S.brand.sector,
-    country:S.brand.country, city:S.brand.city||null};
+    country:S.brand.country, city:S.brand.city||null,
+    // Without this the variant editor above was decorative: it pushed to local
+    // state, showed a toast and lost everything on the next reload.
+    aliases:S.variants};
   const send=async()=>{
     await api.patch(`/api/workspaces/${S.workspaceId}`,body);
     await loadResults();
@@ -3229,6 +3500,74 @@ async function setPlan(p){
     await loadResults();
     toast('Plan updated — locked platforms are now included in the next scan');
   }catch(e){ toast(e.message); }
+}
+
+/* =====================================================================
+   SCAN CONTROL
+   ===================================================================== */
+/**
+ * This function was referenced by the empty-state banner but never existed,
+ * so the one visible way to trigger a scan threw a ReferenceError. The
+ * scheduled job runs once a day; without a manual trigger a customer who has
+ * just fixed something waits until tomorrow to find out whether it worked.
+ */
+async function rescan(){
+  if(S.scanBusy || !S.workspaceId) return;
+  S.scanBusy = true; render();
+  try{
+    const r = await api.post('/api/scan',{workspaceId:S.workspaceId, warm:true});
+    if(r.jobs){
+      toast(`${T('Scan started')} — ${r.jobs} ${T('checks queued')}`);
+      await loadResults({silent:true});
+      pollScan();
+    }else{
+      // enqueueScan reports why it queued nothing. Passing that through beats
+      // a generic "done" that leaves the operator staring at an empty chart.
+      toast(r.reason ? `${T('Nothing to scan')}: ${r.reason}` : T('Nothing to scan'), 'error');
+    }
+  }catch(e){
+    toast(e.message, 'error');
+  }finally{
+    S.scanBusy = false; render();
+  }
+}
+
+/* =====================================================================
+   WORKSPACE SWITCHER
+   ===================================================================== */
+/** "3 dk önce" — an absolute timestamp in a sidebar is noise; freshness is the
+ *  only thing the reader actually wants from it. */
+function relTime(iso){
+  const d=(Date.now()-new Date(iso))/1000;
+  if(!isFinite(d)) return '';
+  if(d<90)      return T('just now');
+  if(d<3600)    return Math.round(d/60)+' '+T('min ago');
+  if(d<86400)   return Math.round(d/3600)+' '+T('h ago');
+  return Math.round(d/86400)+' '+T('d ago');
+}
+
+function toggleWsMenu(){ S.wsMenu = !S.wsMenu; render(); }
+async function switchWs(id){
+  if(id===S.workspaceId){ S.wsMenu=false; render(); return; }
+  S.wsMenu=false; S.workspaceId=id; S.data=null; render();
+  try{ await loadResults(); }
+  catch(e){ S.loadError=e.message; }
+  render();
+}
+function newBrand(){
+  S.wsMenu=false;
+  const cap=(S.planLimits&&S.planLimits.workspaces)||1;
+  if(S.workspaces.length>=cap){
+    toast(`${T('Your plan covers')} ${cap} ${cap>1?T('brands'):T('brand')}. ${T('Upgrade to add another.')}`,'error');
+    go('settings'); setTimeout(()=>setTab('billing'),30); return;
+  }
+  location.href='/uygulama?new=1';
+}
+
+/** Days left on the trial, from the real date rather than a hardcoded 7. */
+function trialDaysLeft(){
+  const t=S.org&&S.org.trialEndsAt; if(!t) return null;
+  return Math.max(0, Math.ceil((new Date(t)-Date.now())/86400000));
 }
 
 async function signOut(){
@@ -3293,6 +3632,7 @@ async function boot(){
   // a 30-character email overflows the sidebar and tells the user nothing.
   S.user={name: me.user.fullName || me.user.email.split('@')[0], mail: me.user.email};
   S.plan=me.org.plan; S.planLimits=me.limits; S.org=me.org; S.role=me.role;
+  S.workspaces=me.workspaces||[];
   // A visitor who switched the marketing site to English arrives with ?lang=en
   // and expects the product in English too; that choice wins for this visit and
   // is written back to the account.
