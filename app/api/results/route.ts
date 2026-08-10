@@ -111,6 +111,18 @@ export const GET = handler(async (req) => {
          group by a.id order by a.ran_at desc limit 1`,
   ]);
 
+  // Measurement quality. `degraded` is written per run when the judge could
+  // not be reached or the brand set changed under stored answers. It was
+  // recorded and never shown, so a customer could be reading a dashboard where
+  // every tone score is a floor value and nothing on screen said so.
+  const [quality] = await sql`
+    select count(*) filter (where degraded is not null)::int as degraded,
+           count(*)::int as total,
+           mode() within group (order by degraded) as reason
+      from answer_runs
+     where workspace_id = ${workspaceId}
+       and asked_at > now() - make_interval(days => ${days})`;
+
   // Self mentions, for share of voice against the tracked competitor set.
   const [selfCount] = await sql`
     select count(*)::int as n from run_brands rb join answer_runs ar on ar.id = rb.run_id
@@ -213,5 +225,10 @@ export const GET = handler(async (req) => {
     recentMentions: recent,
     scan: scanState[0] ?? null,
     audit: audit[0] ?? null,
+    quality: {
+      degraded: Number(quality?.degraded ?? 0),
+      total: Number(quality?.total ?? 0),
+      reason: (quality?.reason as string) ?? null,
+    },
   });
 });
