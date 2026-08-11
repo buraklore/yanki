@@ -45,7 +45,7 @@ export const GET = handler(async (req) => {
   const [latestRow] = await sql`
     select * from daily_scores where workspace_id = ${workspaceId} order by scan_date desc limit 1`;
 
-  const [series, cells, sources, competitors, recent, scanState, audit] = await Promise.all([
+  const [series, cells, sources, competitors, recent, scanState, audit, rivalGaps] = await Promise.all([
     sql`select scan_date, score, ci, low_confidence, mention_rate, citation_rate, share_of_voice
           from daily_scores
          where workspace_id = ${workspaceId} and scan_date > current_date - ${days}::int
@@ -88,6 +88,49 @@ export const GET = handler(async (req) => {
          where ar.workspace_id = ${workspaceId} and ar.mentioned
            and ar.engine_key = any(${allowed})
          order by ar.asked_at desc limit 12`,
+
+    /**
+     * Per-query competitive gap: for every tracked query, the rival that ranks
+     * best in the answers, and how that compares with us.
+     *
+     * Every tool in this category reports a share-of-voice total and stops.
+     * A total tells a marketer they are losing; it never tells them *where*,
+     * and "where" is the only form of the fact that can be worked on. This is
+     * the join the product exists to make — run_brands already holds it.
+     */
+    sql`
+      with self_rank as (
+        select ar.prompt_id, avg(rb.rank)::numeric as r
+          from run_brands rb
+          join answer_runs ar on ar.id = rb.run_id
+         where ar.workspace_id = ${workspaceId} and rb.is_self
+           and ar.asked_at > now() - make_interval(days => ${days})
+           and ar.engine_key = any(${allowed})
+         group by ar.prompt_id
+      ),
+      rival_rank as (
+        select ar.prompt_id, c.name,
+               avg(rb.rank)::numeric as r,
+               count(*)::int as hits,
+               row_number() over (partition by ar.prompt_id order by avg(rb.rank)) as pos
+          from run_brands rb
+          join answer_runs ar on ar.id = rb.run_id
+          join competitors c on c.id = rb.competitor_id
+         where ar.workspace_id = ${workspaceId} and rb.competitor_id is not null
+           and ar.asked_at > now() - make_interval(days => ${days})
+           and ar.engine_key = any(${allowed})
+         group by ar.prompt_id, c.name
+      )
+      select p.id as prompt_id, p.text, p.intent, p.volume,
+             round(s.r, 2) as self_rank,
+             r.name as rival_name,
+             round(r.r, 2) as rival_rank,
+             r.hits as rival_hits
+        from prompts p
+        left join self_rank s on s.prompt_id = p.id
+        left join rival_rank r on r.prompt_id = p.id and r.pos = 1
+       where p.workspace_id = ${workspaceId} and p.active
+       order by p.volume desc`,
 
     sql`select id, status, scan_date, queued_jobs, started_at, finished_at, error,
                (select count(*)::int from scan_jobs j
@@ -223,6 +266,13 @@ export const GET = handler(async (req) => {
     competitors,
     selfMentions: selfCount?.n ?? 0,
     recentMentions: recent,
+    rivalGaps: rivalGaps.map(g => ({
+      promptId: g.prompt_id, text: g.text, intent: g.intent, volume: Number(g.volume),
+      selfRank: g.self_rank === null ? null : Number(g.self_rank),
+      rivalName: g.rival_name ?? null,
+      rivalRank: g.rival_rank === null ? null : Number(g.rival_rank),
+      rivalHits: g.rival_hits === null ? 0 : Number(g.rival_hits),
+    })),
     scan: scanState[0] ?? null,
     audit: audit[0] ?? null,
     quality: {
