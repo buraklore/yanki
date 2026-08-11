@@ -301,7 +301,9 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   display:flex;flex-direction:column;
   background:linear-gradient(155deg,#1E3A8A,#2D4FD6 50%,#3B6BF5)}
 .ins.crit{background:linear-gradient(155deg,#7A1330,#B01E3C 48%,#D93A56)}
+.ins.warn{background:linear-gradient(155deg,#7A4A0B,#B0740F 48%,#D99A1A)}
 .ins.opp{background:linear-gradient(155deg,#0E4B3A,#12795C 48%,#1AA37A)}
+.ins.good{background:linear-gradient(155deg,#123C6B,#1D5FA8 48%,#2C86D9)}
 .ins.wait{background:linear-gradient(155deg,#1F2433,#2C3346 50%,#3A4459)}
 .ins::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(75% 55% at 12% 0%,rgba(255,255,255,.18),transparent 62%)}
@@ -324,7 +326,9 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   font-size:13.5px;font-weight:650;letter-spacing:-.01em;cursor:pointer;
   box-shadow:0 6px 22px rgba(0,0,0,.3);transition:transform .14s ease,box-shadow .14s ease}
 .ins.crit .ins-cta{color:#7A1330}
+.ins.warn .ins-cta{color:#5C3707}
 .ins.opp  .ins-cta{color:#0E4B3A}
+.ins.good .ins-cta{color:#123C6B}
 .ins-cta:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.38)}
 .ins-cta span{transition:transform .14s ease}
 .ins-cta:hover span{transform:translateX(3px)}
@@ -860,6 +864,10 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'ZAYIF':'ZAYIF',
+  'GÜÇLÜ':'GÜÇLÜ',
+  'GELİŞTİRİLEBİLİR':'GELİŞTİRİLEBİLİR',
+  '/ 100 görünürlük':'/ 100 görünürlük',
   'KRİTİK':'KRİTİK',
   'FIRSAT':'FIRSAT',
   'ÖLÇÜM SÜRÜYOR':'ÖLÇÜM SÜRÜYOR',
@@ -2723,27 +2731,95 @@ function insightText(){
            : 'Run the site audit to see where to start.')
   };
 
-  const lvlTr = d.total<15?'kritik':d.total<35?'zayıf':d.total<60?'orta':'güçlü';
-  const lvl   = d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
+  /* ------------------------------------------------------------------
+     Severity ladder.
+     The card used to have exactly two states: red below 10, green above.
+     A brand at 75 got the same green "you are not being clicked" verdict as
+     one at 25, whether or not it was actually being cited — so the colour
+     carried no information and the headline was sometimes simply false.
+     The ladder below is driven by the data it describes.
+     ------------------------------------------------------------------ */
+  const promptsSeen = new Set(d.cells.map(c => c.p.id)).size;
+  const named       = new Set(d.cells.filter(c => c.m > 0).map(c => c.p.id)).size;
+  // Named often but rarely the cited source: the mention is there, the click
+  // is going elsewhere. This is a gap worth naming, not a general weakness.
+  const citeGap = named >= Math.max(2, promptsSeen * 0.4) && cited < named * 0.5;
 
-  return tr ? {
+  if (d.total < 35) return tr ? {
+    lvl:'warn', tag:'ZAYIF',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 görünürlük',
+    head:'Görünürlüğünüz rakiplerin gerisinde',
+    body:`${b.name} ${promptsSeen} sorgunun ${named} tanesinde anılıyor, ancak cevapların `+
+         `çoğunda ya sona kalıyor ya da hiç geçmiyor. Yapay zeka cevaplarında ilk anılan `+
+         `birkaç marka tıklanmanın neredeyse tamamını alır; alt sıralarda olmak, olmamaktan `+
+         `çok az farklıdır. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}/100).`
+  } : {
+    lvl:'warn', tag:'WEAK',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 visibility',
+    head:'Your visibility trails your competitors',
+    body:`${b.name} is named on ${named} of ${promptsSeen} queries, but in most answers it `+
+         `arrives last or not at all. The first brands named in an AI answer take almost all `+
+         `of the click; being far down the list is barely different from being absent. `+
+         `Weakest platform is ${worst.n} (${worst.score.toFixed(1)}/100).`
+  };
+
+  if (citeGap) return tr ? {
     lvl:'opp', tag:'FIRSAT',
-    metric:String(cited), metricLabel:`/ ${new Set(d.cells.map(c=>c.p.id)).size} sorguda kaynak`,
+    metric:String(cited), metricLabel:`/ ${named} sorguda kaynak`,
     head:'Anılıyorsunuz, tıklanan siz değilsiniz',
-    body:`${b.name} ${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size} sorguda anılıyor, görünürlük ${lvlTr} seviyede `+
-         `(${d.total.toFixed(1)}/100). Ancak siteniz yalnızca ${cited} sorguda kaynak olarak gösteriliyor — `+
-         `yani marka anılıyor, trafik başka siteye gidiyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
-         `Organization ve FAQ şeması ile kanonik URL düzeni, kısa vadede en hızlı kazanımı veren iki müdahale.`
+    body:`${b.name} ${named} sorguda anılıyor ama siteniz yalnızca ${cited} tanesinde kaynak `+
+         `olarak gösteriliyor. Marka bilinirliği çalışıyor, trafik başka siteye gidiyor — `+
+         `aradaki fark doğrudan kaybedilen ziyaret demek. Organization ve FAQ şeması ile `+
+         `kanonik URL düzeni, bu boşluğu kapatan en hızlı iki müdahale.`
   } : {
     lvl:'opp', tag:'OPPORTUNITY',
-    metric:String(cited), metricLabel:`/ ${new Set(d.cells.map(c=>c.p.id)).size} queries cite you`,
+    metric:String(cited), metricLabel:`/ ${named} queries cite you`,
     head:'You get named, someone else gets the click',
-    body:`${b.name} is named on ${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size} queries with ${lvl} visibility `+
-         `(${d.total.toFixed(1)}/100). But your site is cited as a source on only ${cited} of them — `+
-         `the brand gets named while the traffic goes elsewhere. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). `+
-         `Organization and FAQ schema plus a clean canonical URL structure are the two fastest wins here.`
+    body:`${b.name} is named on ${named} queries but your site is cited as the source on only `+
+         `${cited}. Awareness is working; the traffic is going elsewhere, and the gap between `+
+         `those two numbers is lost visits. Organization and FAQ schema plus a clean canonical `+
+         `URL structure are the two fastest ways to close it.`
+  };
+
+  if (d.total >= 60) return tr ? {
+    lvl:'good', tag:'GÜÇLÜ',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 görünürlük',
+    head:'Konumunuz güçlü — korumaya oynayın',
+    body:`${b.name} takip edilen sorgularda düzenli olarak öneriliyor ve ${cited} sorguda `+
+         `siteniz kaynak gösteriliyor. Bu konum kalıcı değil: yapay zeka cevapları üçüncü `+
+         `taraf kaynaklardan besleniyor ve rakip içeriği tazelediğinde sıralama haftalar `+
+         `içinde değişebilir. En zayıf halkanız ${worst.n} (${worst.score.toFixed(1)}/100) — `+
+         `düşüş genelde en zayıf platformdan başlar.`
+  } : {
+    lvl:'good', tag:'STRONG',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 visibility',
+    head:'Strong position — play to defend it',
+    body:`${b.name} is recommended consistently on the tracked queries, with your site cited `+
+         `on ${cited} of them. The position is not permanent: AI answers are fed by third-party `+
+         `sources, and a competitor refreshing their content can move the ranking within weeks. `+
+         `Your weakest link is ${worst.n} (${worst.score.toFixed(1)}/100) — decline usually `+
+         `starts at the weakest platform.`
+  };
+
+  return tr ? {
+    lvl:'opp', tag:'GELİŞTİRİLEBİLİR',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 görünürlük',
+    head:'Zemin sağlam, üstüne inşa edilebilir',
+    body:`${b.name} ${named}/${promptsSeen} sorguda anılıyor ve ${cited} sorguda kaynak `+
+         `gösteriliyor — temel kurulmuş. Buradan sonraki kazanç sıralamadan gelir: cevabın `+
+         `içinde kaçıncı anıldığınız, anılıp anılmadığınız kadar belirleyici. En zayıf `+
+         `platform ${worst.n} (${worst.score.toFixed(1)}/100), en hızlı kazanç orada.`
+  } : {
+    lvl:'opp', tag:'ROOM TO GROW',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 visibility',
+    head:'Solid base, room to build on it',
+    body:`${b.name} is named on ${named}/${promptsSeen} queries and cited on ${cited} — the `+
+         `foundation is there. The next gain comes from position: where you are named inside `+
+         `the answer matters as much as whether you are named at all. Weakest platform is `+
+         `${worst.n} (${worst.score.toFixed(1)}/100); that is where the fastest gain sits.`
   };
 }
+
 async function answerModal(runId){
   openModal(T('Raw answer'),
     `<div class="empty"><div class="ic">◎</div>${T('Loading the answer…')}</div>`);
