@@ -157,7 +157,7 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 
 /* ---------- app shell ---------- */
 #app{display:none;min-height:100vh}
-#app.on{display:grid;grid-template-columns:262px minmax(0,1fr)}
+#app.on{display:grid;grid-template-columns:278px minmax(0,1fr)}
 #sb{border-right:1px solid var(--border);background:#08090D;padding:14px 12px;display:flex;flex-direction:column;gap:13px;
   height:100vh;position:sticky;top:0;overflow-y:auto}
 .sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;padding:4px 8px 13px;border-bottom:1px solid var(--border)}
@@ -180,21 +180,21 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 /* --- Zone 1: identity ------------------------------------------------- */
 .sb-id{padding:15px 14px 14px;border-bottom:1px solid #191C24;background:#0A0C10}
 .sb-logo{display:flex;align-items:center;gap:9px;padding:0 2px 14px;border:0}
-.mk{width:24px;height:24px;border-radius:5px;flex:none;background:#2D6BE8;
-  display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em}
-.sb-logo .wm{font-size:14px;font-weight:700;letter-spacing:.09em;color:var(--fg)}
+.mk{width:27px;height:27px;border-radius:6px;flex:none;background:#2D6BE8;
+  display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;letter-spacing:-.02em}
+.sb-logo .wm{font-size:15.5px;font-weight:700;letter-spacing:.08em;color:var(--fg)}
 
 /* Client selector. Square corners and a monogram plate rather than a rounded
    avatar: this is a record being selected, not a person being greeted. */
 .sb-ws{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;
   background:#10131A;border:1px solid #212530;border-radius:6px;padding:8px 9px;color:var(--fg)}
 .sb-ws:hover{border-color:#2E3441;background:#141822}
-.sb-ws .sq{width:28px;height:28px;border-radius:4px;flex:none;display:grid;place-items:center;
-  font-size:12px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
+.sb-ws .sq{width:32px;height:32px;border-radius:5px;flex:none;display:grid;place-items:center;
+  font-size:13.5px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
 .sb-ws .wt{min-width:0;display:grid;flex:1;gap:2px}
-.sb-ws .wt b{font-size:12.5px;font-weight:600;letter-spacing:-.005em;
+.sb-ws .wt b{font-size:14.5px;font-weight:600;letter-spacing:-.01em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-ws .wt i{font-style:normal;font-size:10px;color:#6B7385;letter-spacing:.02em;
+.sb-ws .wt i{font-style:normal;font-size:11.5px;color:#6B7385;letter-spacing:.01em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-ws .cv{flex:none;width:14px;height:14px;color:#5A6274}
 .sb-ws .cv svg{width:100%;height:100%;display:block}
@@ -203,16 +203,16 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    on a scale; the same number in a sentence states nothing. */
 .sb-meter{margin-top:12px}
 .sb-meter .mrow{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
-.sb-meter .ml{font-size:9px;font-weight:700;letter-spacing:.15em;color:#5A6274}
-.sb-meter .mu{font-family:var(--mono);font-size:9.5px;color:#4E5665;margin-left:2px}
+.sb-meter .ml{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:#5A6274}
+.sb-meter .mu{font-family:var(--mono);font-size:10.5px;color:#4E5665;margin-left:2px}
 .sb-meter .mv{margin-left:auto;font-family:var(--mono);font-variant-numeric:tabular-nums;
-  font-size:14px;font-weight:600;letter-spacing:-.02em;color:var(--fg)}
+  font-size:16px;font-weight:600;letter-spacing:-.02em;color:var(--fg)}
 .sb-meter .mtrack{height:3px;border-radius:2px;background:#161A22;overflow:hidden}
 .sb-meter .mtrack i{display:block;height:100%;width:0;background:#2D6BE8;transition:width .45s ease}
 .sb-meter .mtrack i.mid{background:#D89A2B}
 .sb-meter .mtrack i.bad{background:#D4504F}
 .sb-meter .pill{display:flex;align-items:center;gap:6px;margin-top:9px;
-  font-size:10.5px;color:#6B7385;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  font-size:11.5px;color:#6B7385;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-meter .dot{width:5px;height:5px;border-radius:50%;flex:none;background:#5A6274}
 .sb-meter .dot.ok{background:#3FA46A}
 .sb-meter .dot.bad{background:#D4504F}
@@ -222,23 +222,6 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 /* --- Workspace menu --------------------------------------------------- */
 .sb-wswrap{position:relative}
 .wsmenu{display:none}
-.wsmenu.open{display:block;position:absolute;left:14px;right:14px;top:82px;z-index:40;
-  background:#10131A;border:1px solid #2E3441;border-radius:6px;padding:4px;
-  box-shadow:0 18px 44px rgba(0,0,0,.6);max-height:300px;overflow:auto}
-.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
-  border:0;border-radius:4px;padding:8px 9px;color:var(--fg);font-size:12px}
-.wsmenu button:hover{background:#181D27}
-.wsmenu button.on{background:#16233A}
-.wsmenu .sq{width:22px;height:22px;border-radius:4px;background:#16233A;color:#9CC0FF;
-  display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none}
-.wsmenu .t{min-width:0;display:grid}
-.wsmenu .t b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wsmenu .t i{font-style:normal;font-size:10px;color:#6B7385;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap}
-.wsmenu .ck{margin-left:auto;color:#6E9BF0;font-size:11px}
-.wsmenu .sep{height:1px;background:#212530;margin:4px 2px}
-.wsmenu .add{color:#8590A3}
-.wsmenu .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:#5A6274}
 
 /* --- Zone 2: navigation ----------------------------------------------
    Every item hangs off a single rule running the height of the column. The
@@ -246,11 +229,11 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    what turns a list of links into a structure. */
 .nav{display:grid;gap:0;padding:12px 14px 8px;position:relative}
 .nav::before{content:"";position:absolute;left:9px;top:18px;bottom:14px;width:1px;background:#1C2029}
-.nav .sec{font-size:9px;font-weight:700;letter-spacing:.16em;color:#4E5665;
-  padding:15px 0 6px 22px;position:relative}
+.nav .sec{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:#4E5665;
+  padding:16px 0 7px 22px;position:relative}
 .nav .sec:first-child{padding-top:2px}
-.nav a{position:relative;display:flex;align-items:center;gap:9px;padding:7px 9px 7px 22px;
-  border-radius:5px;font-size:12.5px;color:#8590A3;width:100%;line-height:1.35;letter-spacing:-.005em}
+.nav a{position:relative;display:flex;align-items:center;gap:11px;padding:9px 9px 9px 22px;
+  border-radius:6px;font-size:14px;color:#8590A3;width:100%;line-height:1.35;letter-spacing:-.005em}
 .nav a:hover{color:var(--fg);background:#10131A}
 .nav a.on{background:#111827;color:#EAF0FA;font-weight:500}
 /* The marker sits on the spine, covering it — the rule and the active
@@ -258,44 +241,47 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    structure instead of two decorations. */
 .nav a.on::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;
   border-radius:2px;background:#2D6BE8}
-.nav .g{width:16px;height:16px;flex:none;opacity:.55;stroke-width:1.7}
+.nav .g{width:19px;height:19px;flex:none;opacity:.6;stroke-width:1.7}
 .nav a:hover .g{opacity:.85}
 .nav a.on .g{opacity:1;color:#6E9BF0}
 .nav a span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Volume, in tabular figures. A tool that shows how much is inside each
    section looks like a tool with something inside it. */
 .nav .ct{flex:none;font-family:var(--mono);font-variant-numeric:tabular-nums;
-  font-size:10px;color:#4E5665}
+  font-size:11px;color:#4E5665}
 .nav a.on .ct,.nav a:hover .ct{color:#8590A3}
 
 /* --- Foot: status bar -------------------------------------------------- */
 .sb-foot{margin-top:auto;display:grid;gap:0;border-top:1px solid #191C24;background:#0A0C10}
-.plan-row{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:11.5px;
+.plan-row{display:flex;align-items:center;gap:9px;padding:12px 14px;font-size:13px;
   color:var(--fg);border-bottom:1px solid #191C24}
 .plan-row:hover{background:#10131A}
 .plan-row .pd{width:5px;height:5px;border-radius:50%;background:#3FA46A;flex:none}
 .plan-row b{font-weight:600;letter-spacing:.02em}
-.plan-row .mn{margin-left:auto;font-size:10px;color:#5A6274}
+.plan-row .mn{margin-left:auto;font-size:11.5px;color:#5A6274}
 .trial{padding:12px 14px;border-bottom:1px solid #191C24;background:#0C0F15}
 .trial .tr-top{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
-.trial .tr-top b{font-size:11.5px;font-weight:600}
-.trial .tr-d{margin-left:auto;font-family:var(--mono);font-size:10px;color:#6B7385}
+.trial .tr-top b{font-size:13px;font-weight:600}
+.trial .tr-d{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:#6B7385}
 .trial .tr-bar{height:3px;border-radius:2px;background:#161A22;overflow:hidden}
 .trial .tr-bar i{display:block;height:100%;background:#2D6BE8;transition:width .4s ease}
 .trial .btn{border-radius:5px;font-size:12px;padding:8px 12px;background:#2D6BE8;border-color:#2D6BE8}
 .trial .btn{margin-top:10px}
 .sb-acct{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 14px}
-.sb-acct .av{width:26px;height:26px;border-radius:4px;flex:none;display:grid;place-items:center;
-  font-size:10px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
+.sb-acct .av{width:32px;height:32px;border-radius:6px;flex:none;display:grid;place-items:center;
+  font-size:11.5px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
 .sb-acct .who{min-width:0;display:grid;flex:1;gap:1px}
-.sb-acct .who b{font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-acct .who i{font-style:normal;font-size:9.5px;color:#5A6274;
+.sb-acct .who b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-acct .who i{font-style:normal;font-size:10.5px;color:#5A6274;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-acct .ics{display:flex;gap:1px;flex:none}
-.sb-acct .ics button{width:26px;height:26px;display:grid;place-items:center;border-radius:4px;
-  background:none;border:0;color:#5A6274;padding:0}
+.sb-acct .ics{display:flex;gap:3px;flex:none}
+/* The two controls at the foot are the ones a user reaches for least often
+   and needs most reliably. At 26px with a 14px glyph they were a smaller tap
+   target than anything else in the column. */
+.sb-acct .ics button{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;
+  background:none;border:0;color:#7B8494;padding:0}
 .sb-acct .ics button:hover{color:var(--fg);background:#181D27}
-.sb-acct .ics svg{width:14px;height:14px;display:block}
+.sb-acct .ics svg{width:18px;height:18px;display:block}
 .sb-fb{display:none}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
@@ -311,9 +297,15 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .qm:hover{color:var(--fg);border-color:var(--mute2)}
 .sb-wswrap{position:relative}
 .wsmenu{display:none}
-.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
-  background:var(--card);border:1px solid var(--border);border-radius:11px;padding:5px;
-  box-shadow:0 14px 34px rgba(0,0,0,.42);max-height:290px;overflow:auto}
+.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;
+  background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:5px;
+  box-shadow:0 16px 40px rgba(0,0,0,.5)}
+/* Only the list scrolls; the add row stays pinned under it. */
+.wsmenu .list{max-height:264px;overflow-y:auto}
+.wsmenu .add{display:flex;align-items:center;gap:9px;color:#93B4FF;font-weight:500}
+.wsmenu .add .pl{width:22px;height:22px;border-radius:6px;border:1px dashed var(--border2);
+  display:grid;place-items:center;font-size:13px;color:#93B4FF;flex:none}
+.wsmenu .add:hover .pl{border-style:solid}
 .wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
   border:0;border-radius:8px;padding:8px 9px;color:var(--fg);font-size:12.5px}
 .wsmenu button:hover{background:rgba(255,255,255,.04)}
@@ -347,7 +339,7 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   background:linear-gradient(160deg,rgba(59,130,246,.1),var(--card2))}
 .trial .tr-top{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
 .trial .tr-top b{font-size:12.5px;font-weight:600}
-.trial .tr-d{margin-left:auto;font-size:10.5px;color:var(--mute2)}
+.trial .tr-d{margin-left:auto;font-size:11.5px;color:var(--mute2)}
 .trial .tr-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
 .trial .tr-bar i{display:block;height:100%;border-radius:99px;
   background:linear-gradient(90deg,#3B82F6,#8B5CF6);transition:width .4s ease}
@@ -491,7 +483,6 @@ svg{display:block;max-width:100%}
 .card,.pnl,.kpi,.acc,.tool-c,.g2>*,.g3>*,.g4>*,.road>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tw table{min-width:560px}
-.sb-acct .ics button{width:28px;height:28px;display:grid;place-items:center;border-radius:8px}
 .sb-foot>button{padding:9px 11px!important;border-radius:9px}
 .mh button{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;flex:none}
 .mh button:hover{background:rgba(255,255,255,.06)}
@@ -543,13 +534,19 @@ svg{display:block;max-width:100%}
     <div class="sb-id">
       <div class="sb-logo"><span class="mk">Y</span><span class="wm">YANKI</span></div>
 
-      <button class="sb-ws" onclick="toggleWsMenu()" aria-haspopup="true">
-        <span class="sq" id="wsInitial">A</span>
-        <span class="wt"><b id="wsName">brand</b><i id="wsHost"></i></span>
-        <span class="cv" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5 5 5-5"/></svg></span></button>
-      <div class="wsmenu" id="wsMenu"></div>
+      <!-- The menu is absolutely positioned against this wrapper. Without it,
+           the nearest positioned ancestor is the sidebar itself, so the panel
+           opened at 100% of a full-height column — six pixels below the fold,
+           which reads as "there is no menu". -->
+      <div class="sb-wswrap">
+        <button class="sb-ws" onclick="toggleWsMenu()" aria-haspopup="true">
+          <span class="sq" id="wsInitial">A</span>
+          <span class="wt"><b id="wsName">brand</b><i id="wsHost"></i></span>
+          <span class="cv" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5 5 5-5"/></svg></span></button>
+        <div class="wsmenu" id="wsMenu"></div>
+      </div>
 
       <!-- The client's score and the freshness of the reading, set as a meter
            rather than a sentence. This is the line an account manager checks
@@ -2386,13 +2383,18 @@ function renderNav(){
   const wsBox=$('#wsMenu');
   if(wsBox){
     wsBox.className = S.wsMenu ? 'wsmenu open' : 'wsmenu';
+    // The add row sits outside the scrolling list: with a dozen brands it would
+    // otherwise be the one control you have to scroll to reach.
     wsBox.innerHTML = S.wsMenu ? `
-      ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
-         <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
-         <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
-         ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
+      <div class="list">
+        ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
+           <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
+           <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
+           ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
+      </div>
       <div class="sep"></div>
-      <button class="add" onclick="newBrand()">＋ ${T('Add brand')}
+      <button class="add" onclick="newBrand()">
+        <span class="pl">+</span>${T('Add brand')}
         <span class="cnt">${S.workspaces.length}/${cap}</span></button>` : '';
   }
 
