@@ -788,6 +788,20 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Trial':'Deneme',
+  'Starter':'Başlangıç',
+  'Growth':'Büyüme',
+  'Business':'Kurumsal',
+  'Agency':'Ajans',
+  'Manage plan':'Planı yönet',
+  'days left':'gün kaldı',
+  'plan':'plan',
+  'Variant added — press Save to apply':'Varyant eklendi — uygulamak için Kaydet’e basın',
+  'sorguda görünür':'sorguda görünür',
+  'marka içinde':'marka içinde',
+  'sırada':'sırada',
+  'platform':'platform',
+  'sorgu':'sorgu',
   'platform error(s)':'platform hatası',
   'Collecting answers':'Cevaplar toplanıyor',
   'We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.':'Sorularınızı her yapay zeka platformuna soruyoruz. Tüm kontroller tamamlanır tamamlanmaz panel açılacak.',
@@ -799,13 +813,13 @@ const I18N = {
   'you can close this page; the scan continues':'bu sayfayı kapatabilirsiniz, tarama devam eder',
   'Each prompt is asked several times per platform, because AI answers vary between runs. Averaging them is what makes the score stable.':'Her soru, her platformda birkaç kez sorulur — çünkü yapay zeka aynı soruya her seferinde aynı cevabı vermez. Ortalamasını almak skoru istikrarlı kılan şeydir.',
   'What does this mean?':'Bu ne anlama geliyor?',
-  'across':'','platforms':'platform','tracked queries':'takip edilen sorgu',
+
   'points':'puan',
-  'named in':'',
-  'question-platform pairs':'sorgunun',
-  'ranked':'',
-  'among':'/',
-  'brands, by how often each is named':'marka içinde',
+
+
+
+
+
   '58 checks on your website':'58 teknik kriter',
   'The last scan collected nothing yet.':'Henüz veri toplanmadı.',
   'Operator':'Yönetici',
@@ -1293,7 +1307,16 @@ function localise(root){
 }
 
 /** Translate a UI string. Unknown keys pass through, so nothing ever blanks. */
-function T(s){ return S.lang==='tr' ? (I18N[s] || s) : s; }
+function T(s){
+  // `||` treated an intentionally empty translation as "missing" and fell back
+  // to the English key, which is how "named" and "ranked" surfaced inside
+  // Turkish sentences. Some phrases genuinely have no Turkish counterpart —
+  // English needs "ranked 3rd among 4 brands", Turkish just needs "3. / 4
+  // marka içinde" — so an empty string has to mean "render nothing".
+  if(S.lang!=='tr') return s;
+  const v=I18N[s];
+  return v===undefined ? s : v;
+}
 
 function langMenu(){
   openModal(T('Language'), `
@@ -2191,41 +2214,41 @@ const KPI_HELP = {
   visibility: {
     t: 'Görünürlük skoru',
     b: [
-      ['Neyi ölçer', '0 ile 100 arası bir puan. 100 demek: sorduğumuz her soruda, her platformda, ilk sırada anılıyorsunuz ve kaynak olarak siteniz gösteriliyor. 0 demek: hiçbir cevapta adınız geçmiyor.'],
-      ['Nasıl hesaplanır', 'Beş şeyin ağırlıklı ortalaması: adınızın anılması (%30), cevabın neresinde anıldığınız (%22), sitenizin kaynak gösterilmesi (%20), tavsiye edilme biçiminiz (%18) ve anılma tonu (%10).'],
+      ['Ne anlama gelir', '0–100 arası bir performans göstergesi. 100, takip edilen her sorguda markanızın ilk sırada önerildiği ve sitenizin kaynak olarak gösterildiği durumu tanımlar. 0, markanın hiçbir cevapta yer almadığı anlamına gelir.'],
+      ['Neyi kapsar', 'Beş bileşenin ağırlıklı bileşimi: markanın anılması (%30), cevap içindeki konumu (%22), sitenizin kaynak gösterilmesi (%20), öneri biçimi (%18) ve anılma tonu (%10).'],
     ],
   },
   mention: {
     t: 'Anılma oranı',
     b: [
-      ['Neyi ölçer', 'Takip ettiğiniz soruların yüzde kaçında markanızın adı geçti. Her soru her platformda ayrı bir kontrol sayılır.'],
-      ['Görünürlük skorundan farkı', 'Bu sadece "adım geçti mi" sorusunu yanıtlar. Nerede geçtiği, olumlu mu anıldığı, siteniz gösterildi mi — hiçbiri buraya girmez. Ham erişim ölçüsüdür.'],
-      ['Neden önce buna bakılır', 'Adınız hiç geçmiyorsa sıralamayı ya da tonu iyileştirmenin anlamı yok. Önce cevaba girmek gerekir.'],
+      ['Ne anlama gelir', 'Takip edilen sorguların yüzde kaçında markanızın adının geçtiği. Klasik erişim metriğinin yapay zeka karşılığı.'],
+      ['Görünürlük skorundan farkı', 'Yalnızca adın geçip geçmediğini ölçer; konum, ton ve kaynak gösterilme buraya girmez. Huninin en üst basamağıdır.'],
+      ['Neden önce buna bakılır', 'Marka cevapta hiç yer almıyorsa sıralama veya ton üzerinde çalışmanın karşılığı olmaz. Önce cevaba girmek gerekir.'],
     ],
   },
   sov: {
     t: 'Ses payı',
     b: [
-      ['Neyi ölçer', 'Aynı sorularda anılan tüm markalar arasında sizin payınız. Siz ve takip ettiğiniz rakipler toplam %100 eder.'],
-      ['Sıralama ne anlama gelir', 'Kaçıncı sırada olduğunuz, kaç marka arasında. Bu liste yalnızca sizin eklediğiniz rakipleri içerir — piyasanın tamamını değil. Rakip eklemek ya da çıkarmak bu sayıyı değiştirir.'],
-      ['Görünürlük skorundan farkı', 'Görünürlük skoru sizi tek başına ölçer; ses payı rakiplerinize göre ölçer. Skorunuz sabit kalırken rakibiniz hızlandıysa ses payınız düşer.'],
+      ['Ne anlama gelir', 'Aynı sorgularda anılan markalar arasındaki payınız. Siz ve takip listenizdeki rakipler toplamda %100 eder.'],
+      ['Sıralama neye göre', 'Anılma sıklığına göre. Liste yalnızca sizin tanımladığınız rakip setini kapsar, pazarın tamamını değil — rakip eklemek veya çıkarmak payı değiştirir.'],
+      ['Görünürlük skorundan farkı', 'Görünürlük skoru mutlak performansı, ses payı rekabetçi konumu ölçer. Skorunuz sabit kalsa da rakip daha hızlı büyüyorsa ses payınız geriler.'],
     ],
   },
   audit: {
     t: 'Denetim skoru',
     b: [
-      ['Neyi ölçer', 'Web sitenizin, yapay zeka tarafından okunmaya ve alıntılanmaya ne kadar hazır olduğu. 0 ile 100 arası.'],
-      ['Nasıl hesaplanır', 'Sitenizde 58 teknik kontrol çalıştırılır: yapılandırılmış veri, başlık düzeni, içerik netliği, sayfa hızı, yazar bilgisi, taranabilirlik gibi. Her başarısız kontrol puan düşürür.'],
-      ['Görünürlük skorundan farkı', 'Görünürlük skoru yapay zekanın ne söylediğini ölçer — sonuç. Denetim skoru sitenizin kendi durumunu ölçer — sebep. Denetimi düzeltmek görünürlüğü zamanla yukarı çeker, tersi olmaz.'],
-      ['Ne iyidir', '80 üzeri iyi, 60 altı ciddi eksik var demektir. Aksiyon Planı hangi kontrolün başarısız olduğunu ve nasıl düzeltileceğini gösterir.'],
+      ['Ne anlama gelir', 'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlık düzeyi. 0–100 arası.'],
+      ['Neyi kapsar', '58 teknik kriter: yapılandırılmış veri, başlık hiyerarşisi, içerik netliği, sayfa hızı, yazar bilgisi, taranabilirlik ve benzeri. Başarısız her kriter puan düşürür.'],
+      ['Görünürlük skorundan farkı', 'Görünürlük skoru çıktıyı ölçer — yapay zekanın ne söylediğini. Denetim skoru girdiyi ölçer — sitenizin durumunu. Girdiyi düzeltmek çıktıyı zamanla yukarı çeker; tersi işlemez.'],
+      ['Hedef aralık', '80 üzeri sağlıklı, 60 altı ciddi teknik eksik. Öncelik sırası Aksiyon Planı sekmesinde, her kriter için uygulanabilir düzeltmeyle birlikte verilir.'],
     ],
   },
   trend: {
     t: 'Görünürlük trendi',
     b: [
-      ['Grafik neyi gösterir', 'Dikey eksen görünürlük skorunuz, 0 ile 100 arası. Yatay eksen zaman: en sağdaki nokta bugün, sola gidildikçe geçmiş günler.'],
-      ['Neden dalgalanır', 'Yapay zeka cevapları gün gün değişir. Aynı soruya bugün adınızı anıp yarın anmaması olağandır. Bu yüzden tek günlük düşüşe tepki vermeyin.'],
-      ['Nasıl okunmalı', 'Dört haftalık eğime bakın. Üç gün üst üste düşüş bir sinyal değildir; üç hafta üst üste düşüş sinyaldir.'],
+      ['Grafik ne gösterir', '100 üzerinden günlük görünürlük skorunuz. En sağdaki nokta bugün.'],
+      ['Dalgalanma neden olur', 'Yapay zeka cevapları gün içinde değişir; aynı sorguda bugün anılıp yarın anılmamak olağandır. Bu, ölçüm hatası değil mecranın doğasıdır.'],
+      ['Nasıl okunmalı', 'Kampanya etkisini dört haftalık eğimde arayın. Üç günlük düşüş sinyal değildir; üç haftalık düşüş müdahale gerektirir.'],
     ],
   },
 };
@@ -2367,7 +2390,7 @@ VIEWS.dashboard=()=>{
       ${kpiHelp('visibility')}</div>
       ${d.ready
         ? `<div class="v">${d.total.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
-           <div class="d">${T('across')} ${allowed} ${T('platforms')} · ${d.cells.length} ${T('tracked queries')}</div>`
+           <div class="d">${allowed} ${T('platform')} · ${d.cells.length} ${T('sorgu')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d">${T('No scan yet')}</div>`}</div>
 
@@ -2375,7 +2398,7 @@ VIEWS.dashboard=()=>{
       ${kpiHelp('mention')}</div>
       ${d.cells.length
         ? `<div class="v">${d.mentionRate.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${T('named in')} ${d.cells.filter(c=>c.m>0).length} ${T('of')} ${d.cells.length} ${T('question-platform pairs')}</div>`
+           <div class="d">${d.cells.filter(c=>c.m>0).length} / ${d.cells.length} ${T('sorguda görünür')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d">${T('Waiting for the first results')}</div>`}</div>
 
@@ -2383,7 +2406,7 @@ VIEWS.dashboard=()=>{
       ${kpiHelp('sov')}</div>
       ${S.rivals.length
         ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${T('ranked')} ${myPos}${T('.')} ${T('among')} ${sov.length} ${T('brands, by how often each is named')}</div>`
+           <div class="d">${sov.length} ${T('marka içinde')} ${myPos}. ${T('sırada')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d"><a href="#" onclick="go('rivals');return false"
              style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
@@ -2487,10 +2510,9 @@ function insightText(){
   const tr = S.lang==='tr';
 
   if(!d.ready || S.scanState && S.scanState.pending>0) return tr ? {
-    head:'Tarama sürüyor',
-    body:'Skor cevaplar geldikçe yeniden hesaplanıyor, yani tarama boyunca yükseliyor. '+
-         'Tarama bitmeden görünürlük hakkında hüküm vermek yanıltıcıdır — bir marka ilk on cevapta '+
-         'olmayıp sonraki yirmide görünebilir. Taramanın bitmesini bekleyin.'
+    head:'Ölçüm devam ediyor',
+    body:'Veriler geldikçe skor yeniden hesaplanıyor. Ölçüm tamamlanmadan çıkarılacak sonuç '+
+         'yanıltıcı olur; marka ilk sorgularda görünmeyip sonrakilerde öne çıkabilir.'
   } : {
     head:'Scan still running',
     body:'The score is recalculated as answers come back, so it climbs while the scan runs. '+
@@ -2499,12 +2521,13 @@ function insightText(){
   };
 
   if(d.total<10) return tr ? {
-    head:'Görünürlük tüm AI platformlarında kritik',
-    body:`${b.name} takip edilen platformlarda ${d.total.toFixed(1)}/100 alıyor; bu neredeyse tam bir yokluk demek. `+
-         `Marka AI cevaplarında nadiren yüzeye çıkıyor ve acilen temel görünürlüğe ihtiyacı var. `+
+    head:'Görünürlük kritik seviyede',
+    body:`${b.name} takip edilen platformlarda ${d.total.toFixed(1)}/100 görünürlük skoruna sahip. `+
+         `Marka, kullanıcıların yapay zekaya sorduğu satın alma sorularında pratikte hiç önerilmiyor — `+
+         `bu sorgulardan gelen trafiğin tamamı rakiplere gidiyor. `+
          (d.auditRanAt
-           ? `Denetiminizdeki ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} başarısız faktör ilk bakılacak yer.`
-           : 'Hangi teknik sinyallerin sizi engellediğini öğrenmek için bir site denetimi çalıştırın.')
+           ? `Site denetiminde ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} kriter başarısız; öncelik sırası Aksiyon Planı'nda.`
+           : 'İlk adım site denetimi: hangi teknik eksiklerin görünürlüğü engellediğini gösterir.')
   } : {
     head:'Visibility Is Critical Across All AI Platforms',
     body:`${b.name} scores ${d.total.toFixed(1)}/100 across the tracked platforms, which means near-total absence. `+
@@ -2514,14 +2537,15 @@ function insightText(){
            : 'Run a site audit to find out which technical signals are blocking you.')
   };
 
-  const lvlTr = d.total<15?'kritik':d.total<35?'düşük':d.total<60?'orta':'güçlü';
+  const lvlTr = d.total<15?'kritik':d.total<35?'zayıf':d.total<60?'orta':'güçlü';
   const lvl   = d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
 
   return tr ? {
-    head:`Atıf sayısını ${cited}'ten ${Math.max(cited*2,12)}+'a çıkarın`,
-    body:`${b.name} için ${d.cells.filter(c=>c.m>0).length} bahis ve ${lvlTr} görünürlük (${d.total.toFixed(1)}) var; `+
-         `ancak alan adınız yalnızca ${cited} sorguda kaynak gösteriliyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
-         `Organization ve FAQ schema ile kanonik URL düzeni, kısa vadede atıf sayısını ikiye katlayabilir.`
+    head:`Kaynak gösterilme sayısını ${cited} → ${Math.max(cited*2,12)}+ seviyesine taşıyın`,
+    body:`${b.name} ${d.cells.filter(c=>c.m>0).length} sorguda anılıyor ve görünürlük ${lvlTr} seviyede `+
+         `(${d.total.toFixed(1)}/100). Ancak siteniz yalnızca ${cited} sorguda kaynak olarak gösteriliyor — `+
+         `yani marka anılıyor, trafik başka siteye gidiyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
+         `Organization ve FAQ şeması ile kanonik URL düzeni, kısa vadede en hızlı kazanımı veren iki müdahale.`
   } : {
     head:`Increase Website Citations from ${cited} to ${Math.max(cited*2,12)}+`,
     body:`${b.name} has ${d.cells.filter(c=>c.m>0).length} mentions and ${lvl} visibility (${d.total.toFixed(1)}), `+
