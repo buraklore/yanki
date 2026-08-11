@@ -157,7 +157,7 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 
 /* ---------- app shell ---------- */
 #app{display:none;min-height:100vh}
-#app.on{display:grid;grid-template-columns:274px minmax(0,1fr)}
+#app.on{display:grid;grid-template-columns:304px minmax(0,1fr)}
 #sb{border-right:1px solid var(--border);background:#08090D;padding:14px 12px;display:flex;flex-direction:column;gap:13px;
   height:100vh;position:sticky;top:0;overflow-y:auto}
 .sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;padding:4px 8px 13px;border-bottom:1px solid var(--border)}
@@ -172,7 +172,7 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    click apart, and frees the panel beside it to be about the client that is
    loaded rather than about choosing one.
    ===================================================================== */
-#sb{padding:0;gap:0;display:grid;grid-template-columns:56px minmax(0,1fr);
+#sb{padding:0;gap:0;display:grid;grid-template-columns:62px minmax(0,1fr);
   background:#07080B;border-right:1px solid #171A21}
 
 /* --- Rail ------------------------------------------------------------- */
@@ -194,10 +194,6 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 /* The name comes from the native title attribute rather than a styled ::after:
    the rail scrolls, and a scroll container clips its own overflow, so a CSS
    tooltip was being cut off by the very element it belonged to. */
-.rail-add{width:34px;height:34px;border-radius:9px;border:1px dashed #262B36;background:none;
-  color:#4E5665;display:grid;place-items:center;margin-top:2px;padding:0}
-.rail-add:hover{color:#9CC0FF;border-color:#2E5AA8;border-style:solid}
-.rail-add svg{width:15px;height:15px}
 .rail-foot{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:10px}
 .rail-foot button{width:30px;height:30px;border-radius:7px;border:0;background:none;color:#4E5665;
   display:grid;place-items:center;padding:0}
@@ -207,10 +203,38 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 /* --- Panel ------------------------------------------------------------ */
 .col{display:flex;flex-direction:column;min-width:0;background:#07080B}
 .col-hd{padding:14px 14px 13px;border-bottom:1px solid #171A21;background:#0A0C10}
-.ch-top{display:grid;gap:3px;min-width:0;margin-bottom:13px}
+.ch-wrap{position:relative;margin-bottom:13px}
+.ch-top{display:flex;align-items:center;gap:9px;width:100%;min-width:0;text-align:left;
+  background:none;border:0;padding:0;color:var(--fg);border-radius:7px}
+.ch-top:hover{background:#0F1218}
+.ch-top .t{display:grid;gap:2px;min-width:0;flex:1;padding:4px 0 4px 4px}
 .ch-top b{font-size:14px;font-weight:650;letter-spacing:-.015em;color:var(--fg);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ch-top .host{font-size:10.5px;color:#5E6675;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-top .cv{flex:none;width:15px;height:15px;color:#5A6274;margin-right:4px}
+.ch-top .cv svg{width:100%;height:100%;display:block}
+.wsmenu{display:none}
+.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;
+  background:#10131A;border:1px solid #2E3441;border-radius:8px;padding:4px;
+  box-shadow:0 18px 44px rgba(0,0,0,.6)}
+.wsmenu .list{max-height:264px;overflow-y:auto}
+.wsmenu .add .pl{width:24px;height:24px;border-radius:5px;border:1px dashed #2E3441;
+  display:grid;place-items:center;font-size:13px;color:#6E9BF0;flex:none}
+.wsmenu .add:hover .pl{border-style:solid;border-color:#2E5AA8}
+.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;border-radius:5px;padding:8px 9px;color:var(--fg);font-size:12.5px}
+.wsmenu button:hover{background:#181D27}
+.wsmenu button.on{background:#16233A}
+.wsmenu .sq{width:24px;height:24px;border-radius:5px;background:#16233A;color:#9CC0FF;
+  display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none}
+.wsmenu .t{min-width:0;display:grid;flex:1}
+.wsmenu .t b{font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .t i{font-style:normal;font-size:10px;color:#5E6675;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .ck{margin-left:auto;color:#6E9BF0;font-size:11px}
+.wsmenu .sep{height:1px;background:#212530;margin:4px 2px}
+.wsmenu .add{color:#9CC0FF;font-weight:500}
+.wsmenu .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:#5A6274}
 
 /* The reading as a position on a scale, not a sentence. */
 .sb-meter .mrow{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
@@ -405,17 +429,7 @@ body.lt .finding button{background:#EAF2FE;border-color:#B6D3FA;color:#1B6EF3}
 .dash-t .gapbar i{display:block;height:100%;background:#FFA23A;border-radius:3px;min-width:2px}
 .dash-t .gapbar.full{background:#FF6B6B;border-color:transparent}
 
-/* --- Small multiples --------------------------------------------------- */
-.sparks{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px;padding:0 7px 4px}
-.spk{border:1px solid var(--d-line);border-radius:8px;padding:10px 11px 8px;background:var(--d-bg)}
-.spk .sh{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
-.spk .nm{font-size:11.5px;color:var(--d-txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.spk .sv{margin-left:auto;font-family:var(--d-mono);font-variant-numeric:tabular-nums;
   font-size:12.5px;font-weight:600;color:var(--d-txt)}
-.spk.off{opacity:.5}
-.spk.off .sv{font-family:inherit;font-size:10.5px;font-weight:400;color:var(--d-mut2)}
-.spk .sk{width:100%;height:26px;display:block}
-.spk .flat{height:26px;border-top:1px dashed var(--d-line2);margin-top:12px;opacity:.6}
 
 /* --- Source contest ----------------------------------------------------- */
 .srcs{display:grid;gap:3px;padding:0 7px}
@@ -467,25 +481,6 @@ body.lt .src.mine{background:#EAF2FE;box-shadow:inset 0 0 0 1px #C7DDFB}
   color:var(--mute2);font-size:10px;line-height:1;display:inline-grid;place-items:center;margin-left:5px;
   vertical-align:middle;padding:0}
 .qm:hover{color:var(--fg);border-color:var(--mute2)}
-.sb-wswrap{position:relative}
-.wsmenu{display:none}
-.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
-  background:var(--card);border:1px solid var(--border);border-radius:11px;padding:5px;
-  box-shadow:0 14px 34px rgba(0,0,0,.42);max-height:290px;overflow:auto}
-.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
-  border:0;border-radius:8px;padding:8px 9px;color:var(--fg);font-size:12.5px}
-.wsmenu button:hover{background:rgba(255,255,255,.04)}
-.wsmenu button.on{background:rgba(59,130,246,.12)}
-.wsmenu .sq{width:22px;height:22px;border-radius:6px;background:rgba(59,130,246,.16);
-  display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
-.wsmenu .t{min-width:0;display:grid}
-.wsmenu .t b{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wsmenu .t i{font-style:normal;font-size:10.5px;color:var(--mute2);overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap}
-.wsmenu .ck{margin-left:auto;color:#7FB2FF;font-size:11px}
-.wsmenu .sep{height:1px;background:var(--border);margin:5px 2px}
-.wsmenu .add{color:var(--mute)}
-.wsmenu .cnt{margin-left:auto;font-size:10.5px;color:var(--mute2)}
 
 /* Scan strip. Freshness is the first question a returning user has, so it sits
    above the nav rather than buried on the dashboard. */
@@ -704,9 +699,6 @@ svg{display:block;max-width:100%}
     <div class="rail">
       <a class="rail-mk" href="#" onclick="go('dashboard');return false" title="YANKI">Y</a>
       <div class="rail-cl" id="railClients"></div>
-      <button class="rail-add" onclick="newBrand()" title="Marka ekle" aria-label="Marka ekle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
       <!-- An avatar that signs you out is a trap: the picture says "you", the
            action says "leave". Two labelled icons instead. -->
       <div class="rail-foot">
@@ -723,9 +715,18 @@ svg{display:block;max-width:100%}
 
     <div class="col">
       <div class="col-hd">
-        <div class="ch-top">
-          <b id="wsName">brand</b>
-          <span class="host" id="wsHost"></span>
+        <!-- The brand name is the control. Adding a client belongs where the
+             client is named, not as an anonymous "+" on the far edge where it
+             sits beside avatars and reads as "add avatar". -->
+        <div class="ch-wrap">
+          <button class="ch-top" onclick="toggleWsMenu()" aria-haspopup="true">
+            <span class="t"><b id="wsName">brand</b>
+              <span class="host" id="wsHost"></span></span>
+            <span class="cv" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5 5 5-5"/></svg></span>
+          </button>
+          <div class="wsmenu" id="wsMenu"></div>
         </div>
         <div class="sb-meter">
           <div class="mrow"><span class="ml">GÖRÜNÜRLÜK</span>
@@ -1096,13 +1097,13 @@ const I18N = {
   'Go to action plan':'Aksiyon planını aç',
   'Visibility Trend':'Görünürlük seyri',
   'Platform Visibility Score':'Platform bazında görünürlük',
-  'How prominently your brand appears in AI responses (0–100)':'Her motorun markanıza verdiği yer (0–100)',
+  'How prominently your brand appears in AI responses (0–100)':'Platform bazında görünürlük puanınız (0–100)',
   'Recent Mentions':'Son anılmalar',
   'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın anıldığı sorgular — cevabın tamamı için satıra tıklayın',
   'Top Citing Domains':'Kaynak rekabeti',
   'Websites most cited by AI platforms in your industry':'Yapay zekanın bu kategoride dayandığı siteler',
   'No brand mentions found':'Henüz anılma yok',
-  'See the Opportunities tab for where to start':'Nereden başlayacağınızı Fırsatlar sekmesinde görün',
+  'See the Opportunities tab for where to start':'Önceliklendirilmiş aksiyonlar Fırsatlar sekmesinde',
   'No history yet — the first scan writes today\'s point.':'Henüz geçmiş yok — ilk tarama bugünün noktasını yazar.',
   'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.',
   'Last 7 days':'Son 7 gün',
@@ -1119,6 +1120,10 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'yapay zeka platformunda ölçülen görünürlük, ses payı ve rekabet konumunuz.':'yapay zeka platformunda ölçülen görünürlük, ses payı ve rekabet konumunuz.',
+  'Bu tablo rakip listesinden beslenir':'Bu tablo rakip listesinden beslenir',
+  'Ölçüm tamamlandığında rekabet karşılaştırması burada oluşur':'Ölçüm tamamlandığında rekabet karşılaştırması burada oluşur',
+  'Bu iyi haber: eklediğiniz rakiplerin hiçbiri sizden önde değil':'Bu iyi haber: eklediğiniz rakiplerin hiçbiri sizden önde değil',
   'Sıra':'Sıra',
   'bugün':'bugün',
   'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
@@ -1144,10 +1149,7 @@ const I18N = {
   'Hacim':'Hacim',
   'Siz':'Siz',
   'Önde olan':'Önde olan',
-  'Platform bazında seyir':'Platform bazında seyir',
-  'Her motor ayrı ayrı · son':'Her motor ayrı ayrı · son',
   'gün':'gün',
-  'ölçülmedi':'ölçülmedi',
   'Kaynak rekabeti':'Kaynak rekabeti',
   'Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz':'Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz',
   'Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.':'Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.',
@@ -1291,10 +1293,10 @@ const I18N = {
 
 
   '58 checks on your website':'58 teknik kriter',
-  'The last scan collected nothing yet.':'Henüz veri toplanmadı.',
+  'The last scan collected nothing yet.':'Son ölçümde hiç sonuç toplanmadı.',
   'Operator':'Yönetici',
   'platform errors, hidden from customers':'platform hataları, müşteriye gösterilmiyor',
-  'runs had no adjudication model, so tone and recommendation scored zero — the score is capped near 72.':'koşuda değerlendirme modeli çalışmadı; ton ve tavsiye sıfır puanlandı — skor tavanı 72 civarında kalıyor.',
+  'runs had no adjudication model, so tone and recommendation scored zero — the score is capped near 72.':'ölçümde değerlendirme modeli çalışmadı; ton ve tavsiye sıfır puanlandı, skor tavanı 72 civarında kalıyor.',
   'Brand details changed, so earlier results were recalculated. Tone and recommendation data fills in on the next scan.':'Marka bilgileri değişti, önceki sonuçlar yeniden hesaplandı. Ton ve tavsiye verileri bir sonraki taramada tamamlanacak.',
   'Not measured':'Ölçülmedi',
   'Not included in this measurement':'Bu ölçüme dahil edilmedi',
@@ -1350,7 +1352,7 @@ const I18N = {
   'Continue anyway?':'Yine de devam edilsin mi?',
   'Brand settings saved':'Marka ayarları kaydedildi',
   'Check keys':'Anahtarları kontrol et',
-  'Run a scan now':'Ölçümü başlat',
+  'Run a scan now':'Yeniden tara',
   'Scan in progress':'Tarama sürüyor',
   'checks left. Keep this page open; results appear as they arrive.':'kontrol kaldı. Bu sayfayı açık tutun; sonuçlar geldikçe görünür.',
   'Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.':'Her sorgu × platform hücresi, 5 koşunun ortalaması. Ham cevap için satıra tıklayın.',
@@ -2283,19 +2285,6 @@ function adopt(r) {
     sov,
     sources: (r.sources || []).map(s => ({ d: s.domain, v: s.citations, mine: s.mine, t: '', plats: [], first: s.first_seen, last: s.last_seen, trend: 1 })),
     series: (r.series || []).map(x => Number(x.score)),
-    // Per-platform history, keyed by engine. Missing days are left missing
-    // rather than zero-filled: a platform that was not measured on Tuesday
-    // did not score nothing on Tuesday.
-    engineSeries: (() => {
-      const out = {};
-      for (const row of (r.series || [])) {
-        const be = row.by_engine || {};
-        for (const k of Object.keys(be)) {
-          (out[k] ??= []).push(Number(be[k].score));
-        }
-      }
-      return out;
-    })(),
     seriesDates: (r.series || []).map(x => x.scan_date),
     audit,
     auditScore: r.audit ? Number(r.audit.total_score) : 0,
@@ -2638,15 +2627,21 @@ function renderNav(){
   // had no way to move between them.
   const cap=(S.planLimits&&S.planLimits.workspaces)||1;
   const wsBox=$('#wsMenu');
-  if(false && wsBox){
+  if(wsBox){
     wsBox.className = S.wsMenu ? 'wsmenu open' : 'wsmenu';
+    // The add row sits outside the scrolling list. Inside it, a customer with
+    // twelve brands has to scroll to the bottom to find "add" — and the one
+    // control that must always be reachable becomes the hardest to reach.
     wsBox.innerHTML = S.wsMenu ? `
-      ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
-         <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
-         <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
-         ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
+      <div class="list">
+        ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
+           <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
+           <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
+           ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
+      </div>
       <div class="sep"></div>
-      <button class="add" onclick="newBrand()">＋ ${T('Add brand')}
+      <button class="add" onclick="newBrand()">
+        <span class="pl">+</span>${T('Add brand')}
         <span class="cnt">${S.workspaces.length}/${cap}</span></button>` : '';
   }
 
@@ -2992,7 +2987,7 @@ VIEWS.dashboard=()=>{
   <div class="dash">
 
     <div class="dash-intro">
-      <span>${T('Brand performance across')} ${allowed} ${T('AI platforms — visibility, share of voice and where you stand against competitors.')}</span>
+      <span>${allowed} ${T('yapay zeka platformunda ölçülen görünürlük, ses payı ve rekabet konumunuz.')}</span>
       <span class="chipx">↻ ${T('Updates daily')}</span>
     </div>
 
@@ -3083,8 +3078,15 @@ VIEWS.dashboard=()=>{
               :`<span class="gapbar"><i style="width:${Math.min(100,(g.selfRank-g.rivalRank)/5*100)}%"></i></span>`}</td></tr>`).join('')}
         </tbody></table>
         <p class="note">${T('Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.')}</p>`
-        :`<div class="dash-empty"><div class="ic">◇</div>${T('Takip edilen sorgularda rakip sizi geçmiş değil')}<br>
-           <span>${T('Rakip ekledikçe bu tablo dolar')}</span></div>`}</div>
+        :`<div class="dash-empty"><div class="ic">◇</div>
+           ${!S.rivals.length
+             ? `${T('Bu tablo rakip listesinden beslenir')}<br>
+                <span><a href="#" onclick="go('rivals');return false">${T('Add competitors →')}</a></span>`
+             : !promptsSeen
+               ? `${T('Ölçüm tamamlandığında rekabet karşılaştırması burada oluşur')}`
+               : `${T('Takip edilen sorgularda rakip sizi geçmiş değil')}<br>
+                  <span>${T('Bu iyi haber: eklediğiniz rakiplerin hiçbiri sizden önde değil')}</span>`}
+           </div>`}</div>
     </div>
 
     <div class="dash-2">
@@ -3124,32 +3126,23 @@ VIEWS.dashboard=()=>{
           :`<div class="dash-empty"><div class="ic">◈</div>${T('No citations collected yet')}</div>`}</div></div>
     </div>
 
-    <!-- Added below, as asked: one trace per engine. The aggregate line above
-         hides the failure that matters most — holding steady overall while
-         collapsing on the platform that carries the heaviest weight. -->
-    <div class="dash-c">
-      <div class="hd"><div><h3>${T('Platform bazında seyir')}</h3>
-        <div class="sub">${T('Her motor ayrı ayrı · son')} ${S.range} ${T('gün')}</div></div></div>
-      <div class="bd"><div class="sparks">
-        ${d.plats.filter(p=>!p.locked).map(p=>{
-          const es=(d.engineSeries||{})[p.id]||[];
-          const on=p.measured!==false&&p.checks>0;
-          return `<div class="spk ${on?'':'off'}">
-            <div class="sh"><span class="nm">${esc(p.n)}</span>
-              <span class="sv">${on?p.score.toFixed(1):T('ölçülmedi')}</span></div>
-            ${on?miniSpark(es):`<div class="flat"></div>`}</div>`;
-        }).join('')}
-      </div></div>
-    </div>
   </div>`;
 };
 function trendChart(ser){
   if(!ser || ser.length<2) return `<div class="dash-empty"><div class="ic">◜</div>
     ${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
-  const W=680,H=190,PL=40,PR=14,PT=14,PB=26;
+  /* Sized for the narrow column it actually sits in. At 680×190 the viewBox
+     was scaled down to roughly half, which took the 10px axis labels with it
+     and left them unreadable. A smaller box means the text renders near its
+     intended size. */
+  const W=380,H=170,PL=30,PR=10,PT=12,PB=24;
   const lo=Math.min(...ser), hi=Math.max(...ser);
-  const pad=Math.max(2,(hi-lo)*0.25);
-  const y0=Math.max(0,Math.floor((lo-pad)/5)*5), y1=Math.min(100,Math.ceil((hi+pad)/5)*5);
+  // Round to a step that suits the range, so the axis reads 0/8/16 rather than
+  // 0/0/0 when everything sits under five points.
+  const span=Math.max(1,hi-lo);
+  const step=span<8?2:span<25?5:10;
+  const y0=Math.max(0,Math.floor((lo-span*0.3)/step)*step);
+  const y1=Math.min(100,Math.ceil((hi+span*0.3)/step)*step);
   const sx=i=>PL+i/(ser.length-1)*(W-PL-PR);
   const sy=v=>PT+(1-(v-y0)/((y1-y0)||1))*(H-PT-PB);
   const line=ser.map((v,i)=>(i?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1)).join(' ');
@@ -3164,31 +3157,15 @@ function trendChart(ser){
     ${[y0,(y0+y1)/2,y1].map(t=>`
       <line x1="${PL}" x2="${W-PR}" y1="${sy(t).toFixed(1)}" y2="${sy(t).toFixed(1)}"
         stroke="currentColor" stroke-opacity=".12"/>
-      <text x="${PL-9}" y="${(sy(t)+4).toFixed(1)}" text-anchor="end" font-size="10"
-        fill="currentColor" fill-opacity=".45">${t.toFixed(0)}</text>`).join('')}
+      <text x="${PL-7}" y="${(sy(t)+3.5).toFixed(1)}" text-anchor="end" font-size="9"
+        fill="currentColor" fill-opacity=".5">${t.toFixed(0)}</text>`).join('')}
     <path d="${area}" fill="url(#tgr)"/>
     <path d="${line}" fill="none" stroke="${col}" stroke-width="2"
       stroke-linejoin="round" stroke-linecap="round"/>
     <circle cx="${sx(ser.length-1).toFixed(1)}" cy="${sy(ser[ser.length-1]).toFixed(1)}" r="3.5" fill="${col}"/>
-    <text x="${PL}" y="${H-7}" font-size="10" fill="currentColor" fill-opacity=".45">-${S.range}g</text>
-    <text x="${W-PR}" y="${H-7}" text-anchor="end" font-size="10"
-      fill="currentColor" fill-opacity=".45">${T('bugün')}</text>
-  </svg>`;
-}
-
-/** One trace, no axes, no grid — it lives inside a 150px cell and the number
- *  beside it carries the value. Shape is the only job here. */
-function miniSpark(ser){
-  if(!ser||ser.length<2) return `<div class="flat"></div>`;
-  const W=100,H=26,lo=Math.min(...ser),hi=Math.max(...ser),rg=(hi-lo)||1;
-  const pts=ser.map((v,i)=>[i/(ser.length-1)*W, H-2-((v-lo)/rg)*(H-6)]);
-  const dd=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
-  const up=ser[ser.length-1]>=ser[0];
-  const col=up?'#35D07F':'#FF6B6B';
-  return `<svg class="sk" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-    <path d="${dd} L ${W} ${H} L 0 ${H} Z" fill="${col}" fill-opacity=".10"/>
-    <path d="${dd}" fill="none" stroke="${col}" stroke-width="1.5"
-      stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <text x="${PL}" y="${H-6}" font-size="9" fill="currentColor" fill-opacity=".5">-${S.range} ${T('gün')}</text>
+    <text x="${W-PR}" y="${H-6}" text-anchor="end" font-size="9"
+      fill="currentColor" fill-opacity=".5">${T('bugün')}</text>
   </svg>`;
 }
 
