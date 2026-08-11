@@ -163,32 +163,64 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;padding:4px 8px 13px;border-bottom:1px solid var(--border)}
 .mk{width:27px;height:27px;border-radius:8px;flex:none;background:linear-gradient(140deg,#3B82F6,#8B5CF6);
   display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
-.sb-user{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px}
-.sb-user .row{display:flex;align-items:center;gap:9px}
-.sb-user .av{width:33px;height:33px;border-radius:9px;background:rgba(59,130,246,.15);color:#93B4FF;display:grid;
-  place-items:center;font-size:12px;font-weight:700;border:1px solid rgba(59,130,246,.3)}
-.sb-user .ics{margin-left:auto;display:flex;gap:8px}
-.sb-user .ics button{background:none;border:0;color:var(--mute2);font-size:13px;padding:2px}
-.sb-user .ics button:hover{color:var(--fg)}
-.sb-user .lb{font-size:10px;letter-spacing:.13em;color:var(--mute2);margin-top:11px;font-weight:600}
-.sb-user .nm{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-user,.sb-user .row{min-width:0}
-.sb-ws{min-width:0}
-.sb-ws span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.sb-ws{display:flex;align-items:center;gap:9px;background:var(--card2);border:1px solid var(--border);border-radius:10px;
-  padding:10px 12px;font-size:13px;font-weight:500;width:100%;color:var(--fg)}
-.sb-ws .sq{width:22px;height:22px;border-radius:6px;background:rgba(59,130,246,.14);display:grid;place-items:center;font-size:10px}
-.sb-ws .cv{margin-left:auto;color:var(--mute2);font-size:11px}
-.nav{display:grid;gap:2px}
-.nav a,.nav button{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;font-size:13.5px;
-  color:var(--mute);background:none;border:1px solid transparent;width:100%;text-align:left}
-.nav a:hover,.nav button:hover{color:var(--fg);background:rgba(255,255,255,.03)}
-.nav a.on{background:rgba(59,130,246,.13);color:#BBD1FF;border-color:rgba(59,130,246,.22)}
-.nav .g{width:16px;text-align:center;opacity:.85;font-size:13px}
-.nav .sub{display:none;padding-left:8px;margin:2px 0}
+/* --- Brand selector: the subject of the product, so it gets weight --- */
+.sb-wswrap{position:relative;margin-top:2px}
+.sb-ws{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;
+  background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--fg)}
+.sb-ws:hover{border-color:rgba(255,255,255,.14)}
+.sb-ws .sq{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;
+  font-size:13px;font-weight:700;color:#fff;background:linear-gradient(140deg,#3B82F6,#8B5CF6)}
+.sb-ws .wt{min-width:0;display:grid;flex:1;gap:1px}
+.sb-ws .wt b{font-size:13.5px;font-weight:600;letter-spacing:-.01em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-ws .wt i{font-style:normal;font-size:10.5px;color:var(--mute2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-ws .cv{color:var(--mute2);font-size:11px;flex:none}
+
+/* Freshness reads as a property of the brand above it, not a floating chip. */
+.sb-scan{display:flex;align-items:center;gap:7px;padding:8px 4px 0;font-size:11px;color:var(--mute2)}
+.sb-scan .pill{display:flex;align-items:center;gap:6px;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-scan .dot{width:6px;height:6px;border-radius:50%;flex:none;background:var(--mute2)}
+.sb-scan .dot.ok{background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.12)}
+.sb-scan .dot.bad{background:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.12)}
+.sb-scan .dot.run{background:#60A5FA;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.nav{display:grid;gap:1px;margin-top:6px}
+.nav .sec{font-size:9.5px;font-weight:700;letter-spacing:.13em;color:var(--mute2);
+  padding:16px 12px 6px;opacity:.72}
+.nav .sec:first-child{padding-top:4px}
+.nav a,.nav button{position:relative;display:flex;align-items:center;gap:11px;padding:8px 12px;
+  border-radius:9px;font-size:13.5px;color:var(--mute);background:none;border:0;width:100%;text-align:left}
+.nav a:hover,.nav button:hover{color:var(--fg);background:rgba(255,255,255,.035)}
+/* Active state uses a left rule plus a tint. A tint on its own is easy to miss
+   at this contrast; the rule is what the eye finds when scanning the column. */
+.nav a.on{background:rgba(59,130,246,.13);color:#CFE0FF;font-weight:500}
+.nav a.on::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2.5px;
+  border-radius:0 3px 3px 0;background:linear-gradient(180deg,#60A5FA,#8B5CF6)}
+.nav .g{width:17px;text-align:center;font-size:13px;opacity:.7}
+.nav a.on .g{opacity:1}
+.nav .sub{display:none;margin:1px 0 3px 22px;padding-left:10px;border-left:1px solid var(--border)}
 .nav .sub.open{display:grid;gap:1px}
-.nav .sub a{font-size:12.8px;padding:7px 11px}
+.nav .sub a{font-size:12.5px;padding:6px 10px}
 .nav .sub a.on{background:rgba(59,130,246,.1)}
+.nav .sub a.on::before{display:none}
+
+/* --- Foot: account and plan, out of the way but reachable --- */
+.sb-acct{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 8px;border-radius:11px;
+  border:1px solid var(--border);background:var(--card2)}
+.sb-acct .av{width:29px;height:29px;border-radius:9px;flex:none;display:grid;place-items:center;
+  font-size:11px;font-weight:700;color:#93B4FF;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.26)}
+.sb-acct .who{min-width:0;display:grid;flex:1;gap:1px}
+.sb-acct .who b{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-acct .who i{font-style:normal;font-size:10px;color:var(--mute2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-acct .ics{display:flex;gap:4px;flex:none}
+.sb-acct .ics button{background:none;border:0;color:var(--mute2);font-size:12.5px;padding:3px;border-radius:6px}
+.sb-acct .ics button:hover{color:var(--fg);background:rgba(255,255,255,.05)}
+.sb-fb{display:block;font-size:11.5px;color:var(--mute2);text-decoration:none;padding:2px 10px}
+.sb-fb:hover{color:var(--fg)}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
 .apphead{display:flex;align-items:center;gap:14px;padding:14px 26px 0;justify-content:flex-end}
@@ -235,9 +267,14 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-scan button{flex:none;font-size:11.5px;padding:5px 9px}
 .sb-scan button:disabled{opacity:.5}
 .sb-foot{margin-top:auto;display:grid;gap:10px;padding-top:10px}
-.trial{border:1px solid var(--border);border-radius:12px;padding:13px;background:linear-gradient(160deg,rgba(59,130,246,.1),var(--card2))}
-.trial b{font-size:12.5px;display:block;margin-bottom:3px}
-.trial p{font-size:11px;color:var(--mute);margin-bottom:10px}
+.trial{border:1px solid var(--border);border-radius:12px;padding:12px;
+  background:linear-gradient(160deg,rgba(59,130,246,.1),var(--card2))}
+.trial .tr-top{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+.trial .tr-top b{font-size:12.5px;font-weight:600}
+.trial .tr-d{margin-left:auto;font-size:10.5px;color:var(--mute2)}
+.trial .tr-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.trial .tr-bar i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#3B82F6,#8B5CF6);transition:width .4s ease}
 .main{min-width:0;background:var(--bg2)}
 .mobbar{display:none;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);
   position:sticky;top:0;background:rgba(10,11,15,.9);backdrop-filter:blur(12px);z-index:50}
@@ -359,8 +396,7 @@ svg{display:block;max-width:100%}
 .card,.pnl,.kpi,.acc,.tool-c,.g2>*,.g3>*,.g4>*,.road>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tw table{min-width:560px}
-.sb-user .ics button{width:30px;height:30px;display:grid;place-items:center;border-radius:8px}
-.sb-user .ics button:hover{background:rgba(255,255,255,.06)}
+.sb-acct .ics button{width:28px;height:28px;display:grid;place-items:center;border-radius:8px}
 .sb-foot>button{padding:9px 11px!important;border-radius:9px}
 .mh button{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;flex:none}
 .mh button:hover{background:rgba(255,255,255,.06)}
@@ -406,25 +442,34 @@ svg{display:block;max-width:100%}
 <div id="app">
   <aside id="sb">
     <div class="sb-logo"><span class="mk">Y</span> YANKI</div>
-    <div class="sb-user">
-      <div class="row"><span class="av" id="uAv">DH</span>
-        <span class="ics"><button title="Theme" data-i18n-title>◐</button><button title="Language" data-i18n-title onclick="langMenu()">⊕</button><button title="Sign out" data-i18n-title onclick="signOut()">↪</button></span></div>
-      <div class="lb" id="welcomeLb">WELCOME BACK,</div><div class="nm" id="uName">Demo Account</div>
-    </div>
+
+    <!-- The brand under measurement is the subject of every screen, so it sits
+         at the top where identity belongs. The account that happens to be
+         signed in is administrative and moves to the foot, which is where SaaS
+         readers look for it. -->
     <div class="sb-wswrap">
       <button class="sb-ws" onclick="toggleWsMenu()" aria-haspopup="true">
-        <span class="sq">⬢</span><span id="wsName">brand</span><span class="cv">⌄</span></button>
+        <span class="sq" id="wsInitial">A</span>
+        <span class="wt"><b id="wsName">brand</b><i id="wsHost"></i></span>
+        <span class="cv">⌄</span></button>
       <div class="wsmenu" id="wsMenu"></div>
+      <div class="sb-scan"><span class="pill" id="scanPill"></span></div>
     </div>
-    <div class="sb-scan">
-      <span class="pill" id="scanPill"></span>
-    </div>
+
     <nav class="nav" id="nav"></nav>
+
     <div class="sb-foot">
-      
-      <a class="nav" style="font-size:12.5px;color:var(--mute2);text-decoration:none;padding:0 11px"
-        href="mailto:destek@yanki.app?subject=YANKI%20geri%20bildirim"><span id="fbLabel">▭ Feedback</span></a>
       <div class="trial" id="trialBox"></div>
+      <div class="sb-acct">
+        <span class="av" id="uAv">AC</span>
+        <span class="who"><b id="uName">Demo</b><i id="uMail"></i></span>
+        <span class="ics">
+          <button title="Theme" data-i18n-title>◐</button>
+          <button title="Language" data-i18n-title onclick="langMenu()">⊕</button>
+          <button title="Sign out" data-i18n-title onclick="signOut()">↪</button>
+        </span>
+      </div>
+      <a class="sb-fb" href="mailto:destek@yanki.app?subject=YANKI%20geri%20bildirim"><span id="fbLabel">Geri bildirim</span></a>
     </div>
   </aside>
   <div class="main">
@@ -755,7 +800,7 @@ const I18N = {
   'Bot Traffic':'Bot Trafiği',
   'Traffic':'Trafik',
   'Search Performance':'Arama Performansı',
-  'Feedback':'Geri Bildirim',
+  'Feedback':'Geri bildirim',
   'Visibility score':'Görünürlük skoru',
   'Mention rate':'Anılma oranı',
   'Share of voice':'Ses payı',
@@ -800,6 +845,11 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'ÖLÇÜM':'ÖLÇÜM',
+  'AKSİYON':'AKSİYON',
+  'HESAP':'HESAP',
+  'active':'aktif',
+  'Geri bildirim':'Geri bildirim',
   'sorgu ölçüldü':'sorgu ölçüldü',
   'Bu haftaki ölçümde':'Bu haftaki ölçümde',
   'Bilgi amaçlı sorgular haftada bir, pazartesi günleri ölçülür. Bu yüzden diğer günlerde ölçülen sorgu sayısı toplam sorgu sayısından az olur.':'Bilgi amaçlı sorgular haftada bir, pazartesi günleri ölçülür. Bu yüzden diğer günlerde ölçülen sorgu sayısı toplam sorgu sayısından az olur.',
@@ -2110,20 +2160,30 @@ function gauge(v,col){
    ===================================================================== */
 // Labels go through T() at render time so switching language repaints the
 // nav without a reload.
+/**
+ * Grouped rather than flat. Nine equal-weight rows read as a list of features;
+ * the same nine under two headings read as a workflow — first you look at what
+ * the channel is doing, then you act on it. The headings also give the sidebar
+ * something to say in the vertical space a flat list leaves empty.
+ */
 const NAV=[
- {r:'dashboard',g:'▦',n:'Dashboard'},
+ {sec:'ÖLÇÜM'},
+ {r:'dashboard',g:'◱',n:'Dashboard'},
  {g:'◫',n:'Analytics',sub:[
    {r:'mentions',n:'Mentions'},{r:'platforms',n:'Platforms'},{r:'sources',n:'Sources'},
    {r:'opps',n:'Opportunities'}]},
- {r:'rivals',g:'⚔',n:'Competitors'},
- {r:'prompts',g:'▤',n:'AI Prompts'},
- {r:'plan',g:'✦',n:'Action Plan'},
- {r:'audit',g:'◳',n:'Audit'},
- {r:'tools',g:'⚒',n:'Tools'},
- {r:'settings',g:'⚙',n:'Settings'}
+ {r:'rivals',g:'◇',n:'Competitors'},
+ {r:'prompts',g:'◎',n:'AI Prompts'},
+ {sec:'AKSİYON'},
+ {r:'plan',g:'◈',n:'Action Plan'},
+ {r:'audit',g:'◰',n:'Audit'},
+ {r:'tools',g:'◐',n:'Tools'},
+ {sec:'HESAP'},
+ {r:'settings',g:'○',n:'Settings'}
 ];
 function renderNav(){
   $('#nav').innerHTML=NAV.map(it=>{
+    if(it.sec) return `<div class="sec">${T(it.sec)}</div>`;
     if(it.sub){
       const open=it.sub.some(s=>s.r===S.route)||S.openNav[it.n];
       return `<button onclick="S.openNav['${T(it.n)}']=${!open};render()"><span class="g">${it.g}</span>${T(it.n)}
@@ -2133,8 +2193,14 @@ function renderNav(){
     }
     return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false"><span class="g">${it.g}</span>${T(it.n)}</a>`;
   }).join('');
-  const av=(S.brand.name||'YK').slice(0,2).toLocaleUpperCase('tr');
-  $('#uAv').textContent=av;$('#uName').textContent=S.user.name;$('#wsName').textContent=S.brand.name||'marka';
+  const brand=S.brand.name||'—';
+  $('#wsName').textContent=brand;
+  $('#wsInitial').textContent=brand.slice(0,1).toLocaleUpperCase('tr');
+  const hostEl=$('#wsHost');
+  if(hostEl) hostEl.textContent=(S.brand.site||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
+  $('#uAv').textContent=(S.user.name||'YK').slice(0,2).toLocaleUpperCase('tr');
+  $('#uName').textContent=S.user.name;
+  const mailEl=$('#uMail'); if(mailEl) mailEl.textContent=S.user.email||'';
 
   // Workspace switcher. The old control was a button that toasted "single
   // workspace" whatever the plan allowed, so an Agency customer with 25 brands
@@ -2190,15 +2256,21 @@ function renderNav(){
   }
   // These two sit in the static shell rather than a rendered template, so they
   // need filling in on every repaint — including after a language switch.
-  const wb=$('#welcomeLb'); if(wb) wb.textContent=T('WELCOME BACK,');
-  const fb=$('#fbLabel');   if(fb) fb.textContent='▭ '+T('Feedback');
+  const fb=$('#fbLabel');   if(fb) fb.textContent=T('Feedback');
   const planName={trial:T('Trial'),starter:T('Starter'),growth:T('Growth'),pro:T('Growth'),business:T('Business'),agency:T('Agency')}[S.plan]||S.plan;
   const dleft=trialDaysLeft();
+  // A countdown is more legible than a sentence about a countdown, and the bar
+  // does the persuading a paragraph was doing badly.
+  const pct=dleft===null?100:Math.max(4,Math.min(100,Math.round(dleft/7*100)));
   $('#trialBox').innerHTML=S.plan==='trial'
-    ? `<b>${T('Trial')}${dleft===null?'':` — ${dleft} ${T('days left')}`}</b><p>${T('Pick a plan before your trial ends.')}</p>
-       <button class="btn b-pri b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button>`
-    : `<b>${planName} ${T('plan')}</b><p>${T('All platforms and modules unlocked.')}</p>
-       <button class="btn b-gh b-sm b-full" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Manage plan')}</button>`;
+    ? `<div class="tr-top"><b>${T('Trial')}</b>
+         <span class="tr-d">${dleft===null?'':`${dleft} ${T('days left')}`}</span></div>
+       <div class="tr-bar"><i style="width:${pct}%"></i></div>
+       <button class="btn b-pri b-sm b-full" style="margin-top:11px"
+         onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button>`
+    : `<div class="tr-top"><b>${planName}</b><span class="tr-d">${T('active')}</span></div>
+       <button class="btn b-gh b-sm b-full" style="margin-top:10px"
+         onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Manage plan')}</button>`;
 }
 function toggleSb(v){const sb=$('#sb'),sc=$('#sbScrim');
   const open=v===undefined?!sb.classList.contains('open'):v;
