@@ -78,7 +78,43 @@ export async function enqueueScan(
 
   if (rows.length) {
     await sql`insert into scan_jobs ${sql(rows)} on conflict do nothing`;
-    await sql`update scans set queued_jobs = ${rows.length}, status = 'running' where id = ${scan.id}`;
+
+    /* A second scan on the same day found nothing to do.
+     *
+     * The scan row is unique per (workspace, date), so a manual re-run reuses
+     * today's row — and every job for it already exists and is already done.
+     * `on conflict do nothing` therefore inserted zero rows while this function
+     * still reported rows.length as the queue size. The dashboard switched to
+     * the progress screen, read a pending count of zero, and switched straight
+     * back, having wiped finished_at on the way: "no scan yet" on a workspace
+     * that had just been scanned.
+     *
+     * Pressing "rescan" means measure again now, so the existing jobs are reset
+     * rather than skipped. This is safe: the answer insert upserts on
+     * (scan_id, prompt_id, engine_key, run_index), so a re-run replaces the
+     * stored answer instead of duplicating it.
+     */
+    if (opts.force) {
+      await sql`
+        update scan_jobs
+           set done_at = null, attempts = 0, error = null, locked_until = null
+         where scan_id = ${scan.id}`;
+    }
+
+    // Report what is actually waiting, not what we tried to insert. A queue
+    // size the caller cannot verify is how the bug above stayed invisible.
+    const [{ n: pending }] = await sql`
+      select count(*)::int as n from scan_jobs
+       where scan_id = ${scan.id} and done_at is null and attempts < 4`;
+
+    if (!pending) {
+      const reason = 'every check for today has already run; nothing left to queue';
+      await sql`update scans set status = 'done', finished_at = now(), error = ${reason} where id = ${scan.id}`;
+      return { scanId: scan.id, jobs: 0, engines: allowed, reason };
+    }
+
+    await sql`update scans set queued_jobs = ${pending}, status = 'running' where id = ${scan.id}`;
+    return { scanId: scan.id, jobs: pending, engines: allowed };
   } else {
     // Queueing nothing and reporting "done" is a silent no-op the operator
     // cannot debug. Say which condition produced an empty queue.
