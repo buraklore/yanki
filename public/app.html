@@ -73,7 +73,10 @@ tbody tr:last-child td{border-bottom:0}
 tbody tr:hover{background:rgba(255,255,255,.018)}
 td.n,th.n{text-align:right;font-family:var(--mono);font-size:12.5px}
 .tw{overflow-x:auto}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* Cards size to their own content. Stretching them to a common height leaves
+   the shorter one with a block of dead space under its last row, which reads
+   as missing data rather than as a shorter list. */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 @media(max-width:1180px){.g4{grid-template-columns:repeat(2,1fr)}}
@@ -157,7 +160,7 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 
 /* ---------- app shell ---------- */
 #app{display:none;min-height:100vh}
-#app.on{display:grid;grid-template-columns:278px minmax(0,1fr)}
+#app.on{display:grid;grid-template-columns:300px minmax(0,1fr)}
 #sb{border-right:1px solid var(--border);background:#08090D;padding:14px 12px;display:flex;flex-direction:column;gap:13px;
   height:100vh;position:sticky;top:0;overflow-y:auto}
 .sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;padding:4px 8px 13px;border-bottom:1px solid var(--border)}
@@ -178,23 +181,23 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 #sb{padding:0;gap:0;background:#07080B;border-right:1px solid #191C24}
 
 /* --- Zone 1: identity ------------------------------------------------- */
-.sb-id{padding:15px 14px 14px;border-bottom:1px solid #191C24;background:#0A0C10}
+.sb-id{padding:17px 16px 16px;border-bottom:1px solid #191C24;background:#0A0C10}
 .sb-logo{display:flex;align-items:center;gap:9px;padding:0 2px 14px;border:0}
-.mk{width:27px;height:27px;border-radius:6px;flex:none;background:#2D6BE8;
-  display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;letter-spacing:-.02em}
-.sb-logo .wm{font-size:15.5px;font-weight:700;letter-spacing:.08em;color:var(--fg)}
+.mk{width:30px;height:30px;border-radius:7px;flex:none;background:#2D6BE8;
+  display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700;letter-spacing:-.02em}
+.sb-logo .wm{font-size:16.5px;font-weight:700;letter-spacing:.08em;color:var(--fg)}
 
 /* Client selector. Square corners and a monogram plate rather than a rounded
    avatar: this is a record being selected, not a person being greeted. */
-.sb-ws{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;
-  background:#10131A;border:1px solid #212530;border-radius:6px;padding:8px 9px;color:var(--fg)}
+.sb-ws{display:flex;align-items:center;gap:11px;width:100%;min-width:0;text-align:left;
+  background:#10131A;border:1px solid #212530;border-radius:8px;padding:11px 11px;color:var(--fg)}
 .sb-ws:hover{border-color:#2E3441;background:#141822}
-.sb-ws .sq{width:32px;height:32px;border-radius:5px;flex:none;display:grid;place-items:center;
-  font-size:13.5px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
+.sb-ws .sq{width:36px;height:36px;border-radius:7px;flex:none;display:grid;place-items:center;
+  font-size:15px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
 .sb-ws .wt{min-width:0;display:grid;flex:1;gap:2px}
-.sb-ws .wt b{font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+.sb-ws .wt b{font-size:15.5px;font-weight:600;letter-spacing:-.01em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-ws .wt i{font-style:normal;font-size:11.5px;color:#6B7385;letter-spacing:.01em;
+.sb-ws .wt i{font-style:normal;font-size:12px;color:#6B7385;letter-spacing:.01em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-ws .cv{flex:none;width:14px;height:14px;color:#5A6274}
 .sb-ws .cv svg{width:100%;height:100%;display:block}
@@ -203,16 +206,16 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    on a scale; the same number in a sentence states nothing. */
 .sb-meter{margin-top:12px}
 .sb-meter .mrow{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
-.sb-meter .ml{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:#5A6274}
+.sb-meter .ml{font-size:11px;font-weight:700;letter-spacing:.13em;color:#5A6274}
 .sb-meter .mu{font-family:var(--mono);font-size:10.5px;color:#4E5665;margin-left:2px}
 .sb-meter .mv{margin-left:auto;font-family:var(--mono);font-variant-numeric:tabular-nums;
-  font-size:16px;font-weight:600;letter-spacing:-.02em;color:var(--fg)}
+  font-size:18px;font-weight:600;letter-spacing:-.025em;color:var(--fg)}
 .sb-meter .mtrack{height:3px;border-radius:2px;background:#161A22;overflow:hidden}
 .sb-meter .mtrack i{display:block;height:100%;width:0;background:#2D6BE8;transition:width .45s ease}
 .sb-meter .mtrack i.mid{background:#D89A2B}
 .sb-meter .mtrack i.bad{background:#D4504F}
-.sb-meter .pill{display:flex;align-items:center;gap:6px;margin-top:9px;
-  font-size:11.5px;color:#6B7385;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-meter .pill{display:flex;align-items:center;gap:7px;margin-top:11px;
+  font-size:12px;color:#6B7385;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-meter .dot{width:5px;height:5px;border-radius:50%;flex:none;background:#5A6274}
 .sb-meter .dot.ok{background:#3FA46A}
 .sb-meter .dot.bad{background:#D4504F}
@@ -227,13 +230,13 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    Every item hangs off a single rule running the height of the column. The
    active marker sits on that rule rather than floating beside it, which is
    what turns a list of links into a structure. */
-.nav{display:grid;gap:0;padding:12px 14px 8px;position:relative}
+.nav{display:grid;gap:1px;padding:14px 16px 10px;position:relative}
 .nav::before{content:"";position:absolute;left:9px;top:18px;bottom:14px;width:1px;background:#1C2029}
-.nav .sec{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:#4E5665;
-  padding:16px 0 7px 22px;position:relative}
+.nav .sec{font-size:11px;font-weight:700;letter-spacing:.13em;color:#4E5665;
+  padding:18px 0 8px 24px;position:relative}
 .nav .sec:first-child{padding-top:2px}
-.nav a{position:relative;display:flex;align-items:center;gap:11px;padding:9px 9px 9px 22px;
-  border-radius:6px;font-size:14px;color:#8590A3;width:100%;line-height:1.35;letter-spacing:-.005em}
+.nav a{position:relative;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 24px;
+  border-radius:7px;font-size:14.5px;color:#8590A3;width:100%;line-height:1.35;letter-spacing:-.005em}
 .nav a:hover{color:var(--fg);background:#10131A}
 .nav a.on{background:#111827;color:#EAF0FA;font-weight:500}
 /* The marker sits on the spine, covering it — the rule and the active
@@ -241,19 +244,19 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    structure instead of two decorations. */
 .nav a.on::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;
   border-radius:2px;background:#2D6BE8}
-.nav .g{width:19px;height:19px;flex:none;opacity:.6;stroke-width:1.7}
+.nav .g{width:20px;height:20px;flex:none;opacity:.62;stroke-width:1.7}
 .nav a:hover .g{opacity:.85}
 .nav a.on .g{opacity:1;color:#6E9BF0}
 .nav a span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Volume, in tabular figures. A tool that shows how much is inside each
    section looks like a tool with something inside it. */
 .nav .ct{flex:none;font-family:var(--mono);font-variant-numeric:tabular-nums;
-  font-size:11px;color:#4E5665}
+  font-size:12px;color:#4E5665}
 .nav a.on .ct,.nav a:hover .ct{color:#8590A3}
 
 /* --- Foot: status bar -------------------------------------------------- */
 .sb-foot{margin-top:auto;display:grid;gap:0;border-top:1px solid #191C24;background:#0A0C10}
-.plan-row{display:flex;align-items:center;gap:9px;padding:12px 14px;font-size:13px;
+.plan-row{display:flex;align-items:center;gap:9px;padding:13px 16px;font-size:13.5px;
   color:var(--fg);border-bottom:1px solid #191C24}
 .plan-row:hover{background:#10131A}
 .plan-row .pd{width:5px;height:5px;border-radius:50%;background:#3FA46A;flex:none}
@@ -267,11 +270,11 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .trial .tr-bar i{display:block;height:100%;background:#2D6BE8;transition:width .4s ease}
 .trial .btn{border-radius:5px;font-size:12px;padding:8px 12px;background:#2D6BE8;border-color:#2D6BE8}
 .trial .btn{margin-top:10px}
-.sb-acct{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 14px}
-.sb-acct .av{width:32px;height:32px;border-radius:6px;flex:none;display:grid;place-items:center;
+.sb-acct{display:flex;align-items:center;gap:10px;min-width:0;padding:11px 16px}
+.sb-acct .av{width:34px;height:34px;border-radius:7px;flex:none;display:grid;place-items:center;
   font-size:11.5px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
 .sb-acct .who{min-width:0;display:grid;flex:1;gap:1px}
-.sb-acct .who b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-acct .who b{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-acct .who i{font-style:normal;font-size:10.5px;color:#5A6274;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-acct .ics{display:flex;gap:3px;flex:none}
@@ -2878,7 +2881,7 @@ VIEWS.dashboard=()=>{
 
     <div class="card"><div class="ch"><div><h3>${T('Top Citing Domains')}</h3>
       <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">${d.sources.slice(0,8).map((s,i)=>`
+      <div class="cb">${d.sources.slice(0,12).map((s,i)=>`
         <div class="cdr"><span class="i">${i+1}</span>
           <span class="f" style="background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
           <span class="n">${s.d}${s.mine?' <span class="chip pri">yours</span>':''}
