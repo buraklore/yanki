@@ -262,8 +262,20 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .ins>*{position:relative;z-index:1}
 .ins .tg{align-self:flex-start;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:8px;
   padding:5px 11px;font-size:10.5px;font-weight:600;letter-spacing:.05em}
-.ins .tx{margin-top:auto;font-size:12.5px;line-height:1.65;color:rgba(255,255,255,.92)}
-.ins .hl{font-size:20px;font-weight:600;letter-spacing:-.03em;margin-top:14px;line-height:1.25}
+/* The headline used to sit below the paragraph with `margin-top:auto` pushing
+   the text to the bottom — which produced a large dead area under the tag and
+   buried the one line meant to stop the reader. Headline first, body under it,
+   call to action pinned to the bottom. */
+.ins .hl{font-size:25px;font-weight:650;letter-spacing:-.035em;margin-top:16px;line-height:1.18;
+  text-wrap:balance}
+.ins .tx{margin-top:12px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.88)}
+.ins-cta{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:9px;
+  background:#fff;color:#15306E;border:0;border-radius:11px;padding:12px 20px;
+  font-size:13.5px;font-weight:650;letter-spacing:-.01em;cursor:pointer;
+  box-shadow:0 6px 20px rgba(0,0,0,.28);transition:transform .14s ease,box-shadow .14s ease}
+.ins-cta:hover{transform:translateY(-1px);box-shadow:0 9px 26px rgba(0,0,0,.34)}
+.ins-cta span{transition:transform .14s ease}
+.ins-cta:hover span{transform:translateX(3px)}
 .lock{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mute2)}
 .locked-row{opacity:.42}
 .pvr{margin-bottom:11px}
@@ -762,7 +774,7 @@ const I18N = {
   'still running':'devam ediyor',
   'Partial':'Kısmi',
   'AI INSIGHTS':'ÖNE ÇIKAN BULGU',
-  'Go to action plan →':'Aksiyon planına git →',
+  'Go to action plan':'Aksiyon planını aç',
   'Visibility Trend':'Görünürlük Trendi',
   'Platform Visibility Score':'Platform Bazında Görünürlük',
   'How prominently your brand appears in AI responses (0–100)':'Platform bazında görünürlük payınız (0–100)',
@@ -788,6 +800,9 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'sorgu ölçüldü':'sorgu ölçüldü',
+  'Bu haftaki ölçümde':'Bu haftaki ölçümde',
+  'Bilgi amaçlı sorgular haftada bir, pazartesi günleri ölçülür. Bu yüzden diğer günlerde ölçülen sorgu sayısı toplam sorgu sayısından az olur.':'Bilgi amaçlı sorgular haftada bir, pazartesi günleri ölçülür. Bu yüzden diğer günlerde ölçülen sorgu sayısı toplam sorgu sayısından az olur.',
   'from your category, country and description. Edit freely — a starting point, not a verdict.':'kategoriniz, ülkeniz ve açıklamanızdan üretildi. Serbestçe düzenleyin — bu bir başlangıç noktası, kesin hüküm değil.',
   'This is normal for new or distinctive brands. Add the nicknames, abbreviations or spellings your customers use, or skip this step.':'Yeni ya da özgün adlı markalarda bu olağandır. Müşterilerinizin kullandığı takma adları, kısaltmaları ve yazımları ekleyin ya da bu adımı atlayın.',
   '✦ Written for':'✦ Şuna göre yazıldı:',
@@ -2251,12 +2266,14 @@ const KPI_HELP = {
     tr: { t: 'Görünürlük skoru', b: [
       ['Kısaca', 'Yapay zeka mecrasındaki organik performansınız, 100 üzerinden. Google’daki ortalama pozisyon gibi düşünün: tek bir sayı, ama altında sıralama, tıklanma ve marka bilinirliği birlikte çalışıyor.'],
       ['100 ne demek', 'Takip ettiğiniz her sorguda ilk önerilen marka olmak ve kaynak olarak sitenizin gösterilmesi. Bu, mecranın tavanı — pratikte kimse oraya çıkmaz.'],
+      ['Neden bazı sorgular ölçülmedi', 'Bilgi amaçlı (informational) sorgular her gün değil, haftada bir kez — pazartesi günleri — ölçülür. Satın alma amaçlı sorgular her gün ölçülür. Bu yüzden hafta içi bir günde ölçülen sorgu sayısı toplam sorgu sayısından az görünür.'],
       ['Skoru oluşturan kalemler', 'Anılma %30 · cevap içindeki pozisyon %22 · siteye kaynak gösterilme %20 · öneri biçimi %18 · ton %10. Yani sadece görünmek yetmiyor; nerede ve nasıl görüneceğiniz puanın yarısını belirliyor.'],
       ['Neyi etkiler', 'Bu sorguları soran kullanıcı artık arama sonucuna bakmıyor, cevabı okuyup tıklıyor. Skor düşükse o trafiği rakip topluyor.'],
     ]},
     en: { t: 'Visibility score', b: [
       ['In short', 'Your organic performance in the AI channel, out of 100. Think of it like average position in Google: one number, with ranking, click-through and brand awareness all working underneath it.'],
       ['What 100 means', 'Being the first brand recommended on every query you track, with your site given as the source. That is the ceiling of the channel — nobody actually gets there.'],
+      ['Why some queries were not measured', 'Informational queries run weekly, on Mondays, rather than daily; transactional ones run every day. That is why the number measured on a weekday is lower than your total query count.'],
       ['What makes up the score', 'Mentions 30% · position within the answer 22% · your site cited as source 20% · how you are recommended 18% · tone 10%. Being visible is not enough on its own: where and how you appear decides half the score.'],
       ['Why it matters', 'Someone asking these questions no longer scrolls a results page — they read the answer and click. A low score means a competitor is collecting that traffic.'],
     ]},
@@ -2456,7 +2473,8 @@ VIEWS.dashboard=()=>{
       ${kpiHelp('visibility')}</div>
       ${d.ready
         ? `<div class="v">${d.total.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
-           <div class="d">${allowed} ${T('platform')} · ${d.cells.length} ${T('sorgu')}</div>`
+           <div class="d">${d.plats.filter(p=>p.measured!==false&&!p.locked&&p.checks>0).length} ${T('platform')} ·
+             ${new Set(d.cells.map(c=>c.p.id)).size}/${(d.opps||[]).length} ${T('sorgu ölçüldü')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d">${T('No scan yet')}</div>`}</div>
 
@@ -2464,7 +2482,7 @@ VIEWS.dashboard=()=>{
       ${kpiHelp('mention')}</div>
       ${d.cells.length
         ? `<div class="v">${d.mentionRate.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${d.cells.filter(c=>c.m>0).length} / ${d.cells.length} ${T('sorguda görünür')}</div>`
+           <div class="d">${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size}/${new Set(d.cells.map(c=>c.p.id)).size} ${T('sorguda görünür')}</div>`
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d">${T('Waiting for the first results')}</div>`}</div>
 
@@ -2489,10 +2507,9 @@ VIEWS.dashboard=()=>{
 
   <div style="display:grid;grid-template-columns:1fr 1.1fr 1.15fr;gap:14px" class="dashg">
     <div class="ins"><span class="tg">${T('AI INSIGHTS')}</span>
-      <div class="tx">${esc(ins.body)}</div><div class="hl">${esc(ins.head)}</div>
-      <div style="display:flex;align-items:center;margin-top:16px">
-        <button class="btn b-gh b-sm" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff"
-          onclick="go('plan')">${T('Go to action plan →')}</button></div></div>
+      <div class="hl">${esc(ins.head)}</div>
+      <div class="tx">${esc(ins.body)}</div>
+      <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button></div>
 
     <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
       <div class="sub">${T('Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.')}</div></div>
@@ -2546,11 +2563,11 @@ VIEWS.dashboard=()=>{
       <div class="cb">
         <div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
           ${d.plats.filter(p=>!p.locked).map(p=>
-            `<button onclick="toast('${p.n}: ${p.mentions} mentions')">${p.ab} ${p.n.split(' ')[0]} <b style="opacity:.7">${p.mentions}</b></button>`).join('')}</div>
+            `<button onclick="toast('${p.n}: ${p.mentions} mentions')">${p.ab} ${p.n} <b style="opacity:.7">${p.mentions}</b></button>`).join('')}</div>
         ${recent.length?recent.map(m=>{
             const pl=d.plats.find(x=>x.id===m.engine_key)||{c:'#3B82F6',ab:'◆',n:m.engine_key};
             return `<div class="mnt" style="border-left-color:${pl.c}" onclick="answerModal(${m.id})">
-          <span class="chip">${pl.ab} ${pl.n.split(' ')[0]}</span>
+          <span class="chip">${pl.ab} ${pl.n}</span>
           <span class="q">${esc(m.text)}</span>
           <span class="ago">${m.rank?'rank '+m.rank:''}</span></div>`}).join('')
           :`<div class="empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
@@ -2576,7 +2593,7 @@ function insightText(){
   const tr = S.lang==='tr';
 
   if(!d.ready || S.scanState && S.scanState.pending>0) return tr ? {
-    head:'Ölçüm devam ediyor',
+    head:'Ölçüm sürüyor',
     body:'Veriler geldikçe skor yeniden hesaplanıyor. Ölçüm tamamlanmadan çıkarılacak sonuç '+
          'yanıltıcı olur; marka ilk sorgularda görünmeyip sonrakilerde öne çıkabilir.'
   } : {
@@ -2587,7 +2604,7 @@ function insightText(){
   };
 
   if(d.total<10) return tr ? {
-    head:'Görünürlük kritik seviyede',
+    head:'Yapay zeka önerilerinde yoksunuz',
     body:`${b.name} takip edilen platformlarda ${d.total.toFixed(1)}/100 görünürlük skoruna sahip. `+
          `Marka, kullanıcıların yapay zekaya sorduğu satın alma sorularında pratikte hiç önerilmiyor — `+
          `bu sorgulardan gelen trafiğin tamamı rakiplere gidiyor. `+
@@ -2595,7 +2612,7 @@ function insightText(){
            ? `Site denetiminde ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} kriter başarısız; öncelik sırası Aksiyon Planı'nda.`
            : 'İlk adım site denetimi: hangi teknik eksiklerin görünürlüğü engellediğini gösterir.')
   } : {
-    head:'Visibility is at a critical level',
+    head:'You are absent from AI recommendations',
     body:`${b.name} holds a visibility score of ${d.total.toFixed(1)}/100 across the tracked platforms. `+
          `The brand is effectively never recommended on the buying questions users put to AI — `+
          `all of that traffic is going to competitors. `+
@@ -2608,14 +2625,14 @@ function insightText(){
   const lvl   = d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
 
   return tr ? {
-    head:`Kaynak gösterilme sayısını ${cited} → ${Math.max(cited*2,12)}+ seviyesine taşıyın`,
-    body:`${b.name} ${d.cells.filter(c=>c.m>0).length} sorguda anılıyor ve görünürlük ${lvlTr} seviyede `+
+    head:'Anılıyorsunuz, ama tıklanan siz değilsiniz',
+    body:`${b.name} ${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size} sorguda anılıyor, görünürlük ${lvlTr} seviyede `+
          `(${d.total.toFixed(1)}/100). Ancak siteniz yalnızca ${cited} sorguda kaynak olarak gösteriliyor — `+
          `yani marka anılıyor, trafik başka siteye gidiyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
          `Organization ve FAQ şeması ile kanonik URL düzeni, kısa vadede en hızlı kazanımı veren iki müdahale.`
   } : {
-    head:`Take source citations from ${cited} to ${Math.max(cited*2,12)}+`,
-    body:`${b.name} is named on ${d.cells.filter(c=>c.m>0).length} queries with ${lvl} visibility `+
+    head:'You get named — someone else gets the click',
+    body:`${b.name} is named on ${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size} queries with ${lvl} visibility `+
          `(${d.total.toFixed(1)}/100). But your site is cited as a source on only ${cited} of them — `+
          `the brand gets named while the traffic goes elsewhere. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). `+
          `Organization and FAQ schema plus a clean canonical URL structure are the two fastest wins here.`
@@ -2681,7 +2698,7 @@ VIEWS.mentions=()=>{
     <th class="n">${T("Rank")}</th><th class="n">${T("Cited")}</th><th class="n">Sentiment</th><th class="n">${T("Score")}</th><th class="n">±CI</th></tr></thead>
   <tbody>${rows.map((c,i)=>`<tr style="${c.runId?'cursor:pointer':''}" ${c.runId?`onclick="answerModal(${c.runId})"`:''}>
     <td style="max-width:280px">${esc(c.p.text.replace(/"/g,''))}</td>
-    <td><span class="chip" style="border-color:${c.pl.c}44">${c.pl.ab} ${c.pl.n.split(' ')[0]}</span></td>
+    <td><span class="chip" style="border-color:${c.pl.c}44">${c.pl.ab} ${c.pl.n}</span></td>
     <td><span class="chip">${intentLabel(c.p.intent)}</span></td>
     <td class="n" style="color:${c.m>0?'#4ADE80':'#7C8598'}">${(c.m*100).toFixed(0)}%</td>
     <td class="n">${c.rank||'—'}</td><td class="n">${c.c>0?'✓':'—'}</td>
@@ -2717,7 +2734,7 @@ VIEWS.platforms=()=>{
     <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')}</h3>
       <div class="sub">${T('Daily visibility scores per platform')}</div></div><span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
       <div class="cb"><div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
-        ${ps.map(p=>`<button style="border-color:${p.c}44">${p.ab} ${p.n.split(' ')[0]}</button>`).join('')}</div>
+        ${ps.map(p=>`<button style="border-color:${p.c}44">${p.ab} ${p.n}</button>`).join('')}</div>
         ${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','today']})}</div></div>
   </div>
 
@@ -2771,7 +2788,7 @@ VIEWS.sources=()=>{
       <td><span class="bar"><i style="width:${s.v/(mx||1)*100}%;background:${s.mine?'#3B82F6':'#8B5CF6'}"></i></span></td>
       <td class="n">${s.v}</td>
       <td class="n ${s.trend>0?'ok':'bad'}">${s.trend>0?'↑':'↓'}</td>
-      <td>${s.plats.slice(0,2).map(p=>`<span class="chip" style="border-color:${p.c}44">${p.ab} ${p.n.split(' ')[0]}</span>`).join(' ')||'<span class="mut">—</span>'}</td>
+      <td>${s.plats.slice(0,2).map(p=>`<span class="chip" style="border-color:${p.c}44">${p.ab} ${p.n}</span>`).join(' ')||'<span class="mut">—</span>'}</td>
       <td class="n mut">${s.first}</td><td class="n mut">${s.last}</td></tr>`).join('')}</tbody></table></div>
     <p style="font-size:12.5px;color:var(--mute);margin-top:14px">${T('Models learn about you mostly from third-party sources, not your own site. Being absent from the domains at the top of this list is your biggest structural gap — it appears as a task in the')}
       <a href="#" onclick="go('plan');return false" style="color:var(--pri)">${T('action plan')}</a>.</p></div></div>`;
