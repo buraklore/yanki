@@ -46,7 +46,11 @@ export const GET = handler(async (req) => {
     select * from daily_scores where workspace_id = ${workspaceId} order by scan_date desc limit 1`;
 
   const [series, cells, sources, competitors, recent, scanState, audit, rivalGaps] = await Promise.all([
-    sql`select scan_date, score, ci, low_confidence, mention_rate, citation_rate, share_of_voice
+    // by_engine comes along so the dashboard can draw a trace per platform.
+    // One aggregate line hides the case that matters most: holding steady
+    // overall while collapsing on the engine with the heaviest weight.
+    sql`select scan_date, score, ci, low_confidence, mention_rate, citation_rate,
+               share_of_voice, by_engine
           from daily_scores
          where workspace_id = ${workspaceId} and scan_date > current_date - ${days}::int
          order by scan_date`,
