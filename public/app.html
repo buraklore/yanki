@@ -275,6 +275,147 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-fb,.sb-logo,.sb-ws,.sb-wswrap,.wsmenu{display:none}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
+/* =====================================================================
+   DASHBOARD
+   =====================================================================
+   Built as a vertical argument rather than a grid of cards: the report
+   header states whose numbers these are, four figures set the position,
+   then one table says where the brand is losing, and the two sections
+   under it explain that table. A card grid gives every block equal
+   weight, which is exactly the claim this screen should not make.
+   ===================================================================== */
+.dash{
+  --d-bg:#0B0E14; --d-card:#12161F; --d-line:#1E2430; --d-line2:#2A3140;
+  --d-txt:#E9EDF4; --d-txt2:#B7C0CF; --d-mut:#8590A3; --d-mut2:#67707F;
+  --d-up:#35D07F; --d-up-s:rgba(53,208,127,.13);
+  --d-dn:#FF5C5C; --d-dn-s:rgba(255,92,92,.13);
+  --d-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --d-sans:inherit;
+  display:grid;gap:13px;
+}
+body.lt .dash{
+  --d-bg:#F6F7F9; --d-card:#FFFFFF; --d-line:#E4E7EC; --d-line2:#D0D5DD;
+  --d-txt:#101828; --d-txt2:#344054; --d-mut:#667085; --d-mut2:#98A2B3;
+  --d-up:#12A150; --d-up-s:#E7F6EC; --d-dn:#D92D20; --d-dn-s:#FDECEA;
+}
+
+/* --- Report header ---------------------------------------------------- */
+.dash-rep{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
+  background:var(--d-card);border:1px solid var(--d-line);border-radius:10px;padding:15px 17px}
+.dash-rep .who{min-width:0;display:grid;gap:3px}
+.dash-rep .who h2{font-size:18px;font-weight:650;letter-spacing:-.02em;color:var(--d-txt);margin:0}
+.dash-rep .who .dm{font-size:12px;color:var(--d-mut)}
+.dash-rep .per{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dash-rep .per .pl{font-family:var(--d-mono);font-size:11px;color:var(--d-mut);
+  border:1px solid var(--d-line);border-radius:6px;padding:7px 10px;background:var(--d-bg)}
+.dash-rep .per .ex{border:1px solid var(--d-line2);background:var(--d-card);color:var(--d-txt2);
+  border-radius:6px;padding:7px 12px;font-size:12px;font-weight:500}
+.dash-rep .per .ex:hover{border-color:#2D6BE8;color:#6E9BF0}
+
+/* --- Position row ------------------------------------------------------ */
+.dash-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+@media(max-width:980px){.dash-kpi{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.dash-kpi{grid-template-columns:1fr}}
+.dash-k{background:var(--d-card);border:1px solid var(--d-line);border-radius:10px;
+  padding:14px 15px;display:grid;gap:7px;align-content:start}
+.dash-k .lb{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--d-mut);font-weight:500}
+.dash-k .row{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.dash-k .v{font-family:var(--d-mono);font-variant-numeric:tabular-nums;font-size:27px;
+  font-weight:600;letter-spacing:-.04em;color:var(--d-txt);line-height:1}
+.dash-k .v small{font-size:12.5px;font-weight:400;color:var(--d-mut2);letter-spacing:0}
+.dash-k .sub{font-size:11.5px;color:var(--d-mut2)}
+.dash-k a{color:#6E9BF0;font-weight:500}
+.dash-k .dl{display:inline-flex;align-items:center;gap:4px;font-family:var(--d-mono);
+  font-size:11px;font-weight:500;border-radius:5px;padding:3px 6px}
+.dash-k .dl.up{color:var(--d-up);background:var(--d-up-s)}
+.dash-k .dl.dn{color:var(--d-dn);background:var(--d-dn-s)}
+.dash-k .dl.fl{color:var(--d-mut);background:var(--d-bg)}
+
+/* --- Section shell ----------------------------------------------------- */
+.dash-c{background:var(--d-card);border:1px solid var(--d-line);border-radius:10px;overflow:hidden}
+.dash-c > .hd{display:flex;align-items:center;gap:12px;padding:14px 17px;border-bottom:1px solid var(--d-line)}
+.dash-c > .hd h3{font-size:14px;font-weight:600;color:var(--d-txt);margin:0}
+.dash-c > .hd .sub{font-size:11.5px;color:var(--d-mut2);margin-top:2px}
+.dash-c > .hd .rt{margin-left:auto;font-family:var(--d-mono);font-size:11px;color:var(--d-mut2);white-space:nowrap}
+.dash-c > .bd{padding:14px 10px 10px;overflow-x:auto}
+
+/* --- Table ------------------------------------------------------------- */
+.dash-t{width:100%;border-collapse:collapse}
+@media(max-width:820px){.dash-t{min-width:560px}}
+.dash-t th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--d-mut2);padding:0 11px 9px;border-bottom:1px solid var(--d-line);white-space:nowrap}
+.dash-t th.n,.dash-t td.n{text-align:right}
+.dash-t td{padding:10px 11px;border-bottom:1px solid var(--d-line);font-size:12.5px;color:var(--d-txt2)}
+.dash-t tr:last-child td{border-bottom:0}
+.dash-t tbody tr:hover td{background:var(--d-bg)}
+.dash-t td b{font-weight:500;color:var(--d-txt)}
+.dash-t td.n{font-family:var(--d-mono);font-variant-numeric:tabular-nums;color:var(--d-txt);white-space:nowrap}
+.dash-t .tagx{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:5px;
+  background:var(--d-bg);color:var(--d-mut);border:1px solid var(--d-line);white-space:nowrap}
+
+/* --- Priority list: the only accented block on the page ---------------- */
+.dash-c.prio{border-color:#2B3A57}
+.dash-c.prio > .hd{background:linear-gradient(90deg,rgba(45,107,232,.10),transparent)}
+.finding{display:flex;align-items:center;gap:14px;padding:13px 17px;flex-wrap:wrap;
+  border-bottom:1px solid var(--d-line);background:rgba(45,107,232,.05)}
+.finding b{font-size:13.5px;font-weight:650;color:var(--d-txt);letter-spacing:-.015em}
+.finding span{flex:1;min-width:220px;font-size:12.5px;line-height:1.62;color:var(--d-mut)}
+.finding button{flex:none;border:1px solid #2B3A57;background:#131A28;color:#9CC0FF;
+  border-radius:6px;padding:8px 14px;font-size:12px;font-weight:500}
+.finding button:hover{background:#182236;border-color:#3A4E73}
+body.lt .finding button{background:#EAF2FE;border-color:#B6D3FA;color:#1B6EF3}
+
+.dash-t .tagx.hot{background:rgba(255,162,58,.13);color:#FFB55C;border-color:transparent}
+.dash-t .miss{color:#FF6B6B;font-weight:600}
+.dash-t .rr{font-style:normal;font-family:var(--d-mono);font-size:10.5px;color:var(--d-mut2);margin-left:7px}
+/* The gap drawn rather than written: five places behind fills the bar. */
+.dash-t .gapbar{display:inline-block;width:56px;height:6px;border-radius:3px;
+  background:var(--d-bg);border:1px solid var(--d-line);overflow:hidden;vertical-align:middle}
+.dash-t .gapbar i{display:block;height:100%;background:#FFA23A;border-radius:3px;min-width:2px}
+.dash-t .gapbar.full{background:#FF6B6B;border-color:transparent}
+
+/* --- Small multiples --------------------------------------------------- */
+.sparks{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px;padding:0 7px 4px}
+.spk{border:1px solid var(--d-line);border-radius:8px;padding:10px 11px 8px;background:var(--d-bg)}
+.spk .sh{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.spk .nm{font-size:11.5px;color:var(--d-txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.spk .sv{margin-left:auto;font-family:var(--d-mono);font-variant-numeric:tabular-nums;
+  font-size:12.5px;font-weight:600;color:var(--d-txt)}
+.spk.off{opacity:.5}
+.spk.off .sv{font-family:inherit;font-size:10.5px;font-weight:400;color:var(--d-mut2)}
+.spk .sk{width:100%;height:26px;display:block}
+.spk .flat{height:26px;border-top:1px dashed var(--d-line2);margin-top:12px;opacity:.6}
+
+/* --- Source contest ----------------------------------------------------- */
+.srcs{display:grid;gap:3px;padding:0 7px}
+.src{display:grid;grid-template-columns:20px minmax(0,1.1fr) 1fr 40px;align-items:center;gap:11px;
+  padding:8px 9px;border-radius:7px}
+.src:hover{background:var(--d-bg)}
+.src.mine{background:rgba(45,107,232,.09);box-shadow:inset 0 0 0 1px #22314C}
+body.lt .src.mine{background:#EAF2FE;box-shadow:inset 0 0 0 1px #C7DDFB}
+.src .rk{font-family:var(--d-mono);font-size:10.5px;color:var(--d-mut2);text-align:right}
+.src .dm{font-size:12.5px;color:var(--d-txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src.mine .dm{color:#6E9BF0;font-weight:500}
+.src .dm i{font-style:normal;font-size:9.5px;background:rgba(45,107,232,.2);color:#9CC0FF;
+  padding:2px 6px;border-radius:4px;margin-left:7px}
+.src .bar{display:block;height:6px;border-radius:3px;background:var(--d-bg);
+  border:1px solid var(--d-line);overflow:hidden}
+.src .bar i{display:block;height:100%;background:var(--d-line2);border-radius:3px}
+.src.mine .bar i{background:#2D6BE8}
+.src .vv{text-align:right;font-family:var(--d-mono);font-size:11.5px;color:var(--d-mut)}
+.dash-c .note{font-size:11.5px;color:var(--d-mut2);line-height:1.65;margin:12px 9px 4px;
+  padding-top:11px;border-top:1px solid var(--d-line)}
+
+.dash-empty{text-align:center;padding:30px 14px;color:var(--d-mut2);font-size:12.5px}
+.dash-empty .ic{font-size:24px;margin-bottom:8px;opacity:.45}
+
+@media print{
+  #sb,.mobbar,.apphead,.dash-rep .per,.finding button{display:none!important}
+  #app.on{display:block!important}
+  body,.main,.page{background:#fff!important}
+  .dash-c,.dash-k,.dash-rep{break-inside:avoid}
+}
+
 .apphead{display:flex;align-items:center;gap:14px;padding:14px 26px 0;justify-content:flex-end}
 .apphead .hs{font-size:12.5px;color:var(--mute)}
 .apphead .hs b{color:var(--fg);font-weight:600}
@@ -912,17 +1053,17 @@ const I18N = {
   'Partial':'Kısmi',
   'AI INSIGHTS':'ÖNE ÇIKAN BULGU',
   'Go to action plan':'Aksiyon planını aç',
-  'Visibility Trend':'Görünürlük Trendi',
-  'Platform Visibility Score':'Platform Bazında Görünürlük',
-  'How prominently your brand appears in AI responses (0–100)':'Platform bazında görünürlük payınız (0–100)',
-  'Recent Mentions':'Son Anılmalar',
-  'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın geçtiği sorgular — ham cevabı açmak için satıra tıklayın',
-  'Top Citing Domains':'En Çok Atıf Veren Alan Adları',
-  'Websites most cited by AI platforms in your industry':'Sektörünüzde AI platformlarının en çok atıf verdiği siteler',
+  'Visibility Trend':'Görünürlük seyri',
+  'Platform Visibility Score':'Platform bazında görünürlük',
+  'How prominently your brand appears in AI responses (0–100)':'Her motorun markanıza verdiği yer (0–100)',
+  'Recent Mentions':'Son anılmalar',
+  'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın anıldığı sorgular — cevabın tamamı için satıra tıklayın',
+  'Top Citing Domains':'Kaynak rekabeti',
+  'Websites most cited by AI platforms in your industry':'Yapay zekanın bu kategoride dayandığı siteler',
   'No brand mentions found':'Henüz anılma yok',
   'See the Opportunities tab for where to start':'Nereden başlayacağınızı Fırsatlar sekmesinde görün',
   'No history yet — the first scan writes today\'s point.':'Henüz geçmiş yok — ilk tarama bugünün noktasını yazar.',
-  'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Skorlar günlük güncellemeler arasında hafif dalgalanabilir. En doğru sonuç için trendi 4+ hafta takip edin.',
+  'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.',
   'Last 7 days':'Son 7 gün',
   'Last 30 days':'Son 30 gün',
   'Updates daily':'Günlük ölçüm',
@@ -937,6 +1078,36 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Ölçüm bekleniyor':'Ölçüm bekleniyor',
+  'yeni':'yeni',
+  'siteniz':'siteniz',
+  'Yapay zeka görünürlük raporu':'Yapay zeka görünürlük raporu',
+  'CSV indir':'CSV indir',
+  'Yazdır':'Yazdır',
+  'Görünürlük':'Görünürlük',
+  'Anılma':'Anılma',
+  'Pazar payı':'Pazar payı',
+  'Site hazırlığı':'Site hazırlığı',
+  'sorguda':'sorguda',
+  'kriter':'kriter',
+  'Veri bekleniyor':'Veri bekleniyor',
+  'Rakip ekleyin →':'Rakip ekleyin →',
+  'Denetimi başlatın →':'Denetimi başlatın →',
+  'Öncelik listesi':'Öncelik listesi',
+  'Rakibin önde olduğu sorgular · satın alma niyeti ve hacme göre':'Rakibin önde olduğu sorgular · satın alma niyeti ve hacme göre',
+  'Aksiyon planı':'Aksiyon planı',
+  'Sorgu':'Sorgu',
+  'Hacim':'Hacim',
+  'Siz':'Siz',
+  'Önde olan':'Önde olan',
+  'Platform bazında seyir':'Platform bazında seyir',
+  'Her motor ayrı ayrı · son':'Her motor ayrı ayrı · son',
+  'gün':'gün',
+  'ölçülmedi':'ölçülmedi',
+  'Kaynak rekabeti':'Kaynak rekabeti',
+  'Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz':'Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz',
+  'Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.':'Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.',
+  'Ölçüm tamamlandığında kaynaklar burada listelenir':'Ölçüm tamamlandığında kaynaklar burada listelenir',
   'Rekabet açığı':'Rekabet açığı',
   'Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı':'Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı',
   'Niyet':'Niyet',
@@ -2068,6 +2239,19 @@ function adopt(r) {
     sov,
     sources: (r.sources || []).map(s => ({ d: s.domain, v: s.citations, mine: s.mine, t: '', plats: [], first: s.first_seen, last: s.last_seen, trend: 1 })),
     series: (r.series || []).map(x => Number(x.score)),
+    // Per-platform history, keyed by engine. Missing days are left missing
+    // rather than zero-filled: a platform that was not measured on Tuesday
+    // did not score nothing on Tuesday.
+    engineSeries: (() => {
+      const out = {};
+      for (const row of (r.series || [])) {
+        const be = row.by_engine || {};
+        for (const k of Object.keys(be)) {
+          (out[k] ??= []).push(Number(be[k].score));
+        }
+      }
+      return out;
+    })(),
     seriesDates: (r.series || []).map(x => x.scan_date),
     audit,
     auditScore: r.audit ? Number(r.audit.total_score) : 0,
@@ -2726,6 +2910,27 @@ VIEWS.dashboard=()=>{
   const sov=d.sov.slice().sort((a,b)=>b.pct-a.pct);
   const myPos=sov.findIndex(x=>x.you)+1;
 
+  const measured=d.plats.filter(p=>!p.locked&&p.measured!==false&&p.checks>0);
+  const promptsSeen=new Set(d.cells.map(c=>c.p.id)).size;
+  const namedPrompts=new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size;
+  const sovMine=(d.sov.find(x=>x.you)||{pct:0}).pct;
+
+  /* Period over period. A report is a comparison; a snapshot is only a reading. */
+  const ser=d.series.slice(-S.range);
+  const delta=(()=>{
+    if(ser.length<6) return null;
+    const k=Math.max(2,Math.floor(ser.length/3));
+    const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+    const now=avg(ser.slice(-k)), before=avg(ser.slice(-2*k,-k));
+    return isFinite(now)&&isFinite(before) ? now-before : null;
+  })();
+  const chip=v=>v===null
+    ? `<span class="dl fl">${T('yeni')}</span>`
+    : `<span class="dl ${v>0.05?'up':v<-0.05?'dn':'fl'}">${v>0.05?'▲':v<-0.05?'▼':'—'} ${Math.abs(v).toFixed(1)}</span>`;
+
+  const period=`${new Date(Date.now()-S.range*864e5).toLocaleDateString('tr-TR')} – ${new Date().toLocaleDateString('tr-TR')}`;
+  const host=(S.brand.site||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
+
   return `
   ${failBanner}
   ${qualityBanner}
@@ -2735,159 +2940,112 @@ VIEWS.dashboard=()=>{
   ${S.plan==='trial'&&d.plats.length>allowed
      ? upsell(S.lang==='tr'
         ? `${d.plats.length} platformun ${allowed} tanesini takip ediyorsunuz. Diğer ${d.plats.length-allowed} platformda ne söylendiğini görmeden bilemezsiniz.`
-        : `You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
+        : `You're tracking ${allowed} of ${d.plats.length} platforms.`)
      : ''}
-  <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
-    <span>${T('Brand performance across')} ${allowed} ${T('AI platforms — visibility, share of voice and where you stand against competitors.')}</span>
-    <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
-  <div class="g4">
-    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Visibility score')}
-      ${kpiHelp('visibility')}</div>
-      ${d.ready
-        ? `<div class="v">${d.total.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
-           <div class="d">${d.plats.filter(p=>p.measured!==false&&!p.locked&&p.checks>0).length} ${T('platform')} ·
-             ${new Set(d.cells.map(c=>c.p.id)).size}/${(d.opps||[]).length} ${T('sorgu ölçüldü')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">${T('No scan yet')}</div>`}</div>
+  <div class="dash">
 
-    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Mention rate')}
-      ${kpiHelp('mention')}</div>
-      ${d.cells.length
-        ? `<div class="v">${d.mentionRate.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size}/${new Set(d.cells.map(c=>c.p.id)).size} ${T('sorguda görünür')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">${T('Waiting for the first results')}</div>`}</div>
+    <div class="dash-rep">
+      <div class="who"><h2>${esc(S.brand.name||'—')}</h2>
+        <div class="dm">${esc(host)} · ${T('Yapay zeka görünürlük raporu')}</div></div>
+      <div class="per"><span class="pl">${period}</span>
+        <button class="ex" onclick="exportMentions()">${T('CSV indir')}</button>
+        <button class="ex" onclick="window.print()">${T('Yazdır')}</button></div>
+    </div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>${T('Share of voice')}
-      ${kpiHelp('sov')}</div>
-      ${S.rivals.length
-        ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${sov.length} ${T('marka içinde')} ${myPos}. ${T('sırada')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d"><a href="#" onclick="go('rivals');return false"
-             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
+    <div class="dash-kpi">
+      <div class="dash-k"><div class="lb">${T('Görünürlük')} ${kpiHelp('visibility')}</div>
+        <div class="row"><span class="v">${d.ready?d.total.toFixed(1):'—'}<small>/100</small></span>${d.ready?chip(delta):''}</div>
+        <div class="sub">${d.ready?`${measured.length} ${T('platform')} · ${promptsSeen}/${(d.opps||[]).length} ${T('sorgu')}`:T('Ölçüm bekleniyor')}</div></div>
+      <div class="dash-k"><div class="lb">${T('Anılma')} ${kpiHelp('mention')}</div>
+        <div class="row"><span class="v">${d.cells.length?d.mentionRate.toFixed(1):'—'}<small>%</small></span></div>
+        <div class="sub">${d.cells.length?`${namedPrompts}/${promptsSeen} ${T('sorguda')}`:T('Veri bekleniyor')}</div></div>
+      <div class="dash-k"><div class="lb">${T('Pazar payı')} ${kpiHelp('sov')}</div>
+        <div class="row"><span class="v">${S.rivals.length?sovMine.toFixed(1):'—'}<small>%</small></span></div>
+        <div class="sub">${S.rivals.length?`${sov.length} ${T('marka içinde')} ${myPos}.`:`<a href="#" onclick="go('rivals');return false">${T('Rakip ekleyin →')}</a>`}</div></div>
+      <div class="dash-k"><div class="lb">${T('Site hazırlığı')} ${kpiHelp('audit')}</div>
+        <div class="row"><span class="v">${d.auditRanAt?d.auditScore.toFixed(0):'—'}<small>/100</small></span></div>
+        <div class="sub">${d.auditRanAt?`58 ${T('kriter')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}`:`<a href="#" onclick="go('audit');return false">${T('Denetimi başlatın →')}</a>`}</div></div>
+    </div>
 
-    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}
-      ${kpiHelp('audit')}</div>
-      ${d.auditRanAt
-        ? `<div class="v">${d.auditScore.toFixed(0)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
-           <div class="d">${T('58 checks on your website')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d"><a href="#" onclick="go('audit');return false"
-             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Run your first audit →')}</a></div>`}</div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1.1fr 1.15fr;gap:14px" class="dashg">
-    <div class="ins ${ins.lvl||''}">
-      <div class="ins-top">
-        <span class="tg">${esc(T(ins.tag||'AI INSIGHTS'))}</span>
-        ${ins.metric?`<span class="ins-m"><b>${esc(ins.metric)}</b>${esc(T(ins.metricLabel||''))}</span>`:''}
+    <!-- The centrepiece. Not a chart and not a summary: the shortest list of
+         places the brand is losing, ordered by what it costs to stay there.
+         Everything else on this screen exists to explain this table. -->
+    <div class="dash-c prio">
+      <div class="hd">
+        <div><h3>${T('Öncelik listesi')}</h3>
+          <div class="sub">${T('Rakibin önde olduğu sorgular · satın alma niyeti ve hacme göre')}</div></div>
+        <span class="rt">${d.gaps.length} ${T('sorgu')}</span>
       </div>
-      <div class="hl">${esc(ins.head)}</div>
-      <div class="tx">${esc(ins.body)}</div>
-      <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button></div>
+      ${ins.head?`<div class="finding"><b>${esc(ins.head)}</b><span>${esc(ins.body)}</span>
+        <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`:''}
+      <div class="bd">${d.gaps.length?`
+        <table class="dash-t"><thead><tr>
+          <th>${T('Sorgu')}</th><th class="n">${T('Hacim')}</th><th>${T('Niyet')}</th>
+          <th class="n">${T('Siz')}</th><th>${T('Önde olan')}</th><th class="n">${T('Fark')}</th></tr></thead><tbody>
+          ${d.gaps.slice(0,12).map(g=>`<tr>
+            <td><b>${esc(g.text)}</b></td>
+            <td class="n">${nf(g.volume)}</td>
+            <td><span class="tagx ${g.mult>=1.3?'hot':''}">${esc(INTENTS[g.intent]?INTENTS[g.intent].label:g.intent)}</span></td>
+            <td class="n">${g.absent?`<span class="miss">${T('yok')}</span>`:g.selfRank.toFixed(1)}</td>
+            <td>${g.rivalName?esc(g.rivalName):'—'}${g.rivalRank!==null?`<i class="rr">${g.rivalRank.toFixed(1)}</i>`:''}</td>
+            <td class="n">${g.absent?`<span class="gapbar full"></span>`
+              :`<span class="gapbar"><i style="width:${Math.min(100,(g.selfRank-g.rivalRank)/5*100)}%"></i></span>`}</td></tr>`).join('')}
+        </tbody></table>`
+        :`<div class="dash-empty"><div class="ic">◇</div>${T('Takip edilen sorgularda rakip sizi geçmiş değil')}</div>`}</div>
+    </div>
 
-    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
-      <div class="sub">${T('Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.')}</div></div>
-      <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-      <div class="cb">${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','-'+Math.round(S.range/2)+'d','today']})}</div></div>
+    <!-- Per-platform traces instead of one aggregate line beside a bar list.
+         The aggregate hides the failure that matters most: holding steady
+         overall while collapsing on the engine that carries the most weight. -->
+    <div class="dash-c">
+      <div class="hd"><div><h3>${T('Platform bazında seyir')}</h3>
+        <div class="sub">${T('Her motor ayrı ayrı · son')} ${S.range} ${T('gün')}</div></div></div>
+      <div class="bd"><div class="sparks">
+        ${d.plats.filter(p=>!p.locked).map(p=>{
+          const es=(d.engineSeries||{})[p.id]||[];
+          const on=p.measured!==false&&p.checks>0;
+          return `<div class="spk ${on?'':'off'}">
+            <div class="sh"><span class="nm">${esc(p.n)}</span>
+              <span class="sv">${on?p.score.toFixed(1):T('ölçülmedi')}</span></div>
+            ${on?miniSpark(es):`<div class="flat"></div>`}</div>`;
+        }).join('')}
+      </div></div>
+    </div>
 
-    <div class="card"><div class="ch"><div><h3>${T('Platform Visibility Score')}</h3>
-      <div class="sub">${T('How prominently your brand appears in AI responses (0–100)')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">${d.plats.map(p=>{
-        // Three states, never conflated: a platform we could not ask must not
-        // show a number, because a zero reads as "invisible there".
-        const state = p.locked ? 'locked'
-                    : !p.configured ? 'nokey'
-                    : p.failing && !p.measured ? 'failing'
-                    : !p.measured ? 'nodata'
-                    : 'ok';
-        if(state==='ok') return `
-        <div class="pvr"><div class="l"><span class="d" style="background:${p.c}33;color:#EDF1F8;border:1px solid ${p.c}66">${p.ab}</span>${p.n}
-          <span class="v">${p.score.toFixed(2)} <small>/ 100</small></span></div>
-          <div class="bar"><i style="width:${p.score}%;background:${p.c}"></i></div></div>`;
-        return `
-        <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
-          <span class="v" style="font-size:11px;color:${state==='failing'?'#FCA5A5':'var(--mute2)'}">${
-              state==='locked' ? '🔒 '+T('Upgrade')
-            // A customer cannot fix a missing key or a spent credit balance —
-            // those are our accounts. They see one honest fact: this platform
-            // was not measured, and it is not counted as a zero. The reason is
-            // an operator concern and stays on the operator's screen.
-            : state==='nokey'  ? (S.isAdmin
-                ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
-                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
-            : state==='failing'? (S.isAdmin
-                ? `<span title="Every call to this platform returned an error">⚠ ${T('Failing')}</span>`
-                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
-            : `<span title="${esc(T('No answers collected yet'))}">◌ ${T('No data yet')}</span>`}</span></div>
-          <div class="bar"></div></div>`;
-      }).join('')}
-      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?(S.isAdmin?`
-        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
-        <b>${T('Operator')}</b> · <b>No key</b> / <b>Failing</b> platforms were never measured and do not
-        count towards the score. <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
-        style="color:#93B4FF">Settings → Integrations</a>.</p>`:`
-        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
-        ${T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`):''}</div></div>
-  </div>
-  <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
-
-  <!-- The competitive gap. Placed above the mention lists on purpose: what a
-       marketer needs from this screen is not a record of where they appeared,
-       it is the shortest list of places they did not. -->
-  <div class="card"><div class="ch"><div><h3>${T('Rekabet açığı')}</h3>
-    <div class="sub">${T('Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı')}</div></div>
-    <span class="rt">${d.gaps.length} ${T('sorgu')}</span></div>
-    <div class="cb">${d.gaps.length?`
-      <table class="tbl"><thead><tr>
-        <th>${T('Query')}</th><th>${T('Niyet')}</th><th class="n">${T('Sizin sıranız')}</th>
-        <th>${T('Önünüzdeki marka')}</th><th class="n">${T('Fark')}</th></tr></thead><tbody>
-        ${d.gaps.slice(0,10).map(g=>`<tr>
-          <td><b style="font-weight:500">${esc(g.text)}</b>
-            <div class="mut" style="font-size:11px;margin-top:2px">${T('aylık')} ~${nf(g.volume)}</div></td>
-          <td><span class="chip ${g.mult>=1.3?'pri':''}">${esc(INTENTS[g.intent]?INTENTS[g.intent].label:g.intent)}</span></td>
-          <td class="n">${g.absent
-              ? `<span class="bad">${T('yok')}</span>`
-              : g.selfRank.toFixed(1)}</td>
-          <td>${g.rivalName?esc(g.rivalName):'—'}
-            ${g.rivalRank!==null?`<span class="mut" style="font-size:11px"> · ${g.rivalRank.toFixed(1)}</span>`:''}</td>
-          <td class="n">${g.absent
-              ? `<span class="chip" style="border-color:rgba(239,68,68,.35);color:#FCA5A5">${T('cevapta değilsiniz')}</span>`
-              : `<span class="warn">−${(g.selfRank-g.rivalRank).toFixed(1)}</span>`}</td></tr>`).join('')}
-      </tbody></table>
-      <p style="font-size:11.5px;color:var(--mute2);margin-top:11px">
-        ${T('Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.')}</p>`
-    :`<div class="empty"><div class="ic">◇</div>${T('Takip edilen sorgularda rakip sizi geçmiş değil')}<br>
-       <span style="font-size:12px">${T('Rakip ekledikçe bu tablo dolar')}</span></div>`}</div></div>
-
-  <div class="g2">
-    <div class="card"><div class="ch"><div><h3>${T('Recent Mentions')}</h3>
-      <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">
-        <div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
-          ${d.plats.filter(p=>!p.locked).map(p=>
-            `<button onclick="toast('${p.n}: ${p.mentions} mentions')">${p.ab} ${p.n} <b style="opacity:.7">${p.mentions}</b></button>`).join('')}</div>
-        ${recent.length?recent.map(m=>{
-            const pl=d.plats.find(x=>x.id===m.engine_key)||{c:'#3B82F6',ab:'◆',n:m.engine_key};
-            return `<div class="mnt" style="border-left-color:${pl.c}" onclick="answerModal(${m.id})">
-          <span class="chip">${pl.ab} ${pl.n}</span>
-          <span class="q">${esc(m.text)}</span>
-          <span class="ago">${m.rank?'rank '+m.rank:''}</span></div>`}).join('')
-          :`<div class="empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
-             <span style="font-size:12px">${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
-
-    <div class="card"><div class="ch"><div><h3>${T('Top Citing Domains')}</h3>
-      <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">${d.sources.slice(0,8).map((s,i)=>`
-        <div class="cdr"><span class="i">${i+1}</span>
-          <span class="f" style="background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
-          <span class="n">${s.d}${s.mine?' <span class="chip pri">yours</span>':''}
-            <span class="bar" style="margin-top:5px"><i style="width:${d.sources.length?s.v/(d.sources[0].v||1)*100:0}%"></i></span></span>
-          <span class="v">${s.v}</span></div>`).join('')}</div></div>
+    <!-- Sources framed as a contest rather than a leaderboard: who the models
+         lean on in this category, and whether you are among them. -->
+    <div class="dash-c">
+      <div class="hd"><div><h3>${T('Kaynak rekabeti')}</h3>
+        <div class="sub">${T('Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz')}</div></div></div>
+      <div class="bd">${d.sources.length?`
+        <div class="srcs">${d.sources.slice(0,10).map((x,i)=>`
+          <div class="src ${x.mine?'mine':''}">
+            <span class="rk">${i+1}</span>
+            <span class="dm">${esc(x.d)}${x.mine?`<i>${T('siteniz')}</i>`:''}</span>
+            <span class="bar"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span>
+            <span class="vv">${x.v}</span></div>`).join('')}</div>
+        ${!d.sources.some(x=>x.mine)?`<p class="note">${T('Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.')}</p>`:''}`
+        :`<div class="dash-empty"><div class="ic">◈</div>${T('Ölçüm tamamlandığında kaynaklar burada listelenir')}</div>`}</div>
+    </div>
   </div>`;
 };
+/** One trace, no axes, no grid — it lives inside a 150px cell and the number
+ *  beside it carries the value. Shape is the only job here. */
+function miniSpark(ser){
+  if(!ser||ser.length<2) return `<div class="flat"></div>`;
+  const W=100,H=26,lo=Math.min(...ser),hi=Math.max(...ser),rg=(hi-lo)||1;
+  const pts=ser.map((v,i)=>[i/(ser.length-1)*W, H-2-((v-lo)/rg)*(H-6)]);
+  const dd=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
+  const up=ser[ser.length-1]>=ser[0];
+  const col=up?'#35D07F':'#FF6B6B';
+  return `<svg class="sk" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <path d="${dd} L ${W} ${H} L 0 ${H} Z" fill="${col}" fill-opacity=".10"/>
+    <path d="${dd}" fill="none" stroke="${col}" stroke-width="1.5"
+      stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  </svg>`;
+}
+
 function insightText(){
   const d=S.data,b=S.brand;
   // Only platforms we actually measured can be called the weakest. Naming an
