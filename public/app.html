@@ -347,6 +347,53 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 14px}
 .keepopen b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:#FDE68A}
 
+/* --- Platform page --- */
+/* Loss bars. The length is what the gap costs the total score, so a heavy
+   platform at 25 outranks a light one at 0 — which is the ordering an agency
+   needs and the opposite of what a plain score list suggests. */
+.plos{display:grid;gap:2px}
+.pl-row{display:grid;grid-template-columns:170px 1fr 62px;grid-template-areas:"nm lb lv" "dt dt dt";
+  align-items:center;gap:4px 12px;padding:11px 10px;border-radius:9px}
+.pl-row:hover{background:rgba(255,255,255,.025)}
+.pl-row .nm{grid-area:nm;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--fg);min-width:0}
+.pl-row .nm i{width:8px;height:8px;border-radius:3px;flex:none}
+.pl-row .lb{grid-area:lb}
+.pl-row .ltrack{display:block;height:9px;border-radius:4px;background:var(--card2);
+  border:1px solid var(--border);overflow:hidden}
+.pl-row .ltrack i{display:block;height:100%;border-radius:3px;min-width:2px}
+.pl-row .lv{grid-area:lv;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:13px;font-weight:600;color:#FCA5A5}
+.pl-row .dt{grid-area:dt;font-size:11px;color:var(--mute2);padding-left:17px}
+
+.pst{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;white-space:nowrap;
+  padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--mute)}
+.pst i{width:6px;height:6px;border-radius:50%;flex:none;background:var(--border2)}
+.pst.ok{color:#7EE2A8;background:rgba(74,222,128,.1);border-color:transparent}
+.pst.ok i{background:#4ADE80}
+.pst.warn{color:#FCD34D;background:rgba(245,158,11,.1);border-color:transparent}
+.pst.warn i{background:#F59E0B}
+.pst.lock{color:#93B4FF;background:rgba(59,130,246,.1);border-color:transparent}
+.pst.lock i{background:#60A5FA}
+
+.ptbl tr.ghost td{opacity:.6}
+.ptbl tbody tr:hover td{background:rgba(255,255,255,.025)}
+.ptbl .pn{display:flex;align-items:center;gap:9px;min-width:0}
+.ptbl .pn i{width:9px;height:9px;border-radius:3px;flex:none}
+.ptbl .pn b{font-weight:500;color:var(--fg)}
+.ptbl .psc{display:flex;align-items:center;gap:10px}
+.ptbl .psc .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;
+  font-weight:600;color:var(--fg);width:38px}
+.ptbl .psc .bar{flex:1;display:block;height:7px;border-radius:4px;background:var(--card2);
+  border:1px solid var(--border);overflow:hidden}
+.ptbl .psc .bar i{display:block;height:100%;border-radius:3px}
+/* Weight as a percentage. "0.34" is a coefficient; "%34" is a share, and a
+   share is the thing the reader is actually being told. */
+.ptbl .wcell{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--fg2)}
+.ptbl .mut{color:var(--mute2)}
+.ptbl .upl{color:#93B4FF;font-size:12px;font-weight:500}
+.ptbl .ok{color:#4ADE80}
+.ptbl .bad{color:#F87171}
+
 /* Filters as chips, not a dropdown: the two questions asked on this page are
    "where are we missing" and "how did platform X do", and a menu adds a click
    to both every single visit. */
@@ -1021,6 +1068,36 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'bugün':'bugün',
+  'gün':'gün',
+  'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
+  'Planınızın üstünde':'Planınızın üstünde',
+  'Planı Yükselt':'Planı Yükselt',
+  'Anılma':'Anılma',
+  'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.':'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.',
+  'Her platform toplam skorunuza farklı ağırlıkta katılır. Bu sayfa hangisinin ne kadar taşıdığını ve nerede kaybettiğinizi gösterir.':'Her platform toplam skorunuza farklı ağırlıkta katılır. Bu sayfa hangisinin ne kadar taşıdığını ve nerede kaybettiğinizi gösterir.',
+  'Ölçülen platform':'Ölçülen platform',
+  'skorun':'skorun',
+  'bölümü ölçülüyor':'bölümü ölçülüyor',
+  'Planınızda açık':'Planınızda açık',
+  'bölümüne erişiminiz var':'bölümüne erişiminiz var',
+  'En çok kaybettiren':'En çok kaybettiren',
+  'puan kayıp':'puan kayıp',
+  'ölçüm bekleniyor':'ölçüm bekleniyor',
+  'Toplam kayıp':'Toplam kayıp',
+  '100 üzerinden alınmayan puan':'100 üzerinden alınmayan puan',
+  'Nerede kaybediyorsunuz':'Nerede kaybediyorsunuz',
+  'Her çubuğun uzunluğu, o platformdaki eksiğin toplam skorunuza mal olduğu puandır. Ağır bir platformda orta bir skor, hafif bir platformdaki sıfırdan pahalıdır.':'Her çubuğun uzunluğu, o platformdaki eksiğin toplam skorunuza mal olduğu puandır. Ağır bir platformda orta bir skor, hafif bir platformdaki sıfırdan pahalıdır.',
+  'skor':'skor',
+  'ağırlık':'ağırlık',
+  'Ölçüm tamamlandığında burada platform karşılaştırması oluşur':'Ölçüm tamamlandığında burada platform karşılaştırması oluşur',
+  'Ağırlık, o platformun toplam skorunuzdaki payıdır — gerçek kullanım oranlarına göre belirlenir, sizin ayarınız değildir.':'Ağırlık, o platformun toplam skorunuzdaki payıdır — gerçek kullanım oranlarına göre belirlenir, sizin ayarınız değildir.',
+  'Ölçülüyor':'Ölçülüyor',
+  'Veri yok':'Veri yok',
+  'Ağırlık':'Ağırlık',
+  'Kontrol':'Kontrol',
+  'Değişim':'Değişim',
+  'Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullanılmadığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.':'Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullanılmadığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.',
   'Niyet':'Niyet',
   'Skor':'Skor',
   'Ortalama sıra':'Ortalama sıra',
@@ -2237,7 +2314,10 @@ async function loadAttributes(pull){
   try{
     const r = await api.get(`/api/attributes?workspace=${S.workspaceId}&days=${S.range}`);
     S.attributes = r;
-    const c = r.coverage;
+    // A missing optional field should not take the page down with it. Without
+    // the fallback, an /api/attributes body without `coverage` throws here and
+    // the whole Competitors screen renders as "could not be drawn".
+    const c = r.coverage || {};
     if(pull && c.available && c.done < c.total && !S.attrBusy){
       S.attrBusy = true;
       api.post('/api/attributes',{workspaceId:S.workspaceId})
@@ -2364,6 +2444,49 @@ function donut(items,center,sub){
     <text x="72" y="70" text-anchor="middle" font-size="21" font-weight="600" fill="#F3F5F9">${center}</text>
     <text x="72" y="86" text-anchor="middle" font-size="10" fill="#7C8598" font-family="ui-monospace">${sub}</text></svg>`;
 }
+/**
+ * Trend chart scaled to its data.
+ *
+ * The shared lineChart() pins the axis to 0–100, which is right for a gauge and
+ * wrong for a trend: a brand moving 6 → 15 draws a flat line along the floor and
+ * the reader concludes nothing happened, when the score has more than doubled.
+ * This frames the range it was given and labels it, so the shape is readable
+ * and the scale is not a lie.
+ */
+function trendChart(ser){
+  if(!ser || ser.length<2) return `<div class="empty" style="padding:34px 12px">
+    <div class="ic">◜</div>${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
+  const W=680,H=190,PL=38,PR=14,PT=14,PB=26;
+  const lo=Math.min(...ser), hi=Math.max(...ser);
+  const span=Math.max(1,hi-lo);
+  const step=span<8?2:span<25?5:10;
+  const y0=Math.max(0,Math.floor((lo-span*0.3)/step)*step);
+  const y1=Math.min(100,Math.ceil((hi+span*0.3)/step)*step);
+  const sx=i=>PL+i/(ser.length-1)*(W-PL-PR);
+  const sy=v=>PT+(1-(v-y0)/((y1-y0)||1))*(H-PT-PB);
+  const line=ser.map((v,i)=>(i?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1)).join(' ');
+  const up=ser[ser.length-1]>=ser[0];
+  const col=up?'#4ADE80':'#F87171';
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:200px;display:block" role="img"
+    aria-label="${esc(T('Visibility Trend'))}">
+    <defs><linearGradient id="tgr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${col}" stop-opacity=".20"/>
+      <stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${[y0,(y0+y1)/2,y1].map(t=>`
+      <line x1="${PL}" x2="${W-PR}" y1="${sy(t).toFixed(1)}" y2="${sy(t).toFixed(1)}"
+        stroke="currentColor" stroke-opacity=".12"/>
+      <text x="${PL-8}" y="${(sy(t)+3.5).toFixed(1)}" text-anchor="end" font-size="10"
+        fill="currentColor" fill-opacity=".45">${t.toFixed(0)}</text>`).join('')}
+    <path d="${line} L ${sx(ser.length-1).toFixed(1)} ${H-PB} L ${PL} ${H-PB} Z" fill="url(#tgr)"/>
+    <path d="${line}" fill="none" stroke="${col}" stroke-width="2"
+      stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${sx(ser.length-1).toFixed(1)}" cy="${sy(ser[ser.length-1]).toFixed(1)}" r="3.5" fill="${col}"/>
+    <text x="${PL}" y="${H-7}" font-size="10" fill="currentColor" fill-opacity=".45">-${S.range} ${T('gün')}</text>
+    <text x="${W-PR}" y="${H-7}" text-anchor="end" font-size="10"
+      fill="currentColor" fill-opacity=".45">${T('bugün')}</text>
+  </svg>`;
+}
+
 function gauge(v,col){
   const R=62,cx=84,cy=84,a0=Math.PI*.78,a1=Math.PI*2.22,ang=a0+(v/100)*(a1-a0);
   const pt=(r,a)=>[(cx+r*Math.cos(a)).toFixed(1),(cy+r*Math.sin(a)).toFixed(1)];
@@ -3236,47 +3359,104 @@ function exportMentions(){
 
 /* ---------- PLATFORMLAR ---------- */
 VIEWS.platforms=()=>{
-  const d=S.data,ps=d.plats.filter(platAllowed);
-  const dist=ps.map(p=>({n:p.n,v:p.mentions,c:p.c}));
-  const tot=dist.reduce((a,x)=>a+x.v,0);
-  return head(T('Platforms'),T('Detailed performance metrics for each AI platform'),
-    rangeSel()+`<button class="btn b-pri b-sm" onclick="exportPlats()">${T('⭳ Export Platforms')}</button>`)+
-  `${S.plan==='trial'?upsell(T('The trial scans limited platforms. The rest unlock on paid plans.')):''}
-  <div class="g2">
-    <div class="card"><div class="ch"><div><h3>${T('Mention Distribution')}</h3>
-      <div class="sub">${T('Share of your brand mentions coming from each AI platform')}</div></div><span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-      <div class="cb" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
-        ${donut(dist,tot||0,tot?'MENTIONS':'NO DATA')}
-        <div style="flex:1;min-width:150px">${ps.map(p=>`
-          <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0">
-            <i style="width:9px;height:9px;border-radius:3px;background:${p.c};display:block"></i>
-            <span style="flex:1">${p.n}</span><span class="mono">${tot?(p.mentions/tot*100).toFixed(1):0}%</span></div>`).join('')}</div></div></div>
+  const d=S.data;
+  const ser=d.series.slice(-S.range);
 
-    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')}</h3>
-      <div class="sub">${T('Daily visibility scores per platform')}</div></div><span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-      <div class="cb"><div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
-        ${ps.map(p=>`<button style="border-color:${p.c}44">${p.ab} ${p.n}</button>`).join('')}</div>
-        ${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','today']})}</div></div>
+  /* Three states, never conflated. A platform that was never asked did not
+     score zero — printing 0.00 next to it is the most misleading number this
+     screen could produce, and it was doing exactly that. */
+  const state=p=> p.locked ? 'locked'
+                : !p.configured ? 'nokey'
+                : p.failing && !p.measured ? 'failing'
+                : !p.measured || !p.checks ? 'nodata' : 'ok';
+  const live=d.plats.filter(p=>state(p)==='ok');
+  const wLive=live.reduce((a,p)=>a+p.w,0);
+
+  /* What each platform is costing. Weight is the share of the total score a
+     platform carries; multiplied by the points not earned there, it answers
+     the only question this page exists for: which platform to fix first.
+     A weak score on a heavy platform outranks a terrible one on a light one. */
+  const loss=p=>p.w*(100-p.score);
+  const ranked=live.slice().sort((a,b)=>loss(b)-loss(a));
+  const worst=ranked[0]||null;
+  const totalLoss=live.reduce((a,p)=>a+loss(p),0);
+
+  const covered=d.plats.filter(p=>!p.locked).length;
+  const wCovered=d.plats.filter(p=>!p.locked).reduce((a,p)=>a+p.w,0);
+
+  const badge=st=>({
+    ok:      `<span class="pst ok"><i></i>${T('Ölçülüyor')}</span>`,
+    nodata:  `<span class="pst idle"><i></i>${T('Veri yok')}</span>`,
+    nokey:   `<span class="pst idle"><i></i>${S.isAdmin?T('No key'):T('Not measured')}</span>`,
+    failing: `<span class="pst warn"><i></i>${S.isAdmin?T('Failing'):T('Not measured')}</span>`,
+    locked:  `<span class="pst lock"><i></i>${T('Planınızın üstünde')}</span>`,
+  }[st]);
+
+  return head(T('Platforms'),
+    T('Her platform toplam skorunuza farklı ağırlıkta katılır. Bu sayfa hangisinin ne kadar taşıdığını ve nerede kaybettiğinizi gösterir.'),
+    rangeSel()+`<button class="btn b-gh b-sm" onclick="exportPlats()">${T('⭳ Download CSV')}</button>`)+
+  `${S.plan==='trial'?upsell(T('The trial scans limited platforms. The rest unlock on paid plans.')):''}
+
+  <div class="g4">
+    <div class="kpi"><div class="t">${T('Ölçülen platform')}</div>
+      <div class="v">${live.length}<span style="font-size:15px;color:var(--mute2)">/${d.plats.length}</span></div>
+      <div class="d">${T('skorun')} %${Math.round(wLive*100)} ${T('bölümü ölçülüyor')}</div></div>
+    <div class="kpi"><div class="t">${T('Planınızda açık')}</div>
+      <div class="v">${covered}<span style="font-size:15px;color:var(--mute2)">/${d.plats.length}</span></div>
+      <div class="d">${T('skorun')} %${Math.round(wCovered*100)} ${T('bölümüne erişiminiz var')}</div></div>
+    <div class="kpi"><div class="t">${T('En çok kaybettiren')}</div>
+      <div class="v" style="font-size:22px">${worst?esc(worst.n):'—'}</div>
+      <div class="d">${worst?`${loss(worst).toFixed(1)} ${T('puan kayıp')}`:T('ölçüm bekleniyor')}</div></div>
+    <div class="kpi"><div class="t">${T('Toplam kayıp')}</div>
+      <div class="v">${totalLoss.toFixed(1)}</div>
+      <div class="d">${T('100 üzerinden alınmayan puan')}</div></div>
   </div>
 
-  <div class="card"><div class="ch"><div><h3>${T('Platform Details')}</h3>
-    <div class="sub">${T("Score, citation rate and total checks. The weight column defines each platform's share of the total score.")}</div></div>
+  <div class="card"><div class="ch"><div><h3>${T('Nerede kaybediyorsunuz')}</h3>
+    <div class="sub">${T('Her çubuğun uzunluğu, o platformdaki eksiğin toplam skorunuza mal olduğu puandır. Ağır bir platformda orta bir skor, hafif bir platformdaki sıfırdan pahalıdır.')}</div></div></div>
+    <div class="cb">${ranked.length?`<div class="plos">${ranked.map(p=>`
+      <div class="pl-row">
+        <span class="nm"><i style="background:${p.c}"></i>${esc(p.n)}</span>
+        <span class="lb"><span class="ltrack"><i style="width:${totalLoss?loss(p)/totalLoss*100:0}%;background:${p.c}"></i></span></span>
+        <span class="lv">−${loss(p).toFixed(1)}</span>
+        <span class="dt">${T('skor')} ${p.score.toFixed(1)} · ${T('ağırlık')} %${Math.round(p.w*100)}</span>
+      </div>`).join('')}</div>`
+      :`<div class="empty" style="padding:30px"><div class="ic">◔</div>${T('Ölçüm tamamlandığında burada platform karşılaştırması oluşur')}</div>`}</div></div>
+
+  <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
+    <div class="sub">${T('Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.')}</div></div>
     <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-  <div class="tw"><table><thead><tr><th>#</th><th>Platform</th><th>${T("Score")}</th><th class="n">Weight</th>
-    <th class="n">Citation rate</th><th class="n">Mentions</th><th class="n">Citations</th><th class="n">${T("Total checks")}</th><th class="n">Trend</th></tr></thead>
-  <tbody>${d.plats.map((p,i)=>{
-    const lock=!platAllowed(p);
-    return `<tr class="${lock?'locked-row':''}"><td class="n">${i+1}</td>
-    <td><span style="display:flex;align-items:center;gap:8px"><i style="width:9px;height:9px;border-radius:3px;background:${p.c};display:block"></i>${p.n}</span></td>
-    <td style="min-width:180px">${lock?`<span class="lock">🔒 ${T('Upgrade Plan')}</span>`:
-      `<div style="display:flex;align-items:center;gap:10px"><span class="mono" style="width:42px">${p.score.toFixed(2)}</span>
-       <span class="bar" style="flex:1"><i style="width:${p.score}%;background:${p.c}"></i></span></div>`}</td>
-    <td class="n">${p.w.toFixed(2)}</td>
-    <td class="n">${lock?'—':(p.cites/(p.mentions||1)*100).toFixed(1)+'%'}</td>
-    <td class="n">${lock?'—':p.mentions}</td><td class="n">${lock?'—':p.cites}</td>
-    <td class="n">${lock?'—':p.checks}</td>
-    <td class="n ${p.trend>=0?'ok':'bad'}">${lock?'—':(p.trend>=0?'▲':'▼')+Math.abs(p.trend).toFixed(1)}</td></tr>`}).join('')}
-  </tbody></table></div></div>`;
+    <div class="cb">${trendChart(ser)}</div></div>
+
+  <div class="card"><div class="ch"><div><h3>${T('Platform Details')}</h3>
+    <div class="sub">${T('Ağırlık, o platformun toplam skorunuzdaki payıdır — gerçek kullanım oranlarına göre belirlenir, sizin ayarınız değildir.')}</div></div>
+    <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
+  <div class="tw"><table class="ptbl"><thead><tr>
+    <th>${T('Platform')}</th><th>${T('Durum')}</th><th>${T('Skor')}</th>
+    <th class="n">${T('Ağırlık')}</th><th class="n">${T('Anılma')}</th><th class="n">${T('Kaynak')}</th>
+    <th class="n">${T('Kontrol')}</th><th class="n">${T('Değişim')}</th></tr></thead>
+  <tbody>${d.plats.map(p=>{
+    const st=state(p), on=st==='ok';
+    return `<tr class="${on?'':'ghost'}">
+      <td><span class="pn"><i style="background:${on?p.c:'var(--border2)'}"></i><b>${esc(p.n)}</b></span></td>
+      <td>${badge(st)}</td>
+      <td style="min-width:170px">${on
+        ? `<div class="psc"><span class="v">${p.score.toFixed(1)}</span>
+             <span class="bar"><i style="width:${Math.max(1.5,p.score)}%;background:${p.c}"></i></span></div>`
+        : st==='locked'
+          ? `<a href="#" class="upl" onclick="go('settings');setTimeout(()=>setTab('billing'),30);return false">${T('Planı Yükselt')} →</a>`
+          : `<span class="mut">—</span>`}</td>
+      <td class="n"><span class="wcell">%${Math.round(p.w*100)}</span></td>
+      <td class="n">${on?p.mentions:'<span class="mut">—</span>'}</td>
+      <td class="n">${on?p.cites:'<span class="mut">—</span>'}</td>
+      <td class="n">${on?nf(p.checks):'<span class="mut">—</span>'}</td>
+      <td class="n">${on
+        ? `<span class="${p.trend>=0?'ok':'bad'}">${p.trend>=0?'▲':'▼'} ${Math.abs(p.trend).toFixed(1)}</span>`
+        : '<span class="mut">—</span>'}</td></tr>`}).join('')}
+  </tbody></table></div>
+  ${d.plats.some(p=>state(p)!=='ok'&&!p.locked)?`
+    <p class="mnote">${T('Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullanılmadığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.')}</p>`:''}
+  </div>`;
 };
 function exportPlats(){
   const rows=[['Platform','Score','Weight','Mentions','Citations','Total checks']];
