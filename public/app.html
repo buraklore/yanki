@@ -336,6 +336,14 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-scan button:disabled{opacity:.5}
 .sb-foot{margin-top:auto;display:grid;gap:10px;padding-top:10px}
 /* Provenance line: what was measured and when. */
+/* The queue is drained by this page. Saying otherwise was not a phrasing
+   choice, it was wrong: /api/cron/drain exists but is not scheduled, so
+   nothing else picks the work up while the tab is closed. */
+.keepopen{display:inline-flex;align-items:center;gap:7px;margin-top:18px;
+  font-size:12.5px;color:#FCD34D;background:rgba(245,158,11,.1);
+  border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 14px}
+.keepopen b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:#FDE68A}
+
 .ranline{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .ranline .rn{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--mute2);white-space:nowrap}
 .ranline .rn .d{width:6px;height:6px;border-radius:50%;background:var(--border2);flex:none}
@@ -964,6 +972,7 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Lütfen sayfayı kapatmayın':'Lütfen sayfayı kapatmayın',
   'Son tarama':'Son tarama',
   'Son denetim':'Son denetim',
   'hiç çalışmadı':'hiç çalışmadı',
@@ -1078,13 +1087,11 @@ const I18N = {
   'sorgu':'sorgu',
   'platform error(s)':'platform hatası',
   'Collecting answers':'Cevaplar toplanıyor',
-  'We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.':'Sorularınızı her yapay zeka platformuna soruyoruz. Tüm kontroller tamamlanır tamamlanmaz panel açılacak.',
   'checks completed':'kontrol tamamlandı',
   'checks remaining':'kontrol kaldı',
   'remaining':'kaldı',
   'checks done':'kontrol tamam',
   'Last updated':'Son güncelleme',
-  'you can close this page; the scan continues':'bu sayfayı kapatabilirsiniz, tarama devam eder',
   'Each prompt is asked several times per platform, because AI answers vary between runs. Averaging them is what makes the score stable.':'Her soru, her platformda birkaç kez sorulur — çünkü yapay zeka aynı soruya her seferinde aynı cevabı vermez. Ortalamasını almak skoru istikrarlı kılan şeydir.',
   'What does this mean?':'Bu ne anlama geliyor?',
 
@@ -2643,8 +2650,7 @@ function scanningScreen(){
   // that gap would read as a finished scan that found nothing.
   const p=scanProgress()||{pending:null,total:null,done:null,pct:null};
   const pct=p.pct===null?null:Math.min(99,Math.max(2,p.pct));
-  return head(T('Collecting answers'),
-    T('We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.'))+
+  return head(T('Collecting answers'))+
   `<div class="card"><div class="cb" style="padding:34px 26px;text-align:center">
     <div style="font-size:34px;margin-bottom:6px">◐</div>
     <div style="font-size:30px;font-weight:600;letter-spacing:-.5px">
@@ -2665,9 +2671,8 @@ function scanningScreen(){
     <div style="font-size:12.5px;color:var(--mute2);margin-top:14px;max-width:430px;margin-inline:auto;line-height:1.65">
       ${T('Each prompt is asked several times per platform, because AI answers vary between runs. Averaging them is what makes the score stable.')}
     </div>
-    <div style="font-size:12.5px;color:var(--mute);margin-top:16px">
-      ${p.pending===null ? T('you can close this page; the scan continues')
-        : `${p.pending} ${T('remaining')} · ${T('you can close this page; the scan continues')}`}
+    <div class="keepopen">
+      ${p.pending===null ? '' : `<b>${p.pending}</b> ${T('remaining')} · `}${T('Lütfen sayfayı kapatmayın')}
     </div>
   </div></div>`;
 }
