@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%233B82F6%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238B5CF6%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2245%22%20font-family%3D%22Poppins%2CArial%2Csans-serif%22%20font-size%3D%2238%22%20font-weight%3D%22700%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EY%3C%2Ftext%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0A0B0F;--bg2:#0C0E13;--card:#111319;--card2:#151821;--card3:#1A1D27;
@@ -223,6 +223,135 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-fb:hover{color:var(--fg)}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
+/* =====================================================================
+   DASHBOARD — "highlighter"
+   =====================================================================
+   What this product measures is whether a brand gets marked inside someone
+   else's text. That is literally what the answer inspector does: it wraps a
+   mention in <mark>. So the accent here is highlighter amber, and the state
+   it encodes is "named". A second colour, source green, encodes the harder
+   thing: named *and* cited, which is the mention that actually produces a
+   visit.
+
+   Two colours, two facts. No blue-violet gradient — that palette says
+   "dashboard" and nothing about this subject. Everything is scoped to .dash
+   so the rest of the app is untouched.
+   ===================================================================== */
+.dash{
+  --d-s1:#0F1217; --d-s2:#141821; --d-line:#232935; --d-line2:#2E3542;
+  --d-hl:#FFC94A;        /* named — the highlighter stroke */
+  --d-src:#57D9A3;       /* cited — the click actually lands */
+  --d-dim:#333B4A;       /* not measured: present, deliberately colourless */
+  --d-txt:#EDF0F6; --d-mut:#8C94A6; --d-mut2:#69707F;
+  --d-sans:"IBM Plex Sans",Poppins,-apple-system,sans-serif;
+  --d-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  display:grid; gap:16px; font-family:var(--d-sans);
+}
+.dash h3,.dash h4{font-family:var(--d-sans);letter-spacing:-.02em}
+
+/* Eyebrows and figures are set in mono. This is a measurement instrument;
+   tabular figures stop numbers jittering as they update, and the mono voice
+   separates "what was recorded" from "what we think about it". */
+.dash .eyebrow{font-family:var(--d-mono);font-size:10px;font-weight:500;letter-spacing:.16em;
+  color:var(--d-mut2);text-transform:uppercase}
+.dash .num{font-family:var(--d-mono);font-variant-numeric:tabular-nums}
+
+/* ---------- HERO -----------------------------------------------------
+   The signature. One object that answers the only question the reader has:
+   am I in the answers, and where. Score, direction, and the per-platform
+   rail in a single frame, so nothing has to be cross-referenced. */
+.dash-hero{border:1px solid var(--d-line);border-radius:16px;background:
+  linear-gradient(180deg,var(--d-s2),var(--d-s1));overflow:hidden}
+.dash-hero .top{display:flex;align-items:flex-start;gap:26px;padding:22px 24px 18px;flex-wrap:wrap}
+.dash-hero .score{display:grid;gap:5px;min-width:170px}
+.dash-hero .score .v{font-family:var(--d-mono);font-variant-numeric:tabular-nums;
+  font-size:60px;font-weight:600;line-height:.9;letter-spacing:-.05em;color:var(--d-txt)}
+.dash-hero .score .v small{font-size:18px;font-weight:400;color:var(--d-mut2);letter-spacing:0}
+.dash-hero .score .sub{font-size:12px;color:var(--d-mut)}
+.dash-hero .spark{flex:1;min-width:220px;display:grid;gap:7px}
+.dash-hero .spark .cap{display:flex;align-items:center;gap:8px}
+.dash-hero .spark .cap b{font-size:12.5px;font-weight:600;color:var(--d-txt)}
+.dash-hero .spark .cap .rt{margin-left:auto;font-family:var(--d-mono);font-size:10.5px;color:var(--d-mut2)}
+.dash-hero .spark svg{width:100%;height:66px;display:block}
+
+/* ---------- PLATFORM RAIL --------------------------------------------
+   The stroke length is the score; the stroke itself is drawn like a marker
+   pass over the row. An unmeasured platform gets a dashed track and no
+   number at all, because printing 0 next to a platform nobody asked is the
+   single most misleading thing this screen could do. */
+.dash-rail{border-top:1px solid var(--d-line);padding:6px 10px 12px}
+.dash-rail .r{display:grid;grid-template-columns:150px 1fr 92px;align-items:center;gap:14px;
+  padding:9px 14px;border-radius:10px}
+.dash-rail .r:hover{background:rgba(255,255,255,.025)}
+.dash-rail .r .nm{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--d-txt);min-width:0}
+.dash-rail .r .nm i{width:6px;height:6px;border-radius:2px;flex:none;background:var(--d-dim);font-style:normal}
+.dash-rail .r.on .nm i{background:var(--d-hl)}
+.dash-rail .r .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-rail .track{height:9px;border-radius:3px;background:rgba(255,255,255,.045);position:relative;overflow:hidden}
+.dash-rail .track b{position:absolute;inset:0 auto 0 0;border-radius:3px;
+  background:linear-gradient(90deg,var(--d-hl),#FFD97A);
+  box-shadow:0 0 16px rgba(255,201,74,.28)}
+.dash-rail .r.idle .track{background:repeating-linear-gradient(90deg,
+  var(--d-dim) 0 5px,transparent 5px 11px);opacity:.5}
+.dash-rail .r .val{text-align:right;font-family:var(--d-mono);font-variant-numeric:tabular-nums;
+  font-size:12.5px;color:var(--d-txt)}
+.dash-rail .r .val small{color:var(--d-mut2);font-size:10px}
+.dash-rail .r.idle .val{font-family:var(--d-sans);font-size:11px;color:var(--d-mut2)}
+.dash-rail .note{font-size:11.5px;color:var(--d-mut2);padding:10px 14px 2px;line-height:1.6}
+
+/* ---------- STAT STRIPS ----------------------------------------------
+   Three secondary numbers. Deliberately not four equal tiles: only one
+   number on this screen deserves 60px, and giving the others the same
+   treatment flattens the hierarchy the hero just established. */
+.dash-strip{border:1px solid var(--d-line);border-radius:13px;background:var(--d-s1);
+  padding:15px 17px;display:grid;gap:9px;align-content:start}
+.dash-strip .h{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--d-mut)}
+.dash-strip .h i{width:5px;height:14px;border-radius:2px;flex:none;font-style:normal}
+.dash-strip .v{font-family:var(--d-mono);font-variant-numeric:tabular-nums;
+  font-size:27px;font-weight:600;letter-spacing:-.035em;color:var(--d-txt);line-height:1}
+.dash-strip .v small{font-size:13px;font-weight:400;color:var(--d-mut2);letter-spacing:0}
+.dash-strip .d{font-size:11.5px;color:var(--d-mut2)}
+.dash-strip .mini{height:5px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden}
+.dash-strip .mini i{display:block;height:100%;border-radius:3px}
+.dash-strip a{color:var(--d-hl);font-weight:500}
+
+/* ---------- LAYOUT ---------------------------------------------------- */
+.dash-mid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+.dash-stats{display:grid;gap:12px}
+@media(max-width:1080px){.dash-mid{grid-template-columns:1fr}}
+
+/* ---------- LISTS ------------------------------------------------------ */
+.dash-card{border:1px solid var(--d-line);border-radius:14px;background:var(--d-s1);overflow:hidden}
+.dash-card .hd{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--d-line)}
+.dash-card .hd h3{font-size:14px;margin:0}
+.dash-card .hd .sub{font-size:11.5px;color:var(--d-mut2);margin-top:2px}
+.dash-card .hd .rt{margin-left:auto;font-family:var(--d-mono);font-size:10px;color:var(--d-mut2);
+  letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.dash-card .bd{padding:12px 14px}
+
+.dash-mnt{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;cursor:pointer;
+  border-left:2px solid var(--d-hl);background:rgba(255,255,255,.015);margin-bottom:6px}
+.dash-mnt:hover{background:rgba(255,201,74,.06)}
+.dash-mnt .pl{font-family:var(--d-mono);font-size:10px;color:var(--d-mut);white-space:nowrap}
+.dash-mnt .q{flex:1;min-width:0;font-size:12.8px;color:var(--d-txt);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-mnt .rk{font-family:var(--d-mono);font-size:11px;color:var(--d-hl);white-space:nowrap}
+
+.dash-src{display:grid;grid-template-columns:20px 1fr 46px;align-items:center;gap:11px;padding:9px 12px;border-radius:9px}
+.dash-src:hover{background:rgba(255,255,255,.025)}
+.dash-src .i{font-family:var(--d-mono);font-size:10.5px;color:var(--d-mut2);text-align:right}
+.dash-src .n{min-width:0;display:grid;gap:5px}
+.dash-src .n b{font-size:12.5px;font-weight:500;color:var(--d-txt);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-src .n .bar{height:4px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden}
+.dash-src .n .bar i{display:block;height:100%;background:var(--d-dim);border-radius:3px}
+.dash-src.mine .n .bar i{background:var(--d-src)}
+.dash-src.mine b{color:var(--d-src)}
+.dash-src .v{text-align:right;font-family:var(--d-mono);font-size:12px;color:var(--d-mut)}
+
+.dash-empty{text-align:center;padding:34px 16px;color:var(--d-mut2);font-size:12.5px}
+.dash-empty .ic{font-size:26px;margin-bottom:9px;opacity:.5}
+
 .apphead{display:flex;align-items:center;gap:14px;padding:14px 26px 0;justify-content:flex-end}
 .apphead .hs{font-size:12.5px;color:var(--mute)}
 .apphead .hs b{color:var(--fg);font-weight:600}
@@ -297,7 +426,7 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    reports, so it is allowed to look different from every other card. Severity
    drives the colour: a critical finding in the same calm blue as an
    opportunity teaches the reader that colour means nothing here. */
-.ins{border-radius:var(--rl);padding:22px;position:relative;overflow:hidden;min-height:250px;
+.ins{border-radius:16px;padding:22px;position:relative;overflow:hidden;min-height:280px;
   display:flex;flex-direction:column;
   background:linear-gradient(155deg,#1E3A8A,#2D4FD6 50%,#3B6BF5)}
 .ins.crit{background:linear-gradient(155deg,#7A1330,#B01E3C 48%,#D93A56)}
@@ -864,6 +993,9 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Ölçüm bekleniyor':'Ölçüm bekleniyor',
+  'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
+  'siteniz':'siteniz',
   'ZAYIF':'ZAYIF',
   'GÜÇLÜ':'GÜÇLÜ',
   'GELİŞTİRİLEBİLİR':'GELİŞTİRİLEBİLİR',
@@ -2553,6 +2685,33 @@ VIEWS.dashboard=()=>{
   const sov=d.sov.slice().sort((a,b)=>b.pct-a.pct);
   const myPos=sov.findIndex(x=>x.you)+1;
 
+  const measured=d.plats.filter(p=>!p.locked&&p.measured!==false&&p.checks>0);
+  const promptsSeen=new Set(d.cells.map(c=>c.p.id)).size;
+  const namedPrompts=new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size;
+  const ser=d.series.slice(-S.range);
+
+  // Sparkline drawn here rather than through lineChart(): the hero needs a
+  // bare trace with no axes or grid, because the axis labels are already in
+  // the caption and a second set of them would be furniture.
+  const spark=(()=>{
+    if(ser.length<2) return `<div style="height:66px;display:grid;place-items:center;
+      font-size:11.5px;color:var(--d-mut2)">${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
+    const W=100,H=30,mx=Math.max(...ser,10),mn=Math.min(...ser,0);
+    const pts=ser.map((v,i)=>[i/(ser.length-1)*W,H-(v-mn)/((mx-mn)||1)*H]);
+    const dd=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(2)+' '+q[1].toFixed(2)).join(' ');
+    const last=pts[pts.length-1];
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFC94A" stop-opacity=".28"/>
+        <stop offset="1" stop-color="#FFC94A" stop-opacity="0"/></linearGradient></defs>
+      <path d="${dd} L ${W} ${H} L 0 ${H} Z" fill="url(#sg)"/>
+      <path d="${dd}" fill="none" stroke="#FFC94A" stroke-width="1.4"
+        stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <circle cx="${last[0].toFixed(2)}" cy="${last[1].toFixed(2)}" r="2" fill="#FFC94A"/></svg>`;
+  })();
+
+  const sovMine=(d.sov.find(x=>x.you)||{pct:0}).pct;
+
   return `
   ${failBanner}
   ${qualityBanner}
@@ -2564,127 +2723,118 @@ VIEWS.dashboard=()=>{
         ? `${d.plats.length} platformun ${allowed} tanesini takip ediyorsunuz. Diğer ${d.plats.length-allowed} platformda ne söylendiğini görmeden bilemezsiniz.`
         : `You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
      : ''}
-  <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
-    <span>${T('Brand performance across')} ${allowed} ${T('AI platforms — visibility, share of voice and where you stand against competitors.')}</span>
-    <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
-  <div class="g4">
-    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Visibility score')}
-      ${kpiHelp('visibility')}</div>
-      ${d.ready
-        ? `<div class="v">${d.total.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
-           <div class="d">${d.plats.filter(p=>p.measured!==false&&!p.locked&&p.checks>0).length} ${T('platform')} ·
-             ${new Set(d.cells.map(c=>c.p.id)).size}/${(d.opps||[]).length} ${T('sorgu ölçüldü')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">${T('No scan yet')}</div>`}</div>
+  <div class="dash">
 
-    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Mention rate')}
-      ${kpiHelp('mention')}</div>
-      ${d.cells.length
-        ? `<div class="v">${d.mentionRate.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size}/${new Set(d.cells.map(c=>c.p.id)).size} ${T('sorguda görünür')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d">${T('Waiting for the first results')}</div>`}</div>
-
-    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>${T('Share of voice')}
-      ${kpiHelp('sov')}</div>
-      ${S.rivals.length
-        ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
-           <div class="d">${sov.length} ${T('marka içinde')} ${myPos}. ${T('sırada')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d"><a href="#" onclick="go('rivals');return false"
-             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
-
-    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}
-      ${kpiHelp('audit')}</div>
-      ${d.auditRanAt
-        ? `<div class="v">${d.auditScore.toFixed(0)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
-           <div class="d">${T('58 checks on your website')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}</div>`
-        : `<div class="v" style="color:var(--mute2)">—</div>
-           <div class="d"><a href="#" onclick="go('audit');return false"
-             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Run your first audit →')}</a></div>`}</div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1.1fr 1.15fr;gap:14px" class="dashg">
-    <div class="ins ${ins.lvl||''}">
-      <div class="ins-top">
-        <span class="tg">${esc(T(ins.tag||'AI INSIGHTS'))}</span>
-        ${ins.metric?`<span class="ins-m"><b>${esc(ins.metric)}</b>${esc(T(ins.metricLabel||''))}</span>`:''}
+    <!-- Hero: score, direction and per-platform standing in one frame. -->
+    <div class="dash-hero">
+      <div class="top">
+        <div class="score">
+          <div class="eyebrow">${T('Visibility score')} ${kpiHelp('visibility')}</div>
+          <div class="v">${d.ready?d.total.toFixed(1):'—'}<small> / 100</small></div>
+          <div class="sub">${d.ready
+            ? `${measured.length} ${T('platform')} · ${promptsSeen}/${(d.opps||[]).length} ${T('sorgu ölçüldü')}`
+            : T('Ölçüm bekleniyor')}</div>
+        </div>
+        <div class="spark">
+          <div class="cap"><b>${T('Visibility Trend')}</b>${kpiHelp('trend')}
+            <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
+          ${spark}
+        </div>
       </div>
-      <div class="hl">${esc(ins.head)}</div>
-      <div class="tx">${esc(ins.body)}</div>
-      <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button></div>
 
-    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
-      <div class="sub">${T('Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.')}</div></div>
-      <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-      <div class="cb">${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','-'+Math.round(S.range/2)+'d','today']})}</div></div>
+      <div class="dash-rail">
+        ${d.plats.map(p=>{
+          const state = p.locked ? 'locked'
+                      : !p.configured ? 'nokey'
+                      : p.failing && !p.measured ? 'failing'
+                      : !p.measured ? 'nodata' : 'ok';
+          if(state==='ok') return `
+          <div class="r on"><div class="nm"><i></i><span>${esc(p.n)}</span></div>
+            <div class="track"><b style="width:${Math.max(1.5,p.score)}%"></b></div>
+            <div class="val">${p.score.toFixed(1)}<small> /100</small></div></div>`;
+          const label = state==='locked' ? T('Upgrade')
+            : (state==='nokey'||state==='failing')
+                ? (S.isAdmin ? (state==='nokey'?T('No key'):T('Failing')) : T('Not measured'))
+                : T('No data yet');
+          return `
+          <div class="r idle"><div class="nm"><i></i><span>${esc(p.n)}</span></div>
+            <div class="track"></div>
+            <div class="val">${label}</div></div>`;
+        }).join('')}
+        ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
+          <p class="note">${S.isAdmin
+            ? `<b>${T('Operator')}</b> · no key / failing platforms were never measured and do not count towards the score.`
+            : T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`:''}
+      </div>
+    </div>
 
-    <div class="card"><div class="ch"><div><h3>${T('Platform Visibility Score')}</h3>
-      <div class="sub">${T('How prominently your brand appears in AI responses (0–100)')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">${d.plats.map(p=>{
-        // Three states, never conflated: a platform we could not ask must not
-        // show a number, because a zero reads as "invisible there".
-        const state = p.locked ? 'locked'
-                    : !p.configured ? 'nokey'
-                    : p.failing && !p.measured ? 'failing'
-                    : !p.measured ? 'nodata'
-                    : 'ok';
-        if(state==='ok') return `
-        <div class="pvr"><div class="l"><span class="d" style="background:${p.c}33;color:#EDF1F8;border:1px solid ${p.c}66">${p.ab}</span>${p.n}
-          <span class="v">${p.score.toFixed(2)} <small>/ 100</small></span></div>
-          <div class="bar"><i style="width:${p.score}%;background:${p.c}"></i></div></div>`;
-        return `
-        <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
-          <span class="v" style="font-size:11px;color:${state==='failing'?'#FCA5A5':'var(--mute2)'}">${
-              state==='locked' ? '🔒 '+T('Upgrade')
-            // A customer cannot fix a missing key or a spent credit balance —
-            // those are our accounts. They see one honest fact: this platform
-            // was not measured, and it is not counted as a zero. The reason is
-            // an operator concern and stays on the operator's screen.
-            : state==='nokey'  ? (S.isAdmin
-                ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
-                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
-            : state==='failing'? (S.isAdmin
-                ? `<span title="Every call to this platform returned an error">⚠ ${T('Failing')}</span>`
-                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
-            : `<span title="${esc(T('No answers collected yet'))}">◌ ${T('No data yet')}</span>`}</span></div>
-          <div class="bar"></div></div>`;
-      }).join('')}
-      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?(S.isAdmin?`
-        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
-        <b>${T('Operator')}</b> · <b>No key</b> / <b>Failing</b> platforms were never measured and do not
-        count towards the score. <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
-        style="color:#93B4FF">Settings → Integrations</a>.</p>`:`
-        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
-        ${T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`):''}</div></div>
-  </div>
-  <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
+    <div class="dash-mid">
+      <div class="ins ${ins.lvl||''}">
+        <div class="ins-top">
+          <span class="tg">${esc(T(ins.tag||'AI INSIGHTS'))}</span>
+          ${ins.metric?`<span class="ins-m"><b>${esc(ins.metric)}</b>${esc(T(ins.metricLabel||''))}</span>`:''}
+        </div>
+        <div class="hl">${esc(ins.head)}</div>
+        <div class="tx">${esc(ins.body)}</div>
+        <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button>
+      </div>
 
-  <div class="g2">
-    <div class="card"><div class="ch"><div><h3>${T('Recent Mentions')}</h3>
-      <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">
-        <div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
-          ${d.plats.filter(p=>!p.locked).map(p=>
-            `<button onclick="toast('${p.n}: ${p.mentions} mentions')">${p.ab} ${p.n} <b style="opacity:.7">${p.mentions}</b></button>`).join('')}</div>
-        ${recent.length?recent.map(m=>{
-            const pl=d.plats.find(x=>x.id===m.engine_key)||{c:'#3B82F6',ab:'◆',n:m.engine_key};
-            return `<div class="mnt" style="border-left-color:${pl.c}" onclick="answerModal(${m.id})">
-          <span class="chip">${pl.ab} ${pl.n}</span>
-          <span class="q">${esc(m.text)}</span>
-          <span class="ago">${m.rank?'rank '+m.rank:''}</span></div>`}).join('')
-          :`<div class="empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
-             <span style="font-size:12px">${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
+      <div class="dash-stats">
+        <div class="dash-strip">
+          <div class="h"><i style="background:var(--d-hl)"></i>${T('Mention rate')} ${kpiHelp('mention')}</div>
+          ${d.cells.length?`
+            <div class="v">${d.mentionRate.toFixed(1)}<small>%</small></div>
+            <div class="mini"><i style="width:${Math.min(100,d.mentionRate)}%;background:var(--d-hl)"></i></div>
+            <div class="d">${namedPrompts}/${promptsSeen} ${T('sorguda görünür')}</div>`
+          :`<div class="v">—</div><div class="d">${T('Waiting for the first results')}</div>`}
+        </div>
 
-    <div class="card"><div class="ch"><div><h3>${T('Top Citing Domains')}</h3>
-      <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
-      <div class="cb">${d.sources.slice(0,8).map((s,i)=>`
-        <div class="cdr"><span class="i">${i+1}</span>
-          <span class="f" style="background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
-          <span class="n">${s.d}${s.mine?' <span class="chip pri">yours</span>':''}
-            <span class="bar" style="margin-top:5px"><i style="width:${d.sources.length?s.v/(d.sources[0].v||1)*100:0}%"></i></span></span>
-          <span class="v">${s.v}</span></div>`).join('')}</div></div>
+        <div class="dash-strip">
+          <div class="h"><i style="background:var(--d-src)"></i>${T('Share of voice')} ${kpiHelp('sov')}</div>
+          ${S.rivals.length?`
+            <div class="v">${sovMine.toFixed(1)}<small>%</small></div>
+            <div class="mini"><i style="width:${Math.min(100,sovMine)}%;background:var(--d-src)"></i></div>
+            <div class="d">${sov.length} ${T('marka içinde')} ${myPos}. ${T('sırada')}</div>`
+          :`<div class="v">—</div>
+            <div class="d"><a href="#" onclick="go('rivals');return false">${T('Add competitors →')}</a></div>`}
+        </div>
+
+        <div class="dash-strip">
+          <div class="h"><i style="background:var(--d-mut2)"></i>${T('Audit score')} ${kpiHelp('audit')}</div>
+          ${d.auditRanAt?`
+            <div class="v">${d.auditScore.toFixed(0)}<small> / 100</small></div>
+            <div class="mini"><i style="width:${Math.min(100,d.auditScore)}%;background:${d.auditScore>=80?'var(--d-src)':d.auditScore>=60?'var(--d-hl)':'#FF7A85'}"></i></div>
+            <div class="d">${T('58 checks on your website')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}</div>`
+          :`<div class="v">—</div>
+            <div class="d"><a href="#" onclick="go('audit');return false">${T('Run your first audit →')}</a></div>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="dash-card"><div class="hd"><div><h3>${T('Recent Mentions')}</h3>
+        <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div>
+        <span class="rt">${T('Last 7 days')}</span></div>
+        <div class="bd">${recent.length?recent.map(m=>{
+          const pl=d.plats.find(x=>x.id===m.engine_key)||{n:m.engine_key};
+          return `<div class="dash-mnt" onclick="answerModal(${m.id})">
+            <span class="pl">${esc(pl.n)}</span>
+            <span class="q">${esc(m.text)}</span>
+            <span class="rk">${m.rank?'#'+m.rank:''}</span></div>`}).join('')
+          :`<div class="dash-empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
+             <span>${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
+
+      <div class="dash-card"><div class="hd"><div><h3>${T('Top Citing Domains')}</h3>
+        <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div>
+        <span class="rt">${T('Last 7 days')}</span></div>
+        <div class="bd">${d.sources.length?d.sources.slice(0,8).map((x,i)=>`
+          <div class="dash-src ${x.mine?'mine':''}"><span class="i">${i+1}</span>
+            <span class="n"><b>${esc(x.d)}${x.mine?' · '+T('siteniz'):''}</b>
+              <span class="bar"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span></span>
+            <span class="v">${x.v}</span></div>`).join('')
+          :`<div class="dash-empty"><div class="ic">◈</div>${T('No citations collected yet')}</div>`}</div></div>
+    </div>
   </div>`;
 };
 function insightText(){
