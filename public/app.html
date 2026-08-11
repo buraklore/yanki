@@ -293,24 +293,39 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .pills button{padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--card);
   font-size:11.5px;color:var(--mute)}
 .pills button.on{background:rgba(59,130,246,.16);color:#BBD1FF;border-color:rgba(59,130,246,.32)}
-.ins{border-radius:var(--rl);padding:20px;position:relative;overflow:hidden;min-height:250px;display:flex;flex-direction:column;
+/* The insight card is the one place on the dashboard that argues rather than
+   reports, so it is allowed to look different from every other card. Severity
+   drives the colour: a critical finding in the same calm blue as an
+   opportunity teaches the reader that colour means nothing here. */
+.ins{border-radius:var(--rl);padding:22px;position:relative;overflow:hidden;min-height:250px;
+  display:flex;flex-direction:column;
   background:linear-gradient(155deg,#1E3A8A,#2D4FD6 50%,#3B6BF5)}
-.ins::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 15% 0%,rgba(255,255,255,.16),transparent 60%)}
+.ins.crit{background:linear-gradient(155deg,#7A1330,#B01E3C 48%,#D93A56)}
+.ins.opp{background:linear-gradient(155deg,#0E4B3A,#12795C 48%,#1AA37A)}
+.ins.wait{background:linear-gradient(155deg,#1F2433,#2C3346 50%,#3A4459)}
+.ins::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(75% 55% at 12% 0%,rgba(255,255,255,.18),transparent 62%)}
 .ins>*{position:relative;z-index:1}
-.ins .tg{align-self:flex-start;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:8px;
-  padding:5px 11px;font-size:10.5px;font-weight:600;letter-spacing:.05em}
-/* The headline used to sit below the paragraph with `margin-top:auto` pushing
-   the text to the bottom — which produced a large dead area under the tag and
-   buried the one line meant to stop the reader. Headline first, body under it,
-   call to action pinned to the bottom. */
-.ins .hl{font-size:25px;font-weight:650;letter-spacing:-.035em;margin-top:16px;line-height:1.18;
+
+.ins-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ins .tg{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);border-radius:7px;
+  padding:5px 10px;font-size:10px;font-weight:700;letter-spacing:.11em}
+/* The number the sentence is about, pulled out so it registers before the
+   prose does — a reader who only glances still leaves with the figure. */
+.ins-m{margin-left:auto;display:flex;align-items:baseline;gap:6px;
+  font-size:11.5px;color:rgba(255,255,255,.75)}
+.ins-m b{font-size:30px;font-weight:700;letter-spacing:-.04em;color:#fff;line-height:1}
+
+.ins .hl{font-size:26px;font-weight:650;letter-spacing:-.035em;margin-top:18px;line-height:1.16;
   text-wrap:balance}
-.ins .tx{margin-top:12px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.88)}
+.ins .tx{margin-top:11px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.9)}
 .ins-cta{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:9px;
-  background:#fff;color:#15306E;border:0;border-radius:11px;padding:12px 20px;
+  background:#fff;color:#15306E;border:0;border-radius:11px;padding:13px 22px;
   font-size:13.5px;font-weight:650;letter-spacing:-.01em;cursor:pointer;
-  box-shadow:0 6px 20px rgba(0,0,0,.28);transition:transform .14s ease,box-shadow .14s ease}
-.ins-cta:hover{transform:translateY(-1px);box-shadow:0 9px 26px rgba(0,0,0,.34)}
+  box-shadow:0 6px 22px rgba(0,0,0,.3);transition:transform .14s ease,box-shadow .14s ease}
+.ins.crit .ins-cta{color:#7A1330}
+.ins.opp  .ins-cta{color:#0E4B3A}
+.ins-cta:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.38)}
 .ins-cta span{transition:transform .14s ease}
 .ins-cta:hover span{transform:translateX(3px)}
 .lock{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mute2)}
@@ -845,6 +860,11 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'KRİTİK':'KRİTİK',
+  'FIRSAT':'FIRSAT',
+  'ÖLÇÜM SÜRÜYOR':'ÖLÇÜM SÜRÜYOR',
+  '/ 100 görünürlük':'/ 100 görünürlük',
+  'STRATEJİ':'STRATEJİ',
   'ÖLÇÜM':'ÖLÇÜM',
   'AKSİYON':'AKSİYON',
   'HESAP':'HESAP',
@@ -1460,7 +1480,7 @@ async function setLang(l){
    persisted in the browser: a reload re-reads the server, which is why
    refreshing never sends anyone back through setup. */
 const S = {
-  step: 1, onboarded: false, route: 'dashboard', range: 30, openNav: {},
+  step: 1, onboarded: false, route: 'dashboard', range: 30,
   workspaceId: null, plan: 'trial', planLimits: null, org: null, role: 'owner',
   user: { name: '', mail: '' },
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
@@ -2169,28 +2189,28 @@ function gauge(v,col){
 const NAV=[
  {sec:'ÖLÇÜM'},
  {r:'dashboard',g:'◱',n:'Dashboard'},
- {g:'◫',n:'Analytics',sub:[
-   {r:'mentions',n:'Mentions'},{r:'platforms',n:'Platforms'},{r:'sources',n:'Sources'},
-   {r:'opps',n:'Opportunities'}]},
- {r:'rivals',g:'◇',n:'Competitors'},
- {r:'prompts',g:'◎',n:'AI Prompts'},
+ {r:'mentions', g:'◫',n:'Mentions'},
+ {r:'platforms',g:'⬡',n:'Platforms'},
+ {r:'sources',  g:'⬗',n:'Sources'},
+ {sec:'STRATEJİ'},
+ {r:'rivals',   g:'◇',n:'Competitors'},
+ {r:'prompts',  g:'◎',n:'AI Prompts'},
+ {r:'opps',     g:'◉',n:'Opportunities'},
  {sec:'AKSİYON'},
- {r:'plan',g:'◈',n:'Action Plan'},
- {r:'audit',g:'◰',n:'Audit'},
- {r:'tools',g:'◐',n:'Tools'},
+ {r:'plan',     g:'◈',n:'Action Plan'},
+ {r:'audit',    g:'◰',n:'Audit'},
+ {r:'tools',    g:'◐',n:'Tools'},
  {sec:'HESAP'},
- {r:'settings',g:'○',n:'Settings'}
+ {r:'settings', g:'○',n:'Settings'}
 ];
 function renderNav(){
   $('#nav').innerHTML=NAV.map(it=>{
     if(it.sec) return `<div class="sec">${T(it.sec)}</div>`;
-    if(it.sub){
-      const open=it.sub.some(s=>s.r===S.route)||S.openNav[it.n];
-      return `<button onclick="S.openNav['${T(it.n)}']=${!open};render()"><span class="g">${it.g}</span>${T(it.n)}
-        <span style="margin-left:auto;color:var(--mute2);font-size:11px">${open?'⌃':'⌄'}</span></button>
-        <div class="sub ${open?'open':''}">${it.sub.map(s=>
-          `<a class="${S.route===s.r?'on':''}" href="#" onclick="go('${s.r}');return false">${T(s.n)}</a>`).join('')}</div>`;
-    }
+    // The collapsible "Analytics" group is gone. It hid four pages behind a
+    // click, and the toggle was broken in Turkish anyway: the handler wrote
+    // S.openNav['Analitik'] while the render read S.openNav['Analytics'], so
+    // the group could never open. Section headings already give the grouping
+    // the collapse was there to provide.
     return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false"><span class="g">${it.g}</span>${T(it.n)}</a>`;
   }).join('');
   const brand=S.brand.name||'—';
@@ -2578,7 +2598,11 @@ VIEWS.dashboard=()=>{
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1.1fr 1.15fr;gap:14px" class="dashg">
-    <div class="ins"><span class="tg">${T('AI INSIGHTS')}</span>
+    <div class="ins ${ins.lvl||''}">
+      <div class="ins-top">
+        <span class="tg">${esc(T(ins.tag||'AI INSIGHTS'))}</span>
+        ${ins.metric?`<span class="ins-m"><b>${esc(ins.metric)}</b>${esc(T(ins.metricLabel||''))}</span>`:''}
+      </div>
       <div class="hl">${esc(ins.head)}</div>
       <div class="tx">${esc(ins.body)}</div>
       <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button></div>
@@ -2665,45 +2689,55 @@ function insightText(){
   const tr = S.lang==='tr';
 
   if(!d.ready || S.scanState && S.scanState.pending>0) return tr ? {
-    head:'Ölçüm sürüyor',
+    lvl:'wait', tag:'ÖLÇÜM SÜRÜYOR',
+    head:'Sonuçlar hazırlanıyor',
     body:'Veriler geldikçe skor yeniden hesaplanıyor. Ölçüm tamamlanmadan çıkarılacak sonuç '+
          'yanıltıcı olur; marka ilk sorgularda görünmeyip sonrakilerde öne çıkabilir.'
   } : {
-    head:'Measurement in progress',
+    lvl:'wait', tag:'IN PROGRESS',
+    head:'Results are being assembled',
     body:'The score is recalculated as data arrives. Any conclusion drawn before the run '+
          'completes will mislead: a brand can be absent from the first queries and prominent '+
          'in the ones that follow.'
   };
 
   if(d.total<10) return tr ? {
-    head:'Yapay zeka önerilerinde yoksunuz',
-    body:`${b.name} takip edilen platformlarda ${d.total.toFixed(1)}/100 görünürlük skoruna sahip. `+
-         `Marka, kullanıcıların yapay zekaya sorduğu satın alma sorularında pratikte hiç önerilmiyor — `+
-         `bu sorgulardan gelen trafiğin tamamı rakiplere gidiyor. `+
+    lvl:'crit', tag:'KRİTİK',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 görünürlük',
+    head:'Yapay zeka sizi önermiyor',
+    body:`Takip ettiğiniz sorgular müşterilerinizin satın almadan hemen önce sorduğu sorular. `+
+         `${b.name} bu cevapların neredeyse hiçbirinde geçmiyor; kullanıcı öneriyi okuyup tıklıyor ve `+
+         `tıkladığı marka her seferinde bir rakibiniz oluyor. `+
          (d.auditRanAt
-           ? `Site denetiminde ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} kriter başarısız; öncelik sırası Aksiyon Planı'nda.`
-           : 'İlk adım site denetimi: hangi teknik eksiklerin görünürlüğü engellediğini gösterir.')
+           ? `Sebep büyük ölçüde teknik: sitenizde ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} kriter başarısız. Etkiye göre sıralanmış hâli Aksiyon Planı'nda.`
+           : 'Nereden başlanacağını görmek için site denetimini çalıştırın.')
   } : {
-    head:'You are absent from AI recommendations',
-    body:`${b.name} holds a visibility score of ${d.total.toFixed(1)}/100 across the tracked platforms. `+
-         `The brand is effectively never recommended on the buying questions users put to AI — `+
-         `all of that traffic is going to competitors. `+
+    lvl:'crit', tag:'CRITICAL',
+    metric:d.total.toFixed(1), metricLabel:'/ 100 visibility',
+    head:'AI is not recommending you',
+    body:`The queries you track are the ones customers ask right before they buy. `+
+         `${b.name} appears in almost none of those answers; the user reads the recommendation, `+
+         `clicks, and the brand they click is a competitor every time. `+
          (d.auditRanAt
-           ? `${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} checks failed in the site audit; the Action Plan has them in priority order.`
-           : 'Start with a site audit: it shows which technical gaps are holding visibility back.')
+           ? `The cause is largely technical: ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} checks failed on your site. The Action Plan ranks them by impact.`
+           : 'Run the site audit to see where to start.')
   };
 
   const lvlTr = d.total<15?'kritik':d.total<35?'zayıf':d.total<60?'orta':'güçlü';
   const lvl   = d.total<15?'critical':d.total<35?'low':d.total<60?'moderate':'strong';
 
   return tr ? {
-    head:'Anılıyorsunuz, ama tıklanan siz değilsiniz',
+    lvl:'opp', tag:'FIRSAT',
+    metric:String(cited), metricLabel:`/ ${new Set(d.cells.map(c=>c.p.id)).size} sorguda kaynak`,
+    head:'Anılıyorsunuz, tıklanan siz değilsiniz',
     body:`${b.name} ${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size} sorguda anılıyor, görünürlük ${lvlTr} seviyede `+
          `(${d.total.toFixed(1)}/100). Ancak siteniz yalnızca ${cited} sorguda kaynak olarak gösteriliyor — `+
          `yani marka anılıyor, trafik başka siteye gidiyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
          `Organization ve FAQ şeması ile kanonik URL düzeni, kısa vadede en hızlı kazanımı veren iki müdahale.`
   } : {
-    head:'You get named — someone else gets the click',
+    lvl:'opp', tag:'OPPORTUNITY',
+    metric:String(cited), metricLabel:`/ ${new Set(d.cells.map(c=>c.p.id)).size} queries cite you`,
+    head:'You get named, someone else gets the click',
     body:`${b.name} is named on ${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size} queries with ${lvl} visibility `+
          `(${d.total.toFixed(1)}/100). But your site is cited as a source on only ${cited} of them — `+
          `the brand gets named while the traffic goes elsewhere. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). `+
