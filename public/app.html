@@ -937,6 +937,18 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Rekabet açığı':'Rekabet açığı',
+  'Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı':'Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı',
+  'Niyet':'Niyet',
+  'Sizin sıranız':'Sizin sıranız',
+  'Önünüzdeki marka':'Önünüzdeki marka',
+  'Fark':'Fark',
+  'aylık':'aylık',
+  'yok':'yok',
+  'cevapta değilsiniz':'cevapta değilsiniz',
+  'Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.':'Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.',
+  'Takip edilen sorgularda rakip sizi geçmiş değil':'Takip edilen sorgularda rakip sizi geçmiş değil',
+  'Rakip ekledikçe bu tablo dolar':'Rakip ekledikçe bu tablo dolar',
   'ZAYIF':'ZAYIF',
   'GÜÇLÜ':'GÜÇLÜ',
   'GELİŞTİRİLEBİLİR':'GELİŞTİRİLEBİLİR',
@@ -2061,6 +2073,25 @@ function adopt(r) {
     auditScore: r.audit ? Number(r.audit.total_score) : 0,
     auditUrl: r.audit ? r.audit.url : r.workspace.domain,
     auditRanAt: r.audit ? r.audit.ran_at : null,
+    /* Where a rival is ahead of us, query by query. Ranked by what it costs to
+       stay behind: buying intent first, then volume, then the size of the gap.
+       Reporting a share-of-voice total and stopping is the category habit; a
+       total says you are losing without saying where, and "where" is the only
+       form of the fact anyone can act on. */
+    gaps: (r.rivalGaps || []).map(g => {
+      const mult = g.intent === 'transactional' ? 1.5
+                 : g.intent === 'brand_defence' ? 1.3
+                 : g.intent === 'comparison' ? 1.2
+                 : g.intent === 'evaluation' ? 1.0 : 0.8;
+      const absent = g.selfRank === null || g.selfRank === 0;
+      const behind = !absent && g.rivalRank !== null && g.rivalRank < g.selfRank;
+      // Absent is worse than behind, and being behind by four places is worse
+      // than by one. Weighted so a high-intent query always outranks a
+      // high-volume informational one.
+      const severity = absent ? 4 : behind ? Math.min(3, g.selfRank - g.rivalRank) : 0;
+      return { ...g, absent, behind, mult,
+               priority: severity * mult * Math.log10(Math.max(10, g.volume)) };
+    }).filter(g => g.absent || g.behind).sort((a, b) => b.priority - a.priority),
     bots: [],
     opps: r.prompts.map(p => ({
       p: { id: p.id, text: p.text, intent: p.intent, vol: p.volume },
@@ -2802,6 +2833,34 @@ VIEWS.dashboard=()=>{
         ${T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`):''}</div></div>
   </div>
   <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
+
+  <!-- The competitive gap. Placed above the mention lists on purpose: what a
+       marketer needs from this screen is not a record of where they appeared,
+       it is the shortest list of places they did not. -->
+  <div class="card"><div class="ch"><div><h3>${T('Rekabet açığı')}</h3>
+    <div class="sub">${T('Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı')}</div></div>
+    <span class="rt">${d.gaps.length} ${T('sorgu')}</span></div>
+    <div class="cb">${d.gaps.length?`
+      <table class="tbl"><thead><tr>
+        <th>${T('Query')}</th><th>${T('Niyet')}</th><th class="n">${T('Sizin sıranız')}</th>
+        <th>${T('Önünüzdeki marka')}</th><th class="n">${T('Fark')}</th></tr></thead><tbody>
+        ${d.gaps.slice(0,10).map(g=>`<tr>
+          <td><b style="font-weight:500">${esc(g.text)}</b>
+            <div class="mut" style="font-size:11px;margin-top:2px">${T('aylık')} ~${nf(g.volume)}</div></td>
+          <td><span class="chip ${g.mult>=1.3?'pri':''}">${esc(INTENTS[g.intent]?INTENTS[g.intent].label:g.intent)}</span></td>
+          <td class="n">${g.absent
+              ? `<span class="bad">${T('yok')}</span>`
+              : g.selfRank.toFixed(1)}</td>
+          <td>${g.rivalName?esc(g.rivalName):'—'}
+            ${g.rivalRank!==null?`<span class="mut" style="font-size:11px"> · ${g.rivalRank.toFixed(1)}</span>`:''}</td>
+          <td class="n">${g.absent
+              ? `<span class="chip" style="border-color:rgba(239,68,68,.35);color:#FCA5A5">${T('cevapta değilsiniz')}</span>`
+              : `<span class="warn">−${(g.selfRank-g.rivalRank).toFixed(1)}</span>`}</td></tr>`).join('')}
+      </tbody></table>
+      <p style="font-size:11.5px;color:var(--mute2);margin-top:11px">
+        ${T('Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.')}</p>`
+    :`<div class="empty"><div class="ic">◇</div>${T('Takip edilen sorgularda rakip sizi geçmiş değil')}<br>
+       <span style="font-size:12px">${T('Rakip ekledikçe bu tablo dolar')}</span></div>`}</div></div>
 
   <div class="g2">
     <div class="card"><div class="ch"><div><h3>${T('Recent Mentions')}</h3>
