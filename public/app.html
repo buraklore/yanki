@@ -2212,44 +2212,68 @@ function upsell(txt){return `<div class="banner"><span>🔒</span><span>${txt}</
    =================================================================== */
 const KPI_HELP = {
   visibility: {
-    t: 'Görünürlük skoru',
-    b: [
-      ['Ne anlama gelir', '0–100 arası bir performans göstergesi. 100, takip edilen her sorguda markanızın ilk sırada önerildiği ve sitenizin kaynak olarak gösterildiği durumu tanımlar. 0, markanın hiçbir cevapta yer almadığı anlamına gelir.'],
-      ['Neyi kapsar', 'Beş bileşenin ağırlıklı bileşimi: markanın anılması (%30), cevap içindeki konumu (%22), sitenizin kaynak gösterilmesi (%20), öneri biçimi (%18) ve anılma tonu (%10).'],
-    ],
+    tr: { t: 'Görünürlük skoru', b: [
+      ['Kısaca', 'Yapay zeka mecrasındaki organik performansınız, 100 üzerinden. Google’daki ortalama pozisyon gibi düşünün: tek bir sayı, ama altında sıralama, tıklanma ve marka bilinirliği birlikte çalışıyor.'],
+      ['100 ne demek', 'Takip ettiğiniz her sorguda ilk önerilen marka olmak ve kaynak olarak sitenizin gösterilmesi. Bu, mecranın tavanı — pratikte kimse oraya çıkmaz.'],
+      ['Skoru oluşturan kalemler', 'Anılma %30 · cevap içindeki pozisyon %22 · siteye kaynak gösterilme %20 · öneri biçimi %18 · ton %10. Yani sadece görünmek yetmiyor; nerede ve nasıl görüneceğiniz puanın yarısını belirliyor.'],
+      ['Neyi etkiler', 'Bu sorguları soran kullanıcı artık arama sonucuna bakmıyor, cevabı okuyup tıklıyor. Skor düşükse o trafiği rakip topluyor.'],
+    ]},
+    en: { t: 'Visibility score', b: [
+      ['In short', 'Your organic performance in the AI channel, out of 100. Think of it like average position in Google: one number, with ranking, click-through and brand awareness all working underneath it.'],
+      ['What 100 means', 'Being the first brand recommended on every query you track, with your site given as the source. That is the ceiling of the channel — nobody actually gets there.'],
+      ['What makes up the score', 'Mentions 30% · position within the answer 22% · your site cited as source 20% · how you are recommended 18% · tone 10%. Being visible is not enough on its own: where and how you appear decides half the score.'],
+      ['Why it matters', 'Someone asking these questions no longer scrolls a results page — they read the answer and click. A low score means a competitor is collecting that traffic.'],
+    ]},
   },
   mention: {
-    t: 'Anılma oranı',
-    b: [
-      ['Ne anlama gelir', 'Takip edilen sorguların yüzde kaçında markanızın adının geçtiği. Klasik erişim metriğinin yapay zeka karşılığı.'],
-      ['Görünürlük skorundan farkı', 'Yalnızca adın geçip geçmediğini ölçer; konum, ton ve kaynak gösterilme buraya girmez. Huninin en üst basamağıdır.'],
-      ['Neden önce buna bakılır', 'Marka cevapta hiç yer almıyorsa sıralama veya ton üzerinde çalışmanın karşılığı olmaz. Önce cevaba girmek gerekir.'],
-    ],
+    tr: { t: 'Anılma oranı', b: [
+      ['Kısaca', 'Mecranın erişim metriği. Reklamda gösterim, SEO’da ilk sayfada çıkma neyse bu da o: markanız cevaba girdi mi, girmedi mi.'],
+      ['Görünürlük skorundan farkı', 'Bu ham erişim. Kaçıncı sırada anıldığınız, olumlu mu anıldığınız, sitenizin gösterilip gösterilmediği buraya girmez — hepsi görünürlük skorunda.'],
+      ['Önce buna bakın', 'Huninin en üstü burası. Cevaba hiç girmiyorsanız pozisyon ya da ton çalışmasının karşılığı olmaz; bütçe önce cevaba girmeye gider.'],
+    ]},
+    en: { t: 'Mention rate', b: [
+      ['In short', 'The reach metric of this channel. What impressions are to paid media, or first-page presence is to SEO: did your brand make it into the answer or not.'],
+      ['How it differs from visibility score', 'This is raw reach. Where you were mentioned, whether the mention was favourable, whether your site was cited — none of it counts here. All of that sits in the visibility score.'],
+      ['Look here first', 'This is the top of the funnel. If you are not in the answer at all, work on position or tone has nothing to build on; budget goes to getting in first.'],
+    ]},
   },
   sov: {
-    t: 'Ses payı',
-    b: [
-      ['Ne anlama gelir', 'Aynı sorgularda anılan markalar arasındaki payınız. Siz ve takip listenizdeki rakipler toplamda %100 eder.'],
-      ['Sıralama neye göre', 'Anılma sıklığına göre. Liste yalnızca sizin tanımladığınız rakip setini kapsar, pazarın tamamını değil — rakip eklemek veya çıkarmak payı değiştirir.'],
-      ['Görünürlük skorundan farkı', 'Görünürlük skoru mutlak performansı, ses payı rekabetçi konumu ölçer. Skorunuz sabit kalsa da rakip daha hızlı büyüyorsa ses payınız geriler.'],
-    ],
+    tr: { t: 'Ses payı', b: [
+      ['Kısaca', 'Klasik share of voice, yapay zeka mecrasına uyarlanmış hâli. Aynı sorgularda anılan markalar arasındaki payınız; siz ve rakipleriniz toplamda %100.'],
+      ['Rakip listesi payı belirler', 'Hesap yalnızca sizin tanımladığınız rakip setini kapsar, pazarın tamamını değil. Rakip eklediğinizde payınız düşer — bu bir gerileme değil, ölçümün genişlemesidir. Karşılaştırma yaparken listeyi sabit tutun.'],
+      ['Görünürlük skorundan farkı', 'Görünürlük skoru sizi tek başınıza ölçer, ses payı pazardaki konumunuzu. Skorunuz aynı kalırken rakip hızlandıysa payınız erir — mecra büyürken yerinde saymak da gerilemedir.'],
+    ]},
+    en: { t: 'Share of voice', b: [
+      ['In short', 'Classic share of voice, adapted to the AI channel. Your share among the brands named on the same queries; you and your competitors add up to 100%.'],
+      ['Your competitor list sets the number', 'The calculation covers only the competitor set you defined, not the whole market. Adding a competitor lowers your share — that is the measurement widening, not a decline. Keep the list fixed when comparing periods.'],
+      ['How it differs from visibility score', 'Visibility score measures you on your own; share of voice measures your position in the market. If your score holds steady while a rival accelerates, your share erodes — standing still in a growing channel is a decline.'],
+    ]},
   },
   audit: {
-    t: 'Denetim skoru',
-    b: [
-      ['Ne anlama gelir', 'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlık düzeyi. 0–100 arası.'],
-      ['Neyi kapsar', '58 teknik kriter: yapılandırılmış veri, başlık hiyerarşisi, içerik netliği, sayfa hızı, yazar bilgisi, taranabilirlik ve benzeri. Başarısız her kriter puan düşürür.'],
-      ['Görünürlük skorundan farkı', 'Görünürlük skoru çıktıyı ölçer — yapay zekanın ne söylediğini. Denetim skoru girdiyi ölçer — sitenizin durumunu. Girdiyi düzeltmek çıktıyı zamanla yukarı çeker; tersi işlemez.'],
-      ['Hedef aralık', '80 üzeri sağlıklı, 60 altı ciddi teknik eksik. Öncelik sırası Aksiyon Planı sekmesinde, her kriter için uygulanabilir düzeltmeyle birlikte verilir.'],
-    ],
+    tr: { t: 'Denetim skoru', b: [
+      ['Kısaca', 'Sitenizin teknik hazırlık notu, 100 üzerinden. Teknik SEO denetiminin yapay zeka karşılığı: model sitenizi okuyabiliyor ve kaynak gösterebiliyor mu.'],
+      ['Neyi kapsar', '58 kriter — yapılandırılmış veri, başlık hiyerarşisi, içerik netliği, sayfa hızı, yazar bilgisi, taranabilirlik. Başarısız her kriter puandan düşer.'],
+      ['Sebep ile sonuç', 'Görünürlük skoru sonucu ölçer, denetim skoru sebebi. Teknik tarafı düzeltmek görünürlüğü zamanla yukarı çeker; tersi işlemez. Kampanya kurgusuna başlamadan önce bu skoru toparlamak daha hızlı kazanç verir.'],
+      ['Hedef', '80 üzeri sağlıklı, 60 altı ciddi eksik. Aksiyon Planı sekmesi hangi kriterin kaldığını ve nasıl düzeltileceğini öncelik sırasıyla verir.'],
+    ]},
+    en: { t: 'Audit score', b: [
+      ['In short', 'Your site’s technical readiness, out of 100. The AI equivalent of a technical SEO audit: can a model read your site and cite it as a source.'],
+      ['What it covers', '58 checks — structured data, heading hierarchy, content clarity, page speed, author information, crawlability. Every failing check costs points.'],
+      ['Cause and effect', 'The visibility score measures the outcome; the audit score measures the cause. Fixing the technical side pulls visibility up over time — it does not work the other way round. Clearing this score before building a campaign buys faster wins.'],
+      ['Target', 'Above 80 is healthy, below 60 means serious gaps. The Action Plan tab lists which checks are failing and how to fix them, in priority order.'],
+    ]},
   },
   trend: {
-    t: 'Görünürlük trendi',
-    b: [
-      ['Grafik ne gösterir', '100 üzerinden günlük görünürlük skorunuz. En sağdaki nokta bugün.'],
-      ['Dalgalanma neden olur', 'Yapay zeka cevapları gün içinde değişir; aynı sorguda bugün anılıp yarın anılmamak olağandır. Bu, ölçüm hatası değil mecranın doğasıdır.'],
-      ['Nasıl okunmalı', 'Kampanya etkisini dört haftalık eğimde arayın. Üç günlük düşüş sinyal değildir; üç haftalık düşüş müdahale gerektirir.'],
-    ],
+    tr: { t: 'Görünürlük trendi', b: [
+      ['Grafik', '100 üzerinden günlük görünürlük skorunuz; en sağdaki nokta bugün.'],
+      ['Dalgalanma normaldir', 'Yapay zeka aynı sorguya her gün aynı cevabı vermez. Bugün anılıp yarın anılmamak ölçüm hatası değil, mecranın doğası — reklam mecralarındaki günlük gösterim oynamasına benzer.'],
+      ['Raporlama', 'Kampanya etkisini dört haftalık eğimde okuyun. Üç günlük düşüş gürültü, üç haftalık düşüş bulgudur. Müşteri raporlarında haftalık ortalama kullanmak günlük değerden daha sağlıklı bir tablo verir.'],
+    ]},
+    en: { t: 'Visibility trend', b: [
+      ['The chart', 'Your daily visibility score out of 100; the rightmost point is today.'],
+      ['Movement is normal', 'AI does not answer the same query identically every day. Being named today and not tomorrow is not a measurement error, it is how the channel behaves — much like daily impression swings in paid media.'],
+      ['Reporting', 'Read campaign impact off the four-week slope. A three-day dip is noise; a three-week dip is a finding. Weekly averages give clients a truer picture than daily values.'],
+    ]},
   },
 };
 
@@ -2258,7 +2282,13 @@ function kpiHelp(k){
     aria-label="${esc(T('What does this mean?'))}" onclick="showKpiHelp('${k}')">?</button>`;
 }
 function showKpiHelp(k){
-  const h=KPI_HELP[k]; if(!h) return;
+  // These strings sit outside I18N because each one is a paragraph, not a
+  // label, and threading paragraphs through a key-value dictionary makes both
+  // sides unreadable. They still have to switch language — a Turkish
+  // explanation in an English panel is worse than no explanation.
+  const entry=KPI_HELP[k]; if(!entry) return;
+  const h=entry[S.lang==='tr'?'tr':'en'] || entry.en;
+  if(!h) return;
   openModal(h.t, h.b.map(([q,a])=>
     `<div style="margin-bottom:18px">
        <div style="font-size:13px;font-weight:600;margin-bottom:5px">${esc(q)}</div>
@@ -2514,10 +2544,10 @@ function insightText(){
     body:'Veriler geldikçe skor yeniden hesaplanıyor. Ölçüm tamamlanmadan çıkarılacak sonuç '+
          'yanıltıcı olur; marka ilk sorgularda görünmeyip sonrakilerde öne çıkabilir.'
   } : {
-    head:'Scan still running',
-    body:'The score is recalculated as answers come back, so it climbs while the scan runs. '+
-         'Judging visibility before the run finishes is misleading — a brand can be absent from '+
-         'the first ten answers and present in the next twenty. Wait for the scan to complete.'
+    head:'Measurement in progress',
+    body:'The score is recalculated as data arrives. Any conclusion drawn before the run '+
+         'completes will mislead: a brand can be absent from the first queries and prominent '+
+         'in the ones that follow.'
   };
 
   if(d.total<10) return tr ? {
@@ -2529,12 +2559,13 @@ function insightText(){
            ? `Site denetiminde ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} kriter başarısız; öncelik sırası Aksiyon Planı'nda.`
            : 'İlk adım site denetimi: hangi teknik eksiklerin görünürlüğü engellediğini gösterir.')
   } : {
-    head:'Visibility Is Critical Across All AI Platforms',
-    body:`${b.name} scores ${d.total.toFixed(1)}/100 across the tracked platforms, which means near-total absence. `+
-         `The brand is almost never surfaced in AI answers and needs baseline visibility urgently. `+
+    head:'Visibility is at a critical level',
+    body:`${b.name} holds a visibility score of ${d.total.toFixed(1)}/100 across the tracked platforms. `+
+         `The brand is effectively never recommended on the buying questions users put to AI — `+
+         `all of that traffic is going to competitors. `+
          (d.auditRanAt
-           ? `The ${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} failing factors in your audit are the first place to look.`
-           : 'Run a site audit to find out which technical signals are blocking you.')
+           ? `${d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0)} checks failed in the site audit; the Action Plan has them in priority order.`
+           : 'Start with a site audit: it shows which technical gaps are holding visibility back.')
   };
 
   const lvlTr = d.total<15?'kritik':d.total<35?'zayıf':d.total<60?'orta':'güçlü';
@@ -2547,10 +2578,11 @@ function insightText(){
          `yani marka anılıyor, trafik başka siteye gidiyor. En zayıf platform ${worst.n} (${worst.score.toFixed(1)}). `+
          `Organization ve FAQ şeması ile kanonik URL düzeni, kısa vadede en hızlı kazanımı veren iki müdahale.`
   } : {
-    head:`Increase Website Citations from ${cited} to ${Math.max(cited*2,12)}+`,
-    body:`${b.name} has ${d.cells.filter(c=>c.m>0).length} mentions and ${lvl} visibility (${d.total.toFixed(1)}), `+
-         `yet your domain is cited as a source in only ${cited} prompts. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). `+
-         `Implementing Organization and FAQ schema plus canonical URLs can double citations in the short term.`
+    head:`Take source citations from ${cited} to ${Math.max(cited*2,12)}+`,
+    body:`${b.name} is named on ${d.cells.filter(c=>c.m>0).length} queries with ${lvl} visibility `+
+         `(${d.total.toFixed(1)}/100). But your site is cited as a source on only ${cited} of them — `+
+         `the brand gets named while the traffic goes elsewhere. Weakest platform is ${worst.n} (${worst.score.toFixed(1)}). `+
+         `Organization and FAQ schema plus a clean canonical URL structure are the two fastest wins here.`
   };
 }
 async function answerModal(runId){
