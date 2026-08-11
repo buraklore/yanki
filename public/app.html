@@ -379,7 +379,7 @@ svg{display:block;max-width:100%}
 </head>
 <body>
 
-<!-- ============ ONBOARDING ============ -->
+
 <div id="ob" class="on">
   <div class="ob-top">
     <span class="sb-logo" style="border:0;padding:0;font-size:18px"><span class="mk">Y</span>YANKI</span>
@@ -390,7 +390,7 @@ svg{display:block;max-width:100%}
   <div class="ob-body"><div class="ob-card" id="obCard"></div></div>
 </div>
 
-<!-- ============ APP ============ -->
+
 <div id="app">
   <aside id="sb">
     <div class="sb-logo"><span class="mk">Y</span> YANKI</div>
@@ -409,7 +409,7 @@ svg{display:block;max-width:100%}
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sb-foot">
-      <!-- The old button thanked the user for feedback it never collected. -->
+      
       <a class="nav" style="font-size:12.5px;color:var(--mute2);text-decoration:none;padding:0 11px"
         href="mailto:destek@yanki.app?subject=YANKI%20geri%20bildirim"><span id="fbLabel">▭ Feedback</span></a>
       <div class="trial" id="trialBox"></div>
@@ -788,6 +788,83 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'from your category, country and description. Edit freely — a starting point, not a verdict.':'kategoriniz, ülkeniz ve açıklamanızdan üretildi. Serbestçe düzenleyin — bu bir başlangıç noktası, kesin hüküm değil.',
+  'This is normal for new or distinctive brands. Add the nicknames, abbreviations or spellings your customers use, or skip this step.':'Yeni ya da özgün adlı markalarda bu olağandır. Müşterilerinizin kullandığı takma adları, kısaltmaları ve yazımları ekleyin ya da bu adımı atlayın.',
+  '✦ Written for':'✦ Şuna göre yazıldı:',
+  'Sources appear once a scan finishes and the platforms cite pages in their answers. If a scan has run and this is still empty, no platform cited any source.':'Kaynaklar, ölçüm tamamlanıp platformlar cevaplarında sayfa gösterdiğinde belirir. Ölçüm çalıştığı hâlde burası boşsa hiçbir platform kaynak göstermemiş demektir.',
+  'your site':'siteniz',
+  'Prompt':'Sorgu',
+  'Suggested action':'Önerilen aksiyon',
+  '(you)':'(siz)',
+  'Adding a competitor changes the share-of-voice denominator and recalculates historical data, so past figures will shift.':'Rakip eklemek ses payı paydasını değiştirir ve geçmiş veriyi yeniden hesaplar; önceki rakamlar kayar.',
+  'Could not reach the server. Refresh to try again.':'Sunucuya ulaşılamadı. Yenileyip tekrar deneyin.',
+  'New prompts written for your brand':'Markanız için yazılmış yeni sorgular',
+  'Regenerated from templates':'Şablonlardan yeniden üretildi',
+  '↻ Regenerate':'↻ Yeniden üret',
+  'This is normal for new or distinctive brands. Add the nicknames, abbreviations or spellings your customers use.':'Yeni ya da özgün adlı markalarda bu olağandır. Müşterilerinizin kullandığı takma adları, kısaltmaları ve yazımları ekleyin.',
+  'Industry':'Sektör',
+  'Country':'Ülke',
+  'City':'Şehir',
+  'Intent':'Niyet',
+  '✦ AI-suggested names':'✦ Yapay zekanın önerdiği adlar',
+  '← Back':'← Geri',
+  '↻ Try again':'↻ Tekrar dene',
+  'Edit':'Düzenle',
+  'Save':'Kaydet',
+  'Continue':'Devam',
+  'Skip':'Atla',
+  'AI tools sometimes mention your brand in a different form than its official name. Add your abbreviations and spellings so those mentions are counted too.':'Yapay zeka araçları markanızı bazen resmî adından farklı biçimde anar. Kısaltmalarınızı ve yazım varyantlarınızı ekleyin ki bu anılmalar da sayılsın.',
+  'Alternative names AI may use for your brand. This lets us track mentions across every variation.':'Yapay zekanın markanız için kullanabileceği alternatif adlar. Böylece her varyanttaki anılmayı takip edebiliriz.',
+  'The intent multiplier sets the weight in the score: transactional 1.50 … informational 0.80':'Niyet çarpanı skordaki ağırlığı belirler: satın alma amaçlı 1,50 … bilgi amaçlı 0,80',
+  'The trial scans 3 platforms. The remaining 5 unlock on paid plans.':'Deneme planı 3 platformu ölçer. Kalan 5 platform ücretli planlarda açılır.',
+  'These are the searches we will run on every platform. Keep the ones your customers would actually type.':'Her platformda çalıştıracağımız sorgular bunlar. Müşterilerinizin gerçekten yazacağı olanları bırakın.',
+  '⚒ Content and audit tools':'⚒ İçerik ve denetim araçları',
+  "AI systems refer to your brand with different names — let's track all of them.":'Yapay zeka sistemleri markanızı farklı adlarla anabilir — hepsini takip edelim.',
+  "Let's configure your project workspace":'Çalışma alanınızı yapılandıralım',
+  "We'll track brand visibility for this domain":'Marka görünürlüğünü bu alan adı için takip edeceğiz',
+  "Who are your main competitors? We'll track them too":'Başlıca rakipleriniz kimler? Onları da takibe alalım',
+  'Interface language. Saved to your account and applied on every device.':'Arayüz dili. Hesabınıza kaydedilir, tüm cihazlarda geçerlidir.',
+  'No variants yet. Add variants to improve detection quality.':'Henüz varyant yok. Tespit kalitesini artırmak için varyant ekleyin.',
+  'Intent weights the score: a transactional prompt counts almost twice an informational one.':'Niyet skoru ağırlıklandırır: satın alma amaçlı bir sorgu, bilgi amaçlı bir sorgunun neredeyse iki katı sayılır.',
+  'Raw answer':'Ham cevap',
+  'Loading the answer…':'Cevap yükleniyor…',
+  'Query':'Sorgu',
+  'sorgu × platform':'sorgu × platform',
+  'kapsama':'kapsama',
+  'Agency plan is handled by our sales team':'Ajans planı satış ekibimiz tarafından yönetilir',
+  'Brand name is required':'Marka adı zorunlu',
+  'Competitor added — it will appear in the next scan':'Rakip eklendi — bir sonraki ölçümde görünecek',
+  'Competitor name is required':'Rakip adı zorunlu',
+  'Copied to clipboard':'Panoya kopyalandı',
+  'Could not copy':'Kopyalanamadı',
+  'Delete this account?':'Bu hesap silinsin mi?',
+  'Edit prompt':'Sorguyu düzenle',
+  'New prompt':'Yeni sorgu',
+  'Plan updated — locked platforms are now included in the next scan':'Plan güncellendi — kilitli platformlar bir sonraki ölçüme dahil',
+  'Prompt added — it will be scanned on the next run':'Sorgu eklendi — bir sonraki ölçümde çalışacak',
+  'Prompt deleted':'Sorgu silindi',
+  'Prompt is required':'Sorgu metni zorunlu',
+  'Prompt is too short':'Sorgu çok kısa',
+  'Prompt removed':'Sorgu kaldırıldı',
+  'Prompt updated':'Sorgu güncellendi',
+  'Redirects to the payment provider':'Ödeme sağlayıcısına yönlendirir',
+  'Select at least one prompt':'En az bir sorgu seçin',
+  'Write at least one prompt (6 characters or more)':'En az bir sorgu yazın (6 karakter veya daha uzun)',
+  'Cited':'Kaynak gösterildi',
+  'Coverage':'Kapsama',
+  'Domain':'Alan adı',
+  'Rank':'Sıra',
+  'Score':'Skor',
+  'Prompt text':'Sorgu metni',
+  'Total checks':'Toplam kontrol',
+  'Add and recalculate':'Ekle ve yeniden hesapla',
+  'Add and scan':'Ekle ve ölç',
+  'Go to Dashboard →':'Panele git →',
+  'What you should do':'Ne yapmalısınız',
+  'No citations collected yet':'Henüz kaynak verisi toplanmadı',
+  'No additional names found':'Ek isim bulunamadı',
+  'Testing every provider…':'Tüm sağlayıcılar test ediliyor…',
+  '⚪ Not visible':'⚪ Görünmüyor',
   'Trial':'Deneme',
   'Starter':'Başlangıç',
   'Growth':'Büyüme',
@@ -857,7 +934,6 @@ const I18N = {
   'Scanning…':'Taranıyor…',
   'Starting…':'Başlatılıyor…',
   'Updated':'Güncellendi',
-  'No scan yet':'Henüz tarama yok',
   'just now':'az önce',
   'min ago':'dk önce',
   'h ago':'sa önce',
@@ -865,7 +941,6 @@ const I18N = {
   'Add brand':'Marka ekle',
   'Your plan covers':'Planınız',
   'brands':'marka',
-  'brand':'marka',
   'Upgrade to add another.':'Bir tane daha eklemek için yükseltin.',
 
   'tone and recommendation are counted as zero, so the score is a floor rather than a measurement.':'ton ve tavsiye sıfır sayıldı, yani skor bir ölçüm değil alt sınır.',
@@ -881,7 +956,6 @@ const I18N = {
   'Hizmet':'Hizmet',
   'Continue anyway?':'Yine de devam edilsin mi?',
   'Brand settings saved':'Marka ayarları kaydedildi',
-  'Scanning…':'Taranıyor…',
   'Check keys':'Anahtarları kontrol et',
   'Run a scan now':'Ölçümü başlat',
   'Scan in progress':'Tarama sürüyor',
@@ -890,7 +964,6 @@ const I18N = {
   'Detailed performance metrics for each AI platform':'Her AI platformu için ayrıntılı performans metrikleri',
   'Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.':'Sektörünüzde AI platformlarının en çok atıf verdiği siteler. Bu liste GEO stratejinizin haritasıdır.',
   'Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.':'Kapsama, tahmini hacim, kaynak sayısı ve ticari niyet birleşerek her sorguya bir fırsat skoru verir. Yüksek skorlu sorgular yüksek hacimli ve az kaynaklıdır — oradan başlayın.',
-  'Total checks':'Toplam kontrol',
   'Citations':'Atıf',
   'Average rank':'Ortalama sıra',
   'cells':'hücre',
@@ -901,10 +974,7 @@ const I18N = {
   'when mentioned':'bahsedildiğinde',
   'Mention matrix':'Bahsetme matrisi',
   'Mention rate, prominence, citation, recommendation strength and sentiment are measured separately':'Bahsetme oranı, belirginlik, atıf, tavsiye gücü ve duygu ayrı ayrı ölçülür',
-  'Rank':'Sıra',
-  'Cited':'Atıf',
   'Sentiment':'Duygu',
-  'Score':'Skor',
   'Mention Distribution':'Bahsetme Dağılımı',
   'Share of your brand mentions coming from each AI platform':'Marka bahsetmelerinizin her AI platformundan gelen payı',
   'Daily visibility scores per platform':'Platform bazlı günlük görünürlük skorları',
@@ -921,15 +991,12 @@ const I18N = {
   'The "Generate content" button drafts a brief for that prompt':'"İçerik üret" düğmesi o sorgu için bir brief hazırlar',
   'Est. volume':'Tahmini hacim',
   'Content fit':'İçerik uyumu',
-  'Suggested action':'Önerilen aksiyon',
   'High':'Yüksek',
   'Medium':'Orta',
   'Low':'Düşük',
-  'Domain':'Alan adı',
   'Count':'Sayı',
   'First':'İlk',
   'Last':'Son',
-  'your site':'sizin siteniz',
   'No crawler logs connected':'Tarayıcı logu bağlı değil',
   'Google Analytics 4 is not connected':'Google Analytics 4 bağlı değil',
   'Connect Google Search Console':'Google Search Console\'u bağlayın',
@@ -963,10 +1030,7 @@ const I18N = {
   'Active':'Aktif',
   'Paused':'Pasif',
   'Search prompts...':'Sorgu ara...',
-  'Prompt':'Sorgu',
-  'Intent':'Niyet',
   'Volume':'Hacim',
-  'Coverage':'Kapsama',
   'Source':'Kaynak',
   'Status':'Durum',
   'Custom':'Özel',
@@ -974,15 +1038,6 @@ const I18N = {
   '+ New Prompt':'+ Yeni Sorgu',
   '✦ Regenerate with AI':'✦ AI ile Yeniden Üret',
   'Generate content':'İçerik üret',
-  'New prompt':'Yeni sorgu',
-  'Prompt text':'Sorgu metni',
-  'Add and scan':'Ekle ve tara',
-  'Edit':'Düzenle',
-  'Save':'Kaydet',
-  'Edit prompt':'Sorguyu düzenle',
-  'Prompt updated':'Sorgu güncellendi',
-  'Prompt removed':'Sorgu kaldırıldı',
-  'Prompt is too short':'Sorgu çok kısa',
   'Plan limit':'Plan limiti',
   'prompts':'sorgu',
   'Transactional':'İşlemsel',
@@ -1003,7 +1058,6 @@ const I18N = {
   'Pass':'Geçti',
   'Fail':'Başarısız',
   'Fix':'Düzeltme',
-  'Copy':'Kopyala',
   'Download':'İndir',
   'Generate llms.txt':'llms.txt üret',
   'Generate schema':'schema üret',
@@ -1143,15 +1197,11 @@ const I18N = {
   'Danger Zone':'Tehlikeli Bölge',
   'General':'Genel',
   'Brand name':'Marka adı',
-  'Industry':'Sektör',
   'Location':'Konum',
-  'Country':'Ülke',
-  'City':'Şehir',
   '✓ Save Brand Settings':'✓ Marka Ayarlarını Kaydet',
   'Brand Name Variants':'Marka Adı Varyantları',
   'AI providers':'AI sağlayıcıları',
   'Test all keys':'Tüm anahtarları test et',
-  'Testing every provider…':'Her sağlayıcı test ediliyor…',
   'Working':'Çalışıyor',
   'Usage Summary':'Kullanım Özeti',
   'Plans':'Planlar',
@@ -1165,26 +1215,20 @@ const I18N = {
   '⭳ Export My Data':'⭳ Verilerimi Dışa Aktar',
   '🗑 Delete Account':'🗑 Hesabı Sil',
   'These actions cannot be undone. Please proceed carefully.':'Bu işlemler geri alınamaz. Lütfen dikkatli ilerleyin.',
-  'Continue':'Devam Et',
-  '← Back':'← Geri',
   'Cancel':'İptal',
-  'Skip':'Atla',
   'Add':'Ekle',
   'Delete':'Sil',
   'Close':'Kapat',
   'Dismiss':'Kapat',
   'Export':'Dışa aktar',
   'The trial scans limited platforms. The rest unlock on paid plans.':'Deneme sürümü sınırlı platform tarar. Kalanlar ücretli planlarda açılır.',
-  'Trial':'Deneme','days left':'gün kaldı',
   'Pick a plan before your trial ends.':'Deneme süreniz bitmeden bir plan seçin.',
-  'Manage plan':'Planı yönet','plan':'plan',
   'All platforms and modules unlocked.':'Tüm platformlar ve modüller açık.',
   'Brand performance across':'Marka performansınız:',
   'AI platforms — visibility, share of voice and where you stand against competitors.':'yapay zeka platformunda. Görünürlük, ses payı ve rakipler karşısındaki konumunuz.',
   'AI platforms. Scores, trends and latest scan results at a glance.':
     'AI platformunda. Skorlar, trendler ve son tarama sonuçları tek bakışta.',
   'of':'/','brands':'marka',
-  'Starter':'Başlangıç','Growth':'Büyüme','Business':'Kurumsal','Agency':'Ajans',
   'Thanks for your feedback':'Geri bildiriminiz için teşekkürler',
   'Page not found':'Sayfa bulunamadı',
 
@@ -1322,7 +1366,7 @@ function langMenu(){
   openModal(T('Language'), `
     <p style="font-size:13px;color:var(--mute);margin-bottom:16px">
       Panel dili. Seçiminiz hesabınıza kaydedilir ve diğer cihazlarınızda da geçerli olur.<br>
-      <span style="color:var(--mute2)">Interface language. Saved to your account and applied on every device.</span></p>
+      <span style="color:var(--mute2)">${T(`Interface language. Saved to your account and applied on every device.`)}</span></p>
     <div style="display:grid;gap:9px">
       ${[['tr','Türkçe','Dijital pazarlama terimleriyle'],
          ['en','English','Original product wording']].map(([k,n,d])=>`
@@ -1397,7 +1441,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 function dl(name,content,type='text/plain'){const b=new Blob([content],{type});const u=URL.createObjectURL(b);
   const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);toast(name+' indirildi')}
 function copy(id){const el=document.getElementById(id);navigator.clipboard?.writeText(el.textContent)
-  .then(()=>toast('Copied to clipboard')).catch(()=>toast('Could not copy'))}
+  .then(()=>toast(T('Copied to clipboard'))).catch(()=>toast(T('Could not copy')))}
 function csv(rows){return rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n')}
 function reset(){location.reload()}
 function planRank(){return {trial:0,starter:1,pro:2,business:3}[S.plan]}
@@ -1425,39 +1469,39 @@ function renderOb(){
 }
 
 function obS1(){
-  $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>Set Up Your Hub</h2>
-  <p class="lead">Let's configure your project workspace</p>
+  $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>${T("Set Up Your Hub")}</h2>
+  <p class="lead">${T(`Let's configure your project workspace`)}</p>
   <div class="ob-form">
-    <div class="fld"><label>Project / Brand Name</label>
-      <input class="in" id="i1" value="${esc(S.brand.name)}" placeholder="e.g. Acme Commerce">
-      <div class="hint">This is how your project will appear in the dashboard</div></div>
-    <div class="fld"><label>Your website</label>
+    <div class="fld"><label>${T(`Project / Brand Name`)}</label>
+      <input class="in" id="i1" value="${esc(S.brand.name)}" placeholder="${esc(T(`e.g. Acme Commerce`))}">
+      <div class="hint">${T(`This is how your project will appear in the dashboard`)}</div></div>
+    <div class="fld"><label>${T("Your website")}</label>
       <input class="in" id="i2" value="${esc(S.brand.site)}" placeholder="https://www.example.com">
-      <div class="hint">We'll track brand visibility for this domain</div></div>
-    <button class="btn b-pri b-full b-lg" onclick="obNext1()">Continue</button>
+      <div class="hint">${T(`We'll track brand visibility for this domain`)}</div></div>
+    <button class="btn b-pri b-full b-lg" onclick="obNext1()">${T(`Continue`)}</button>
   </div>`;
 }
 async function obNext1(){
   const n=$('#i1').value.trim(), site=$('#i2').value.trim();
-  if(!n) return toast('Brand name is required');
+  if(!n) return toast(T('Brand name is required'));
   S.brand.name=n; S.brand.site=site;
   S.step=2; renderOb();
 }
 function obS2(){
-  $('#obCard').innerHTML=`<div class="ob-ic">◎</div><h2>Define Your Identity</h2>
-  <p class="lead">Help us understand your business so we can build better AI monitoring prompts</p>
+  $('#obCard').innerHTML=`<div class="ob-ic">◎</div><h2>${T("Define Your Identity")}</h2>
+  <p class="lead">${T(`Help us understand your business so we can build better AI monitoring prompts`)}</p>
   <div class="ob-form">
-    <div class="fld"><label for="i3">Industry</label><select class="in" id="i3">
+    <div class="fld"><label for="i3">${T(`Industry`)}</label><select class="in" id="i3">
       ${sectorOptions(S.brand.sector)}</select></div>
-    <div class="fld"><label for="i4">Country</label><select class="in" id="i4">
+    <div class="fld"><label for="i4">${T(`Country`)}</label><select class="in" id="i4">
       ${['Türkiye','Almanya','Birleşik Krallık','ABD','Hollanda','BAE'].map(k=>`<option ${S.brand.country===k?'selected':''}>${k}</option>`).join('')}</select></div>
-    <div class="fld"><label>City</label><input class="in" id="i5" value="${esc(S.brand.city)}" placeholder="e.g. Istanbul">
-      <div class="hint">Leave empty for country-wide targeting</div></div>
-    <div class="fld"><label>Describe Your Business</label>
+    <div class="fld"><label>${T(`City`)}</label><input class="in" id="i5" value="${esc(S.brand.city)}" placeholder="${esc(T(`e.g. Istanbul`))}">
+      <div class="hint">${T(`Leave empty for country-wide targeting`)}</div></div>
+    <div class="fld"><label>${T("Describe Your Business")}</label>
       <textarea class="in" id="i6" placeholder="e.g. We offer a cloud CRM for small businesses — sales tracking, e-invoicing and WhatsApp management in one panel...">${esc(S.brand.desc)}</textarea>
-      <div class="hint">We use this to generate smarter prompts specific to your services</div></div>
-    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=1;renderOb()">← Back</button>
-      <button class="btn b-pri b-lg" onclick="obNext2()">Continue</button></div>
+      <div class="hint">${T(`We use this to generate smarter prompts specific to your services`)}</div></div>
+    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=1;renderOb()">${T(`← Back`)}</button>
+      <button class="btn b-pri b-lg" onclick="obNext2()">${T(`Continue`)}</button></div>
   </div>`;
 }
 async function obNext2(){
@@ -1502,26 +1546,23 @@ function obS3(){
   const list=S.variants.length
     ? `<div class="taglist" style="justify-content:center">${S.variants.map((v,i)=>
         `<span class="tagx">${esc(v)}<button onclick="S.variants.splice(${i},1);renderOb()">×</button></span>`).join('')}</div>`
-    : `<div class="sugg"><div style="font-size:22px;margin-bottom:8px">◈</div><b>No additional names found</b>
-       <p style="font-size:12.5px;color:var(--mute);margin-top:6px">This is normal for new or distinctive brands. Add the nicknames,
-       abbreviations or spellings your customers use below.</p>
-       <button class="btn b-gh b-sm" style="margin-top:12px" onclick="S.variants=suggestVariants(S.brand.name);renderOb()">↻ Try again</button></div>`;
-  $('#obCard').innerHTML=`<div class="ob-ic">◈</div><h2>Alternative Brand Names</h2>
-  <p class="lead">AI systems refer to your brand with different names — let's track all of them.</p>
-  <div class="info">AI tools sometimes mention your brand in a different form than its official name.
-    Add your alternatives so no mention is missed.
-    <ul><li>Abbreviations — e.g. "THY" for Turk Hava Yollari</li>
-    <li>Spelling without special characters — e.g. "Turk Hava Yollari"</li>
-    <li>Local-language or translated names</li>
-    <li>Domain form — e.g. "yourbrand.com"</li></ul></div>
-  <div style="font-size:13px;font-weight:500;margin-bottom:12px;text-align:left">✦ AI-suggested names</div>
+    : `<div class="sugg"><div style="font-size:22px;margin-bottom:8px">◈</div><b>${T("No additional names found")}</b>
+       <p style="font-size:12.5px;color:var(--mute);margin-top:6px">${T(`This is normal for new or distinctive brands. Add the nicknames, abbreviations or spellings your customers use, or skip this step.`)}</p>
+       <button class="btn b-gh b-sm" style="margin-top:12px" onclick="S.variants=suggestVariants(S.brand.name);renderOb()">${T(`↻ Try again`)}</button></div>`;
+  $('#obCard').innerHTML=`<div class="ob-ic">◈</div><h2>${T(`Alternative Brand Names`)}</h2>
+  <p class="lead">${T(`AI systems refer to your brand with different names — let's track all of them.`)}</p>
+  <div class="info">${T(`AI tools sometimes mention your brand in a different form than its official name. Add your alternatives so no mention is missed.`)}<ul><li>${T(`Abbreviations — e.g. "THY" for Turk Hava Yollari`)}</li>
+    <li>${T(`Spelling without special characters — e.g. "Turk Hava Yollari"`)}</li>
+    <li>${T(`Local-language or translated names`)}</li>
+    <li>${T(`Domain form — e.g. "yourbrand.com"`)}</li></ul></div>
+  <div style="font-size:13px;font-weight:500;margin-bottom:12px;text-align:left">${T(`✦ AI-suggested names`)}</div>
   ${list}
   <div class="ob-form" style="margin-top:22px">
-    <label style="display:block;font-size:13px;font-weight:500;margin-bottom:7px">+ Add variant</label>
-    <div style="display:flex;gap:9px"><input class="in" id="iv" placeholder="e.g. THY, Turkish Air"
+    <label style="display:block;font-size:13px;font-weight:500;margin-bottom:7px">${T(`+ Add variant`)}</label>
+    <div style="display:flex;gap:9px"><input class="in" id="iv" placeholder="${esc(T(`e.g. THY, Turkish Air`))}"
       onkeydown="if(event.key==='Enter')addVar()"><button class="btn b-pri" onclick="addVar()">+</button></div>
-    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=2;renderOb()">← Back</button>
-      <button class="btn b-pri b-lg" onclick="obNext3()">${S.variants.length?'Continue':'Skip'}</button></div>
+    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=2;renderOb()">${T(`← Back`)}</button>
+      <button class="btn b-pri b-lg" onclick="obNext3()">${S.variants.length?T('Continue'):T('Skip')}</button></div>
   </div>`;
 }
 function addVar(){const v=$('#iv').value.trim();if(!v)return;
@@ -1539,18 +1580,18 @@ async function obNext3(){
   }catch(e){ toast(e.message,'error'); }
 }
 function obS4(){
-  $('#obCard').innerHTML=`<div class="ob-ic">⚔</div><h2>Competitor Radar</h2>
-  <p class="lead">Who are your main competitors? We'll track them too</p>
+  $('#obCard').innerHTML=`<div class="ob-ic">⚔</div><h2>${T(`Competitor Radar`)}</h2>
+  <p class="lead">${T(`Who are your main competitors? We'll track them too`)}</p>
   <div class="ob-form">
     ${S.rivals.map((r,i)=>`<div class="rivrow"><div class="hd">Competitor ${i+1}
       <button onclick="S.rivals.splice(${i},1);renderOb()">×</button></div>
       <div class="in2"><input class="in" placeholder="Competitor name" value="${esc(r.n)}" oninput="S.rivals[${i}].n=this.value">
       <input class="in" placeholder="competitor.com" value="${esc(r.d)}" oninput="S.rivals[${i}].d=this.value"></div></div>`).join('')}
-    <button class="btn b-gh b-full b-sm" onclick="S.rivals.push({n:'',d:''});renderOb()">+ Add Another Competitor</button>
+    <button class="btn b-gh b-full b-sm" onclick="S.rivals.push({n:'',d:''});renderOb()">${T(`+ Add Another Competitor`)}</button>
     <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=3;renderOb()">← Back</button>
       <button class="btn b-pri b-lg" onclick="obNext4()">Continue</button></div>
     <div style="text-align:center;margin-top:14px"><button class="btn b-gh b-sm" style="border:0;background:none;color:var(--mute)"
-      onclick="S.rivals=[];obNext4()">Skip this step</button></div>
+      onclick="S.rivals=[];obNext4()">${T("Skip this step")}</button></div>
   </div>`;
 }
 async function obNext4(){
@@ -1593,13 +1634,11 @@ async function regenOnboarding(){
 function obS5(){
   const sel=S.prompts.filter(p=>p.on).length;
   const byAi=S.promptSource==='ai';
-  $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>AI Search Prompts</h2>
-  <p class="lead">These are the searches we will run on every platform. Keep the ones your customers
-    would actually type, drop the rest, and add your own — you know your buyers better than any model does.</p>
+  $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>${T(`AI Search Prompts`)}</h2>
+  <p class="lead">${T(`These are the searches we will run on every platform. Keep the ones your customers would actually type, drop the rest, and add your own — you know your buyers better than any model does.`)}</p>
 
   ${byAi
-    ? `<div class="info" style="margin-bottom:14px">✦ Written for <b>${esc(S.brand.name)}</b> from your category,
-        country and description. Edit freely — a starting point, not a verdict.</div>`
+    ? `<div class="info" style="margin-bottom:14px">${T(`✦ Written for`)} <b>${esc(S.brand.name)}</b> ${T(`from your category, country and description. Edit freely — a starting point, not a verdict.`)}</div>`
     : `<div class="banner" style="margin-bottom:14px"><span>ℹ</span><span>${S.promptAiAvailable===false
         ? 'Generated from templates because no OpenAI or Anthropic key is configured. Templates are generic — your own prompts will measure something far more useful.'
         : 'Generated from templates this time. Try Regenerate, or write your own below.'}</span></div>`}
@@ -1607,7 +1646,7 @@ function obS5(){
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:12.5px;flex-wrap:wrap">
     <b style="font-size:13px">${byAi?'✦ Suggested for your brand':'Suggested prompts'}</b>
     <span class="mut">${sel} of ${S.prompts.length} selected</span>
-    <button class="btn b-gh b-sm" style="margin-left:auto" id="regenBtn" onclick="regenOnboarding()">↻ Regenerate</button>
+    <button class="btn b-gh b-sm" style="margin-left:auto" id="regenBtn" onclick="regenOnboarding()">${T(`↻ Regenerate`)}</button>
   </div>
 
   <div class="ob-form">
@@ -1619,20 +1658,17 @@ function obS5(){
           <span class="chip">vol ~${nf(p.vol)}</span>
           ${p.src==='custom'?'<span class="chip pri">yours</span>':''}
         </span>
-        <button class="btn b-gh b-sm" style="flex:none" onclick="editPrompt(${i})">Edit</button>
+        <button class="btn b-gh b-sm" style="flex:none" onclick="editPrompt(${i})">${T(`Edit`)}</button>
       </div>`).join('')
-     :'<div class="empty" style="padding:26px">No suggestions yet — write your own below.</div>'}
+     :'<div class="empty" style="padding:26px">${T(`No suggestions yet — write your own below.`)}</div>'}
 
-    <label style="display:block;font-size:13px;font-weight:500;margin:20px 0 7px">+ Your own prompts</label>
-    <p style="font-size:12px;color:var(--mute);margin-bottom:9px">
-      Write them exactly as a customer would type them. One per line — paste a whole list if you have one.</p>
+    <label style="display:block;font-size:13px;font-weight:500;margin:20px 0 7px">${T("+ Your own prompts")}</label>
+    <p style="font-size:12px;color:var(--mute);margin-bottom:9px">${T(`Write them exactly as a customer would type them. One per line — paste a whole list if you have one.`)}</p>
     <textarea class="in" id="iq" rows="3" style="resize:vertical"
       placeholder="en ucuz steam cüzdan kodu nereden alınır&#10;knight online cash satın al&#10;güvenilir epin sitesi önerir misin"></textarea>
-    <button class="btn b-pri b-full" style="margin-top:9px" onclick="addPrompt()">Add these prompts</button>
+    <button class="btn b-pri b-full" style="margin-top:9px" onclick="addPrompt()">${T(`Add these prompts`)}</button>
 
-    <div class="info" style="margin-top:18px">💡 A prompt that names your brand only proves the model can read.
-      Keep the brand out of them — except the trust question, which is there on purpose to show what is said
-      when someone checks up on you.</div>
+    <div class="info" style="margin-top:18px">${T(`💡 A prompt that names your brand only proves the model can read. Keep the brand out of them — except the trust question, which is there on purpose to show what is said when someone checks up on you.`)}</div>
 
     <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=4;renderOb()">← Back</button>
       <button class="btn b-pri b-lg" ${sel?'':'disabled'} onclick="obFinish()">Continue (${sel})</button></div>
@@ -1645,7 +1681,7 @@ function addPrompt(){
   const lines=raw.split('\n')
     .map(l=>l.trim().replace(/^[-•*\d.)\s]+/,'').replace(/^["']|["']$/g,''))
     .filter(l=>l.length>=6);
-  if(!lines.length) return toast('Write at least one prompt (6 characters or more)','error');
+  if(!lines.length) return toast(T('Write at least one prompt (6 characters or more)'),'error');
   const existing=new Set(S.prompts.map(p=>p.text.toLocaleLowerCase('tr')));
   let added=0;
   for(const text of lines){
@@ -1677,30 +1713,30 @@ function guessIntent(t){
 
 function editPrompt(i){
   const p=S.prompts[i]; if(!p) return;
-  openModal('Edit prompt',`
-    <div class="fld"><label>Prompt text</label>
+  openModal(T('Edit prompt'),`
+    <div class="fld"><label>${T("Prompt text")}</label>
       <input class="in" id="epText" value="${esc(p.text)}"></div>
-    <div class="fld"><label>Intent</label>
+    <div class="fld"><label>${T(`Intent`)}</label>
       <select class="in" id="epIntent">${Object.entries(INTENTS).map(([k,v])=>
         `<option value="${k}" ${p.intent===k?'selected':''}>${v.label} · ×${v.mult.toFixed(2)}</option>`).join('')}</select>
-      <div class="hint">Intent weights the score: a transactional prompt counts almost twice an informational one.</div></div>
+      <div class="hint">${T(`Intent weights the score: a transactional prompt counts almost twice an informational one.`)}</div></div>
     <div style="display:flex;gap:9px">
-      <button class="btn b-pri" onclick="savePrompt(${i})">Save</button>
+      <button class="btn b-pri" onclick="savePrompt(${i})">${T(`Save`)}</button>
       <button class="btn b-gh" onclick="removePrompt(${i})">${T('Remove')}</button>
     </div>`);
 }
 function savePrompt(i){
   const t=$('#epText').value.trim();
-  if(t.length<6) return toast('Prompt is too short','error');
+  if(t.length<6) return toast(T('Prompt is too short'),'error');
   S.prompts[i].text=t; S.prompts[i].intent=$('#epIntent').value;
-  closeModal(); renderOb(); toast('Prompt updated');
+  closeModal(); renderOb(); toast(T('Prompt updated'));
 }
 function removePrompt(i){
-  S.prompts.splice(i,1); closeModal(); renderOb(); toast('Prompt removed');
+  S.prompts.splice(i,1); closeModal(); renderOb(); toast(T('Prompt removed'));
 }
 async function obFinish(){
   const chosen=S.prompts.filter(p=>p.on);
-  if(!chosen.length) return toast('Select at least one prompt');
+  if(!chosen.length) return toast(T('Select at least one prompt'));
   const btn=document.querySelector('.ob-nav .b-pri');
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
   try{
@@ -1727,8 +1763,8 @@ function obS6(){
         ? `First scan queued — ${S.firstScan.jobs} checks across ${S.firstScan.engines.length} platforms`
         : 'No AI provider keys are configured on the server yet'}</div>
   </div>
-  <button class="btn b-pri b-lg" style="margin-top:26px;padding-inline:34px" onclick="enterApp()">Go to Dashboard →</button>
-  <p style="font-size:12px;color:var(--mute);margin-top:14px">Your scan is running in the background — results will appear in the dashboard shortly</p>`;
+  <button class="btn b-pri b-lg" style="margin-top:26px;padding-inline:34px" onclick="enterApp()">${T("Go to Dashboard →")}</button>
+  <p style="font-size:12px;color:var(--mute);margin-top:14px">${T(`Your scan is running in the background — results will appear in the dashboard shortly`)}</p>`;
 }
 async function enterApp(){
   S.onboarded=true;$('#ob').classList.remove('on');$('#app').classList.add('on');
@@ -2051,7 +2087,7 @@ function gauge(v,col){
     return `<path d="M${x1} ${y1}A${r} ${r} 0 ${(t-f)>Math.PI?1:0} 1 ${x2} ${y2}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`};
   return `<svg viewBox="0 0 168 142" width="190" style="max-width:100%">${arc(a0,a1,R,14,'#1A1D27')}${arc(a0,ang,R,14,col)}
     <text x="84" y="90" text-anchor="middle" font-size="34" font-weight="600" fill="#F3F5F9">${v.toFixed(0)}</text>
-    <text x="84" y="108" text-anchor="middle" font-size="10" fill="#7C8598" font-family="ui-monospace">OUT OF 100</text></svg>`;
+    <text x="84" y="108" text-anchor="middle" font-size="10" fill="#7C8598" font-family="ui-monospace">${T("OUT OF 100")}</text></svg>`;
 }
 
 /* =====================================================================
@@ -2586,8 +2622,8 @@ function insightText(){
   };
 }
 async function answerModal(runId){
-  openModal('Raw answer inspector',
-    '<div class="empty"><div class="ic">◎</div>Loading the answer…</div>');
+  openModal(T('Raw answer'),
+    `<div class="empty"><div class="ic">◎</div>${T('Loading the answer…')}</div>`);
   let d;
   try{ d = await api.get(`/api/answers?run=${runId}`); }
   catch(e){ $('#mBody').innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
@@ -2605,7 +2641,7 @@ async function answerModal(runId){
 
   const sent = d.sentiment===null ? '—' : (d.sentiment>=0?'+':'')+Number(d.sentiment).toFixed(2);
   $('#mBody').innerHTML = `
-   <div style="font-size:12.5px;color:var(--mute);margin-bottom:6px">Prompt</div>
+   <div style="font-size:12.5px;color:var(--mute);margin-bottom:6px">${T('Query')}</div>
    <div style="font-size:14.5px;font-weight:500;margin-bottom:16px">${esc(d.prompt)}</div>
    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
      <span class="chip">${esc(d.engine)}</span>
@@ -2635,14 +2671,14 @@ VIEWS.mentions=()=>{
   return head(T('Mentions'),T('Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.'),
     rangeSel()+`<button class="btn b-gh b-sm" onclick="exportMentions()">${T('⭳ Download CSV')}</button>`)+
   `<div class="g4">
-    <div class="kpi"><div class="t">${T('Total checks')}</div><div class="v">${nf(rows.length*5)}</div><div class="d">${rows.length} ${T('cells')} × 5 runs</div></div>
-    <div class="kpi"><div class="t">${T('Mentions')}</div><div class="v">${rows.filter(c=>c.m>0).length}</div><div class="d">${(rows.filter(c=>c.m>0).length/rows.length*100).toFixed(1)}% coverage</div></div>
+    <div class="kpi"><div class="t">${T('Total checks')}</div><div class="v">${nf(rows.length*5)}</div><div class="d">${rows.length} ${T('sorgu × platform')}</div></div>
+    <div class="kpi"><div class="t">${T('Mentions')}</div><div class="v">${rows.filter(c=>c.m>0).length}</div><div class="d">${(rows.filter(c=>c.m>0).length/rows.length*100).toFixed(1)}% ${T('kapsama')}</div></div>
     <div class="kpi"><div class="t">${T('Citations')}</div><div class="v">${rows.filter(c=>c.c>0).length}</div><div class="d">${T('domain cited as source')}</div></div>
     <div class="kpi"><div class="t">${T('Average rank')}</div><div class="v">${(rows.filter(c=>c.rank).reduce((a,c)=>a+c.rank,0)/(rows.filter(c=>c.rank).length||1)).toFixed(1)}</div><div class="d">${T('when mentioned')}</div></div>
   </div>
   <div class="card"><div class="ch"><div><h3>${T('Mention matrix')}</h3><div class="sub">${T('Mention rate, prominence, citation, recommendation strength and sentiment are measured separately')}</div></div></div>
   <div class="tw"><table><thead><tr><th>${T('Prompt')}</th><th>Platform</th><th>${T('Intent')}</th><th class="n">${T('Mention count')}</th>
-    <th class="n">Rank</th><th class="n">Cited</th><th class="n">Sentiment</th><th class="n">Score</th><th class="n">±CI</th></tr></thead>
+    <th class="n">${T("Rank")}</th><th class="n">${T("Cited")}</th><th class="n">Sentiment</th><th class="n">${T("Score")}</th><th class="n">±CI</th></tr></thead>
   <tbody>${rows.map((c,i)=>`<tr style="${c.runId?'cursor:pointer':''}" ${c.runId?`onclick="answerModal(${c.runId})"`:''}>
     <td style="max-width:280px">${esc(c.p.text.replace(/"/g,''))}</td>
     <td><span class="chip" style="border-color:${c.pl.c}44">${c.pl.ab} ${c.pl.n.split(' ')[0]}</span></td>
@@ -2688,8 +2724,8 @@ VIEWS.platforms=()=>{
   <div class="card"><div class="ch"><div><h3>${T('Platform Details')}</h3>
     <div class="sub">${T("Score, citation rate and total checks. The weight column defines each platform's share of the total score.")}</div></div>
     <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-  <div class="tw"><table><thead><tr><th>#</th><th>Platform</th><th>Score</th><th class="n">Weight</th>
-    <th class="n">Citation rate</th><th class="n">Mentions</th><th class="n">Citations</th><th class="n">Total checks</th><th class="n">Trend</th></tr></thead>
+  <div class="tw"><table><thead><tr><th>#</th><th>Platform</th><th>${T("Score")}</th><th class="n">Weight</th>
+    <th class="n">Citation rate</th><th class="n">Mentions</th><th class="n">Citations</th><th class="n">${T("Total checks")}</th><th class="n">Trend</th></tr></thead>
   <tbody>${d.plats.map((p,i)=>{
     const lock=!platAllowed(p);
     return `<tr class="${lock?'locked-row':''}"><td class="n">${i+1}</td>
@@ -2718,22 +2754,20 @@ VIEWS.sources=()=>{
   if(!d.sources.length){
     return head(T('Sources'),T('Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.'))+
       `<div class="card"><div class="empty"><div class="ic">⊕</div>
-        <b style="color:var(--fg);font-size:15px">No citations collected yet</b>
-        <p style="margin-top:8px;max-width:52ch;margin-inline:auto">Sources appear once a scan finishes and the
-          platforms cite pages in their answers. If a scan has already run and this stays empty, the models are
-          answering from training data rather than searching.</p></div></div>`;
+        <b style="color:var(--fg);font-size:15px">${T("No citations collected yet")}</b>
+        <p style="margin-top:8px;max-width:52ch;margin-inline:auto">${T(`Sources appear once a scan finishes and the platforms cite pages in their answers. If a scan has run and this is still empty, no platform cited any source.`)}</p></div></div>`;
   }
   const mx=d.sources[0].v||1;
   return head(T('Sources'),T('Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.'),
     rangeSel()+`<button class="btn b-pri b-sm" onclick="exportSources()">${T('⭳ Export Sources')}</button>`)+
   `<div class="card"><div class="cb"><div class="tw"><table>
-    <thead><tr><th>#</th><th>Domain</th><th style="width:38%">Citations</th><th class="n">Count</th><th class="n">Trend</th>
+    <thead><tr><th>#</th><th>${T("Domain")}</th><th style="width:38%">Citations</th><th class="n">Count</th><th class="n">Trend</th>
       <th>Platforms</th><th class="n">First</th><th class="n">Last</th></tr></thead>
     <tbody>${d.sources.map((s,i)=>`<tr>
       <td class="n">${i+1}</td>
       <td><span style="display:flex;align-items:center;gap:9px">
         <span class="cdr-f" style="width:21px;height:21px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
-        ${s.d}${s.mine?' <span class="chip pri">your site</span>':''}</span></td>
+        ${s.d}${s.mine?' <span class="chip pri">${T(`your site`)}</span>':''}</span></td>
       <td><span class="bar"><i style="width:${s.v/(mx||1)*100}%;background:${s.mine?'#3B82F6':'#8B5CF6'}"></i></span></td>
       <td class="n">${s.v}</td>
       <td class="n ${s.trend>0?'ok':'bad'}">${s.trend>0?'↑':'↓'}</td>
@@ -2755,8 +2789,8 @@ VIEWS.opps=()=>{
   `<div class="card"><div class="ch"><div><h3>${T('Prioritised prompt opportunities')}</h3>
     <div class="sub">${T('The "Generate content" button drafts a brief for that prompt')}</div></div>
     <span class="rt"><button class="btn b-gh b-sm" onclick="exportOpps()">⭳ CSV</button></span></div>
-  <div class="tw"><table><thead><tr><th>Prompt</th><th>Intent</th><th class="n">Est. volume</th>
-    <th class="n">Coverage</th><th class="n">Sources</th><th>Content fit</th><th>Suggested action</th>
+  <div class="tw"><table><thead><tr><th>${T(`Prompt`)}</th><th>${T(`Intent`)}</th><th class="n">Est. volume</th>
+    <th class="n">${T("Coverage")}</th><th class="n">Sources</th><th>Content fit</th><th>${T(`Suggested action`)}</th>
     <th class="n">Opportunity</th><th></th></tr></thead>
   <tbody>${d.opps.map(o=>`<tr>
     <td style="max-width:260px">${esc(o.p.text.replace(/"/g,''))}</td>
@@ -3002,17 +3036,16 @@ function sovBars(rows){
 function addRivalModal(){
   openModal('Add competitor',`<div class="fld"><label>Competitor name</label><input class="in" id="rn" placeholder="Competitor brand"></div>
    <div class="fld"><label>Website</label><input class="in" id="rd" placeholder="competitor.com"></div>
-   <button class="btn b-pri b-full" onclick="addRival()">Add and recalculate</button>
-   <p style="font-size:12px;color:var(--mute);margin-top:12px">Adding a competitor changes the share-of-voice denominator and
-     recalculates historical data, so comparisons stay consistent.</p>`);
+   <button class="btn b-pri b-full" onclick="addRival()">${T("Add and recalculate")}</button>
+   <p style="font-size:12px;color:var(--mute);margin-top:12px">${T(`Adding a competitor changes the share-of-voice denominator and recalculates historical data, so past figures will shift.`)}</p>`);
 }
 async function addRival(){
-  const n=$('#rn').value.trim(); if(!n) return toast('Competitor name is required');
+  const n=$('#rn').value.trim(); if(!n) return toast(T('Competitor name is required'));
   const btn=$('#addRivalBtn'); if(btn){btn.disabled=true;btn.textContent='Adding…';}
   try{
     await api.post('/api/competitors',{workspaceId:S.workspaceId,name:n,domain:$('#rd').value.trim()||null});
     closeModal(); await loadResults();
-    toast('Competitor added — it will appear in the next scan');
+    toast(T('Competitor added — it will appear in the next scan'));
   }catch(e){ toast(e.message); if(btn){btn.disabled=false;btn.textContent='Add and recalculate';} }
 }
 async function rmRival(id){
@@ -3063,7 +3096,7 @@ async function togglePrompt(id){
   catch(e){ p.active=!next; render(); toast(e.message); }
 }
 async function delPrompt(id){
-  try{ await api.del(`/api/prompts?id=${encodeURIComponent(id)}`); await loadResults(); toast('Prompt deleted'); }
+  try{ await api.del(`/api/prompts?id=${encodeURIComponent(id)}`); await loadResults(); toast(T('Prompt deleted')); }
   catch(e){ toast(e.message); }
 }
 async function regen(){
@@ -3078,20 +3111,20 @@ async function regen(){
   }catch(e){ toast(e.message,'error'); }
 }
 function newPromptModal(){
-  openModal('New prompt',`<div class="fld"><label>Prompt text</label>
+  openModal(T('New prompt'),`<div class="fld"><label>${T("Prompt text")}</label>
     <input class="in" id="np" placeholder="e.g. which are the best ... companies"></div>
-   <div class="fld"><label>Intent</label><select class="in" id="ni">
+   <div class="fld"><label>${T(`Intent`)}</label><select class="in" id="ni">
      ${Object.entries(INTENTS).map(([k,v])=>`<option value="${k}">${v.label} · ×${v.mult.toFixed(2)}</option>`).join('')}</select>
-     <div class="hint">The intent multiplier sets the weight in the score: transactional 1.50 … informational 0.80</div></div>
-   <button class="btn b-pri b-full" onclick="addPrompt2()">Add and scan</button>`);
+     <div class="hint">${T(`The intent multiplier sets the weight in the score: transactional 1.50 … informational 0.80`)}</div></div>
+   <button class="btn b-pri b-full" onclick="addPrompt2()">${T("Add and scan")}</button>`);
 }
 async function addPrompt2(){
-  const v=$('#np').value.trim(); if(!v) return toast('Prompt is required');
+  const v=$('#np').value.trim(); if(!v) return toast(T('Prompt is required'));
   try{
     await api.post('/api/prompts',{workspaceId:S.workspaceId,
       prompts:[{text:v,intent:$('#ni').value,volume:300,source:'custom'}]});
     closeModal(); await loadResults();
-    toast('Prompt added — it will be scanned on the next run');
+    toast(T('Prompt added — it will be scanned on the next run'));
   }catch(e){ toast(e.message); }
 }
 
@@ -3455,7 +3488,7 @@ function toolOutput(){
       (b.desc?` ${b.desc.trim()}`:'')).replace(/\s+/g,' ').slice(0,158);
   const title=`${b.name} — ${sectorTerm(b.sector)}${b.city?' | '+b.city:''}`.slice(0,60);
   const locale=b.country==='Turkey'?'tr_TR':'en_US';
-  return `<title>${title}</title>\n<meta name="description" content="${desc}">\n<link rel="canonical" href="${b.site}">\n\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="${b.name}">\n<meta property="og:title" content="${title}">\n<meta property="og:description" content="${desc}">\n<meta property="og:url" content="${b.site}">\n<meta property="og:locale" content="${locale}">\n\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="${title}">\n<meta name="twitter:description" content="${desc}">\n\n<!-- AI crawlers -->\n<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">`;
+  return `<title>${title}</title>\n<meta name="description" content="${desc}">\n<link rel="canonical" href="${b.site}">\n\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="${b.name}">\n<meta property="og:title" content="${title}">\n<meta property="og:description" content="${desc}">\n<meta property="og:url" content="${b.site}">\n<meta property="og:locale" content="${locale}">\n\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="${title}">\n<meta name="twitter:description" content="${desc}">\n\n\n<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">`;
 }
 function writerFor(pid){const p=S.prompts.find(x=>x.id===pid);S.writerTopic=p?p.text.replace(/"/g,''):'';
   tool='writer';go('tools');setTimeout(runWriter,60)}
@@ -3530,10 +3563,10 @@ VIEWS.settings=()=>{
         <p style="font-size:12.5px;color:var(--mute);margin:6px 0 14px">${T('These actions cannot be undone. Please proceed carefully.')}</p>
         <div style="display:flex;gap:9px;flex-wrap:wrap">
           <button class="btn b-gh b-sm" onclick="exportAll()">${T('⭳ Export My Data')}</button>
-          <button class="btn b-dg b-sm" onclick="if(confirm('Delete this account?'))reset()">${T('🗑 Delete Account')}</button></div></div></div>`;
+          <button class="btn b-dg b-sm" onclick="if(confirm(T('Delete this account?')))reset()">${T('🗑 Delete Account')}</button></div></div></div>`;
   }else if(setTabV==='brand'){
     body=`<div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">General</h4>
-      <p style="font-size:12.5px;color:var(--mute)">Update your brand name, website and industry.</p></div>
+      <p style="font-size:12.5px;color:var(--mute)">${T(`Update your brand name, website and industry.`)}</p></div>
       <div><div class="fld"><label>Brand name</label><input class="in" aria-label="Brand name" value="${esc(b.name)}" onchange="S.brand.name=this.value"></div>
       <div class="fld"><label>Website</label><input class="in" aria-label="Website" value="${esc(b.site)}" onchange="S.brand.site=this.value"></div>
       <div class="fld"><label>Industry *</label><select class="in" aria-label="Industry" onchange="S.brand.sector=this.value">
@@ -3541,17 +3574,16 @@ VIEWS.settings=()=>{
       <button class="btn b-pri" onclick="saveBrand()">✓ Save Brand Settings</button></div></div>
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
       <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">Location</h4>
-        <p style="font-size:12.5px;color:var(--mute)">Set the primary country and city for localised AI monitoring results.</p></div>
+        <p style="font-size:12.5px;color:var(--mute)">${T(`Set the primary country and city for localised AI monitoring results.`)}</p></div>
         <div><div class="fld"><label>Country</label><select class="in" aria-label="Country" onchange="S.brand.country=this.value">
           ${['Turkey','Germany','United Kingdom','United States','Netherlands','UAE'].map(k=>`<option ${b.country===k?'selected':''}>${k}</option>`).join('')}</select></div>
         <div class="fld"><label>City</label><input class="in" value="${esc(b.city)}" placeholder="e.g. Istanbul" onchange="S.brand.city=this.value"></div></div></div>
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
       <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">Brand Name Variants</h4>
-        <p style="font-size:12.5px;color:var(--mute)">Alternative names AI may use for your brand. This lets us track mentions across
-          every variation, and it is critical for brands with non-ASCII characters.</p></div>
+        <p style="font-size:12.5px;color:var(--mute)">${T(`Alternative names AI may use for your brand. This lets us track mentions across every variation, and it is critical for brands with non-ASCII characters.`)}</p></div>
         <div><div class="taglist" style="margin-bottom:12px">${S.variants.length?S.variants.map((v,i)=>
           `<span class="tagx">${esc(v)}<button onclick="S.variants.splice(${i},1);render()">×</button></span>`).join('')
-          :'<span class="mut" style="font-size:13px">No variants yet. Add variants to improve detection quality.</span>'}</div>
+          :'<span class="mut" style="font-size:13px">${T(`No variants yet. Add variants to improve detection quality.`)}</span>'}</div>
         <div style="display:flex;gap:9px"><input class="in" id="vv" placeholder="e.g. THY, Turkish Air"
           onkeydown="if(event.key==='Enter'){addVar2()}"><button class="btn b-pri" onclick="addVar2()">+</button></div>
         ${suggestedVariants().length?`<div style="margin-top:11px">
@@ -3562,16 +3594,16 @@ VIEWS.settings=()=>{
   }else if(setTabV==='team'){
     body=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
       <div><h4 style="font-size:15px">Team Members</h4>
-      <p style="font-size:12.5px;color:var(--mute)">Manage who can access this brand. There is no per-seat charge.</p></div>
+      <p style="font-size:12.5px;color:var(--mute)">${T(`Manage who can access this brand. There is no per-seat charge.`)}</p></div>
       <button class="btn b-pri b-sm" style="margin-left:auto" onclick="toast('Invitation email sent (demo)')">＋ Invite Member</button></div>
       <div class="card"><div class="cb" style="display:flex;align-items:center;gap:12px">
         <span style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.15);color:#93B4FF;display:grid;
           place-items:center;font-weight:700;font-size:12px">${(S.user.name||'DH').slice(0,2).toLocaleUpperCase('tr')}</span>
-        <div><b style="font-size:14px">${esc(S.user.name)} <span class="mut" style="font-weight:400">(you)</span></b>
+        <div><b style="font-size:14px">${esc(S.user.name)} <span class="mut" style="font-weight:400">${T(`(you)`)}</span></b>
           <div style="font-size:12.5px;color:var(--mute)">${esc(S.user.mail)}</div></div>
         <span class="chip pri" style="margin-left:auto">Owner</span></div></div>
       <p style="font-size:12.5px;color:var(--mute);margin-top:14px">Roles: <b>Owner</b> manages everything ·
-        <b>Analyst</b> edits prompts and competitors · <b>Client</b> has view-only access. Client seats are unlimited on the Agency plan.</p>`;
+        <b>Analyst</b>${T(`edits prompts and competitors ·`)}<b>Client</b>${T(`has view-only access. Client seats are unlimited on the Agency plan.`)}</p>`;
   }else if(setTabV==='integrations'){
     body = `<div id="engBox"><div class="empty"><div class="ic">◉</div>Checking providers…</div></div>
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
@@ -3581,15 +3613,15 @@ VIEWS.settings=()=>{
         <div>
           <div class="card" style="margin-bottom:10px"><div class="cb" style="display:flex;align-items:center;gap:14px">
             <div style="flex:1"><b style="font-size:14px">Google Analytics 4</b>
-              <p style="font-size:12.5px;color:var(--mute);margin-top:3px">Separates AI-sourced sessions from direct traffic.</p></div>
+              <p style="font-size:12.5px;color:var(--mute);margin-top:3px">${T(`Separates AI-sourced sessions from direct traffic.`)}</p></div>
             <span class="chip">Coming soon</span></div></div>
           <div class="card" style="margin-bottom:10px"><div class="cb" style="display:flex;align-items:center;gap:14px">
             <div style="flex:1"><b style="font-size:14px">Google Search Console</b>
-              <p style="font-size:12.5px;color:var(--mute);margin-top:3px">Finds pages that rank on Google but never appear in AI answers.</p></div>
+              <p style="font-size:12.5px;color:var(--mute);margin-top:3px">${T(`Finds pages that rank on Google but never appear in AI answers.`)}</p></div>
             <span class="chip">Coming soon</span></div></div>
           <div class="card"><div class="cb" style="display:flex;align-items:center;gap:14px">
             <div style="flex:1"><b style="font-size:14px">Server / CDN log delivery</b>
-              <p style="font-size:12.5px;color:var(--mute);margin-top:3px">GPTBot and ClaudeBot crawl activity. Cloudflare Logpush, Nginx, S3.</p></div>
+              <p style="font-size:12.5px;color:var(--mute);margin-top:3px">${T(`GPTBot and ClaudeBot crawl activity. Cloudflare Logpush, Nginx, S3.`)}</p></div>
             <span class="chip">Coming soon</span></div></div>
         </div></div>`;
     setTimeout(()=>loadEngines(false),50);
@@ -3601,7 +3633,7 @@ VIEWS.settings=()=>{
     body=`${S.plan==='trial'?`<div class="banner" style="margin-bottom:16px"><span>⏳</span>
       <span>${T('Trial')} — 7 ${T('days left')}</span><span class="r chip">7 ${T('days left')}</span></div>`:''}
       <div class="g2" style="margin-bottom:26px"><div><h4 style="font-size:15px;margin-bottom:6px">Usage Summary</h4>
-        <p style="font-size:12.5px;color:var(--mute)">Track current usage of every feature in your plan.</p></div>
+        <p style="font-size:12.5px;color:var(--mute)">${T(`Track current usage of every feature in your plan.`)}</p></div>
         <div>${use(['AI Prompts',S.prompts.length,lim.q])}${use(['Competitors',S.rivals.length,lim.r])}
              ${use(['GEO Audits',1,lim.a])}${use(['Content Writer',0,lim.c])}</div></div>
       <h4 style="font-size:15px;margin-bottom:14px">Plans</h4>
@@ -3622,8 +3654,8 @@ VIEWS.settings=()=>{
           onclick="setPlan('${p[0]}')">${S.plan===p[0]?'Current plan':'Get started'}</button></div></div>`).join('')}</div>
       <div class="card" style="margin-top:16px"><div class="cb" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div><b style="font-size:14px">Payment Method</b>
-          <p style="font-size:12.5px;color:var(--mute)">No payment method on file. Add one to keep your subscription active.</p></div>
-        <button class="btn b-gh b-sm" style="margin-left:auto" onclick="toast('Redirects to the payment provider')">Add Payment Method</button></div></div>`;
+          <p style="font-size:12.5px;color:var(--mute)">${T(`No payment method on file. Add one to keep your subscription active.`)}</p></div>
+        <button class="btn b-gh b-sm" style="margin-left:auto" onclick="toast(T('Redirects to the payment provider'))">Add Payment Method</button></div></div>`;
   }
   return head(T('Settings'),T('Configure core tracking preferences such as brand name, domain, industry and location.'))+
   `<div class="tabs">${tabs.map(t=>`<button class="${setTabV===t[0]?'on':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
@@ -3668,14 +3700,14 @@ function addVar2(){const v=$('#vv').value.trim();if(!v)return;
  */
 async function loadEngines(probe){
   const box=$('#engBox'); if(!box) return;
-  if(probe) box.innerHTML='<div class="empty"><div class="ic">◉</div>Testing every provider…</div>';
+  if(probe) box.innerHTML='<div class="empty"><div class="ic">◉</div>${T("Testing every provider…")}</div>';
   let d;
   try{ d=await api.get('/api/engines'+(probe?'?test=1':'')); }
   catch(e){ box.innerHTML=`<div class="empty">${esc(e.message)}</div>`; return; }
 
   const badge=e=>{
     if(!e.configured) return '<span class="chip">No key</span>';
-    if(!e.planOk) return '<span class="chip warn">Above your plan</span>';
+    if(!e.planOk) return '<span class="chip warn">${T("Above your plan")}</span>';
     if(!e.test)   return '<span class="chip ok">Key present</span>';
     return e.test.ok
       ? `<span class="chip ok">Working${e.test.latencyMs?' · '+e.test.latencyMs+'ms':''}</span>`
@@ -3693,7 +3725,7 @@ async function loadEngines(probe){
    ${d.mock?`<div class="banner" style="margin-bottom:14px"><span>⚠</span>
      <span>MOCK_ENGINES is on. Answers are synthetic — set it to 0 and add real keys before launch.</span></div>`:''}
    ${!d.ready?`<div class="banner" style="margin-bottom:14px;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07)">
-     <span>🔑</span><span>No usable provider yet. Scans cannot run until at least one key is configured.</span></div>`:''}
+     <span>🔑</span><span>${T(`No usable provider yet. Scans cannot run until at least one key is configured.`)}</span></div>`:''}
    ${d.engines.map(e=>`
      <div class="card" style="margin-bottom:10px"><div class="cb"
         style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
@@ -3766,11 +3798,11 @@ async function saveBrand(){
 }
 
 async function setPlan(p){
-  if(p==='agency'){ toast('Agency plan is handled by our sales team'); return; }
+  if(p==='agency'){ toast(T('Agency plan is handled by our sales team')); return; }
   try{
     await api.post('/api/org/plan',{plan:p});
     await loadResults();
-    toast('Plan updated — locked platforms are now included in the next scan');
+    toast(T('Plan updated — locked platforms are now included in the next scan'));
   }catch(e){ toast(e.message); }
 }
 
@@ -3873,18 +3905,17 @@ function firstScanModal(){
              ${p.ab}<i style="position:absolute;right:-2px;top:-2px;width:9px;height:9px;border-radius:99px;
              background:${!al?'#7C8598':hit?'#22C55E':'#949CAD'}"></i></span>`}).join('')}</div>
        <div style="display:flex;gap:14px;font-size:11px;color:var(--mute);flex-wrap:wrap">
-         <span>🟢 Visible</span><span>⚪ Not visible</span><span>🔒 Locked</span></div>
-       <b style="font-size:13.5px;display:block;margin-top:18px">What you should do</b>
+         <span>🟢 Visible</span><span>${T("⚪ Not visible")}</span><span>🔒 Locked</span></div>
+       <b style="font-size:13.5px;display:block;margin-top:18px">${T("What you should do")}</b>
        <div style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:9px;font-size:13px">
          💡 ${esc(S.data.actions[0].t)}</div></div>
    </div>
    <div class="res-foot" style="border-top:1px solid var(--border);margin-top:20px;padding-top:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center">
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:var(--fg2)">
        <span>✦ All 7 AI platforms</span><span>↻ Automated daily tracking</span>
-       <span>⚔ Competitor benchmarking</span><span>⚒ Content and audit tools</span></div>
+       <span>⚔ Competitor benchmarking</span><span>${T(`⚒ Content and audit tools`)}</span></div>
      <button class="btn b-pri b-lg" onclick="closeModal();go('settings');setTimeout(()=>setTab('billing'),30)">Unlock all platforms</button></div>
-   <p style="text-align:center;font-size:11.5px;color:var(--mute2);margin-top:14px">
-     The trial scans 3 platforms. The remaining 5 unlock on paid plans.</p></div>`);
+   <p style="text-align:center;font-size:11.5px;color:var(--mute2);margin-top:14px">${T(`The trial scans 3 platforms. The remaining 5 unlock on paid plans.`)}</p></div>`);
 }
 
 /* ---------- boot ----------
@@ -3896,7 +3927,7 @@ async function boot(){
   try{ me = await api.get('/api/auth/me'); }
   catch{ document.body.innerHTML =
     '<div style="display:grid;place-items:center;min-height:100vh;color:#949CAD;font-size:14px">'+
-    'Could not reach the server. Refresh to try again.</div>'; return; }
+    T('Could not reach the server. Refresh to try again.')+'</div>'; return; }
 
   if(!me.signedIn){ location.replace('/giris'); return; }
 
