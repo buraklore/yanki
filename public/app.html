@@ -163,63 +163,120 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;padding:4px 8px 13px;border-bottom:1px solid var(--border)}
 .mk{width:27px;height:27px;border-radius:8px;flex:none;background:linear-gradient(140deg,#3B82F6,#8B5CF6);
   display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
-/* --- Brand selector: the subject of the product, so it gets weight --- */
-.sb-wswrap{position:relative;margin-top:2px}
+/* =====================================================================
+   SIDEBAR
+   =====================================================================
+   The reader here is an account manager with several clients open. The
+   column has to answer "which client, how are they doing, where do I go"
+   without being read — so the brand block carries a live score, the nav is
+   tight enough to take in at once, and everything else gets out of the way.
+   ===================================================================== */
+#sb{padding:14px 10px}
+.sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:16.5px;
+  letter-spacing:-.02em;padding:2px 6px 13px;border-bottom:1px solid var(--border)}
+
+/* --- Brand switcher --- */
+.sb-wswrap{position:relative;margin-top:12px}
 .sb-ws{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;
-  background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--fg)}
-.sb-ws:hover{border-color:rgba(255,255,255,.14)}
+  background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:9px 10px;color:var(--fg)}
+.sb-ws:hover{border-color:var(--border2);background:var(--card3)}
 .sb-ws .sq{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;
   font-size:13px;font-weight:700;color:#fff;background:linear-gradient(140deg,#3B82F6,#8B5CF6)}
 .sb-ws .wt{min-width:0;display:grid;flex:1;gap:1px}
-.sb-ws .wt b{font-size:13.5px;font-weight:600;letter-spacing:-.01em;
+.sb-ws .wt b{font-size:13px;font-weight:600;letter-spacing:-.01em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-ws .wt i{font-style:normal;font-size:10.5px;color:var(--mute2);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-ws .cv{color:var(--mute2);font-size:11px;flex:none}
+.sb-ws .wt i{font-style:normal;font-size:10.5px;color:var(--mute2);display:flex;
+  align-items:center;gap:6px;min-width:0}
+.sb-ws .wt i > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* The client's current score, in the control that names the client. */
+.sb-ws .sc{flex:none;font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:10px;font-weight:600;padding:1px 5px;border-radius:5px;line-height:1.5}
+.sb-ws .sc.good{color:#4ADE80;background:rgba(34,197,94,.13)}
+.sb-ws .sc.mid{color:#FBBF24;background:rgba(251,191,36,.13)}
+.sb-ws .sc.bad{color:#F87171;background:rgba(248,113,113,.13)}
+.sb-ws .sc.off{display:none}
+.sb-ws .cv{flex:none;width:15px;height:15px;color:var(--mute2)}
+.sb-ws .cv svg{width:100%;height:100%;display:block}
 
-/* Freshness reads as a property of the brand above it, not a floating chip. */
-.sb-scan{display:flex;align-items:center;gap:7px;padding:8px 4px 0;font-size:11px;color:var(--mute2)}
+/* Freshness sits under the brand it describes, quiet by default. */
+.sb-scan{display:flex;align-items:center;gap:7px;padding:9px 6px 0;font-size:11px;color:var(--mute2)}
 .sb-scan .pill{display:flex;align-items:center;gap:6px;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-scan .dot{width:6px;height:6px;border-radius:50%;flex:none;background:var(--mute2)}
-.sb-scan .dot.ok{background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.12)}
-.sb-scan .dot.bad{background:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.12)}
+.sb-scan .dot.ok{background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.13)}
+.sb-scan .dot.bad{background:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.13)}
 .sb-scan .dot.run{background:#60A5FA;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-.nav{display:grid;gap:1px;margin-top:6px}
-.nav .sec{font-size:9.5px;font-weight:700;letter-spacing:.13em;color:var(--mute2);
-  padding:16px 12px 6px;opacity:.72}
-.nav .sec:first-child{padding-top:4px}
-.nav a,.nav button{position:relative;display:flex;align-items:center;gap:11px;padding:8px 12px;
-  border-radius:9px;font-size:13.5px;color:var(--mute);background:none;border:0;width:100%;text-align:left}
-.nav a:hover,.nav button:hover{color:var(--fg);background:rgba(255,255,255,.035)}
-/* Active state uses a left rule plus a tint. A tint on its own is easy to miss
-   at this contrast; the rule is what the eye finds when scanning the column. */
-.nav a.on{background:rgba(59,130,246,.13);color:#CFE0FF;font-weight:500}
-.nav a.on::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2.5px;
-  border-radius:0 3px 3px 0;background:linear-gradient(180deg,#60A5FA,#8B5CF6)}
-.nav .g{width:17px;text-align:center;font-size:13px;opacity:.7}
-.nav a.on .g{opacity:1}
-.nav .sub{display:none;margin:1px 0 3px 22px;padding-left:10px;border-left:1px solid var(--border)}
-.nav .sub.open{display:grid;gap:1px}
-.nav .sub a{font-size:12.5px;padding:6px 10px}
-.nav .sub a.on{background:rgba(59,130,246,.1)}
-.nav .sub a.on::before{display:none}
+/* --- Workspace menu --- */
+.wsmenu{display:none}
+.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
+  background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:5px;
+  box-shadow:0 16px 38px rgba(0,0,0,.5);max-height:300px;overflow:auto}
+.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;border-radius:8px;padding:8px 9px;color:var(--fg);font-size:12.5px}
+.wsmenu button:hover{background:rgba(255,255,255,.05)}
+.wsmenu button.on{background:rgba(59,130,246,.13)}
+.wsmenu .sq{width:22px;height:22px;border-radius:6px;background:rgba(59,130,246,.16);
+  display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+.wsmenu .t{min-width:0;display:grid}
+.wsmenu .t b{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .t i{font-style:normal;font-size:10.5px;color:var(--mute2);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .ck{margin-left:auto;color:#7FB2FF;font-size:11px}
+.wsmenu .sep{height:1px;background:var(--border);margin:5px 2px}
+.wsmenu .add{color:var(--mute)}
+.wsmenu .cnt{margin-left:auto;font-size:10.5px;color:var(--mute2)}
 
-/* --- Foot: account and plan, out of the way but reachable --- */
-.sb-acct{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 8px;border-radius:11px;
+/* --- Navigation ---
+   36px rows instead of 64. The old spacing made eleven links look like a
+   half-finished list; at this rhythm the whole map is one glance. */
+.nav{display:grid;gap:1px;margin-top:14px}
+.nav .sec{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:var(--mute2);
+  padding:15px 10px 5px;opacity:.65}
+.nav .sec:first-child{padding-top:2px}
+.nav a{position:relative;display:flex;align-items:center;gap:10px;padding:8px 10px;
+  border-radius:8px;font-size:13px;color:var(--mute);width:100%;line-height:1.3}
+.nav a:hover{color:var(--fg);background:rgba(255,255,255,.04)}
+.nav a.on{background:rgba(59,130,246,.12);color:#D3E2FF;font-weight:500}
+.nav a.on::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:2.5px;
+  border-radius:0 3px 3px 0;background:linear-gradient(180deg,#60A5FA,#8B5CF6)}
+.nav .g{width:17px;height:17px;flex:none;opacity:.62;stroke-width:1.6}
+.nav a:hover .g{opacity:.9}
+.nav a.on .g{opacity:1;color:#7FB2FF}
+
+/* --- Foot --- */
+.sb-foot{margin-top:auto;display:grid;gap:8px;padding-top:14px}
+.plan-row{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:10px;
+  border:1px solid var(--border);background:var(--card2);font-size:12px;color:var(--fg)}
+.plan-row:hover{border-color:var(--border2)}
+.plan-row .pd{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex:none;
+  box-shadow:0 0 0 3px rgba(74,222,128,.14)}
+.plan-row b{font-weight:600}
+.plan-row .mn{margin-left:auto;font-size:10.5px;color:var(--mute2)}
+.trial{border:1px solid var(--border);border-radius:11px;padding:11px 12px;
+  background:linear-gradient(150deg,rgba(59,130,246,.09),var(--card2))}
+.trial .tr-top{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.trial .tr-top b{font-size:12px;font-weight:600}
+.trial .tr-d{margin-left:auto;font-size:10.5px;color:var(--mute2)}
+.trial .tr-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.trial .tr-bar i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#3B82F6,#8B5CF6);transition:width .4s ease}
+.sb-acct{display:flex;align-items:center;gap:9px;min-width:0;padding:8px;border-radius:11px;
   border:1px solid var(--border);background:var(--card2)}
-.sb-acct .av{width:29px;height:29px;border-radius:9px;flex:none;display:grid;place-items:center;
-  font-size:11px;font-weight:700;color:#93B4FF;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.26)}
+.sb-acct .av{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;
+  font-size:10.5px;font-weight:700;color:#93B4FF;background:rgba(59,130,246,.14);
+  border:1px solid rgba(59,130,246,.26)}
 .sb-acct .who{min-width:0;display:grid;flex:1;gap:1px}
-.sb-acct .who b{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-acct .who i{font-style:normal;font-size:10px;color:var(--mute2);
+.sb-acct .who b{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-acct .who i{font-style:normal;font-size:9.5px;color:var(--mute2);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-acct .ics{display:flex;gap:4px;flex:none}
-.sb-acct .ics button{background:none;border:0;color:var(--mute2);font-size:12.5px;padding:3px;border-radius:6px}
-.sb-acct .ics button:hover{color:var(--fg);background:rgba(255,255,255,.05)}
-.sb-fb{display:block;font-size:11.5px;color:var(--mute2);text-decoration:none;padding:2px 10px}
+.sb-acct .ics{display:flex;gap:2px;flex:none}
+.sb-acct .ics button{width:27px;height:27px;display:grid;place-items:center;border-radius:7px;
+  background:none;border:0;color:var(--mute2);padding:0}
+.sb-acct .ics svg{width:15px;height:15px;display:block}
+.sb-acct .ics button:hover{color:var(--fg);background:rgba(255,255,255,.06)}
+.sb-fb{display:block;font-size:11px;color:var(--mute2);text-decoration:none;padding:1px 10px 2px}
 .sb-fb:hover{color:var(--fg)}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
@@ -467,10 +524,17 @@ svg{display:block;max-width:100%}
          signed in is administrative and moves to the foot, which is where SaaS
          readers look for it. -->
     <div class="sb-wswrap">
+      <!-- An agency reader wants two things from this control at a glance: which
+           client is loaded, and how that client is doing. Putting the score in
+           the switcher means the answer is already there before they choose a
+           screen. -->
       <button class="sb-ws" onclick="toggleWsMenu()" aria-haspopup="true">
         <span class="sq" id="wsInitial">A</span>
-        <span class="wt"><b id="wsName">brand</b><i id="wsHost"></i></span>
-        <span class="cv">⌄</span></button>
+        <span class="wt"><b id="wsName">brand</b>
+          <i><span id="wsHost"></span><span class="sc" id="wsScore"></span></i></span>
+        <span class="cv" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5 5 5-5"/></svg></span></button>
       <div class="wsmenu" id="wsMenu"></div>
       <div class="sb-scan"><span class="pill" id="scanPill"></span></div>
     </div>
@@ -478,14 +542,19 @@ svg{display:block;max-width:100%}
     <nav class="nav" id="nav"></nav>
 
     <div class="sb-foot">
-      <div class="trial" id="trialBox"></div>
+      <div id="trialBox"></div>
       <div class="sb-acct">
         <span class="av" id="uAv">AC</span>
         <span class="who"><b id="uName">Demo</b><i id="uMail"></i></span>
         <span class="ics">
-          <button title="Theme" data-i18n-title>◐</button>
-          <button title="Language" data-i18n-title onclick="langMenu()">⊕</button>
-          <button title="Sign out" data-i18n-title onclick="signOut()">↪</button>
+          <button title="Language" data-i18n-title onclick="langMenu()" aria-label="Language">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>
+              <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></svg></button>
+          <button title="Sign out" data-i18n-title onclick="signOut()" aria-label="Sign out">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5"/>
+              <path d="M20 12H9"/><path d="M12 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"/></svg></button>
         </span>
       </div>
       <a class="sb-fb" href="mailto:destek@yanki.app?subject=YANKI%20geri%20bildirim"><span id="fbLabel">Geri bildirim</span></a>
@@ -2194,22 +2263,47 @@ function gauge(v,col){
  * the channel is doing, then you act on it. The headings also give the sidebar
  * something to say in the vertical space a flat list leaves empty.
  */
+/**
+ * Icons as inline SVG rather than unicode glyphs.
+ *
+ * The old set (◱ ◫ ⬡ ◈ ◰ ◐) was drawn by whichever font happened to resolve
+ * each codepoint, so the weights never matched, the sizes never matched, and
+ * "Tools" rendered as a half-filled dot that reads as a loading state. A
+ * single stroked set at one weight is the difference between a product and a
+ * prototype, and it costs nothing at this size.
+ */
+const ICON={
+  dashboard:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  mentions:'<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.7-.8L3 21l1.9-5.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/>',
+  platforms:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  sources:'<path d="M10 13a5 5 0 0 0 7.5.6l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.6l-3 3a5 5 0 0 0 7 7L12.2 19"/>',
+  rivals:'<path d="M3 20h4v-8H3zM10 20h4V4h-4zM17 20h4v-5h-4z"/>',
+  prompts:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>',
+  opps:'<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
+  plan:'<path d="M9 5h9a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M8.5 13l2.2 2.2L15.5 11"/>',
+  audit:'<path d="M4 20V9M9.5 20V4M15 20v-7M20.5 20v-4"/>',
+  tools:'<path d="M14.7 6.3a4 4 0 0 0 5.3 5.3l-8 8a2.5 2.5 0 0 1-3.6-3.6z"/><path d="M6.5 3.5l2 2-2 2-3-1z"/>',
+  settings:'<circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
+};
+const ic=k=>`<svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]||''}</svg>`;
+
 const NAV=[
  {sec:'ÖLÇÜM'},
- {r:'dashboard',g:'◱',n:'Dashboard'},
- {r:'mentions', g:'◫',n:'Mentions'},
- {r:'platforms',g:'⬡',n:'Platforms'},
- {r:'sources',  g:'⬗',n:'Sources'},
+ {r:'dashboard',g:'dashboard',n:'Dashboard'},
+ {r:'mentions', g:'mentions', n:'Mentions'},
+ {r:'platforms',g:'platforms',n:'Platforms'},
+ {r:'sources',  g:'sources',  n:'Sources'},
  {sec:'STRATEJİ'},
- {r:'rivals',   g:'◇',n:'Competitors'},
- {r:'prompts',  g:'◎',n:'AI Prompts'},
- {r:'opps',     g:'◉',n:'Opportunities'},
+ {r:'rivals',   g:'rivals',   n:'Competitors'},
+ {r:'prompts',  g:'prompts',  n:'AI Prompts'},
+ {r:'opps',     g:'opps',     n:'Opportunities'},
  {sec:'AKSİYON'},
- {r:'plan',     g:'◈',n:'Action Plan'},
- {r:'audit',    g:'◰',n:'Audit'},
- {r:'tools',    g:'◐',n:'Tools'},
+ {r:'plan',     g:'plan',     n:'Action Plan'},
+ {r:'audit',    g:'audit',    n:'Audit'},
+ {r:'tools',    g:'tools',    n:'Tools'},
  {sec:'HESAP'},
- {r:'settings', g:'○',n:'Settings'}
+ {r:'settings', g:'settings', n:'Settings'}
 ];
 function renderNav(){
   $('#nav').innerHTML=NAV.map(it=>{
@@ -2219,7 +2313,7 @@ function renderNav(){
     // S.openNav['Analitik'] while the render read S.openNav['Analytics'], so
     // the group could never open. Section headings already give the grouping
     // the collapse was there to provide.
-    return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false"><span class="g">${it.g}</span>${T(it.n)}</a>`;
+    return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false">${ic(it.g)}<span>${T(it.n)}</span></a>`;
   }).join('');
   const brand=S.brand.name||'—';
   $('#wsName').textContent=brand;
@@ -2229,6 +2323,12 @@ function renderNav(){
   $('#uAv').textContent=(S.user.name||'YK').slice(0,2).toLocaleUpperCase('tr');
   $('#uName').textContent=S.user.name;
   const mailEl=$('#uMail'); if(mailEl) mailEl.textContent=S.user.email||'';
+  const scEl=$('#wsScore');
+  if(scEl){
+    const v=S.data&&S.data.ready?S.data.total:null;
+    scEl.textContent = v===null?'' : v.toFixed(1);
+    scEl.className = 'sc'+(v===null?' off':v<35?' bad':v<60?' mid':' good');
+  }
 
   // Workspace switcher. The old control was a button that toasted "single
   // workspace" whatever the plan allowed, so an Agency customer with 25 brands
@@ -2290,15 +2390,18 @@ function renderNav(){
   // A countdown is more legible than a sentence about a countdown, and the bar
   // does the persuading a paragraph was doing badly.
   const pct=dleft===null?100:Math.max(4,Math.min(100,Math.round(dleft/7*100)));
+  $('#trialBox').className = S.plan==='trial' ? 'trial' : '';
   $('#trialBox').innerHTML=S.plan==='trial'
     ? `<div class="tr-top"><b>${T('Trial')}</b>
          <span class="tr-d">${dleft===null?'':`${dleft} ${T('days left')}`}</span></div>
        <div class="tr-bar"><i style="width:${pct}%"></i></div>
        <button class="btn b-pri b-sm b-full" style="margin-top:11px"
          onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button>`
-    : `<div class="tr-top"><b>${planName}</b><span class="tr-d">${T('active')}</span></div>
-       <button class="btn b-gh b-sm b-full" style="margin-top:10px"
-         onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Manage plan')}</button>`;
+    // A paid plan has no countdown to show, so it does not need the card — a
+    // single line that names the plan and links to it is the whole message.
+    : `<a class="plan-row" href="#"
+         onclick="go('settings');setTimeout(()=>setTab('billing'),30);return false">
+         <span class="pd"></span><b>${planName}</b><span class="mn">${T('Manage plan')}</span></a>`;
 }
 function toggleSb(v){const sb=$('#sb'),sc=$('#sbScrim');
   const open=v===undefined?!sb.classList.contains('open'):v;
