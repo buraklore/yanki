@@ -68,7 +68,18 @@ export const GET = handler(async (req) => {
            and cs.scan_date = (select max(scan_date) from cell_scores where workspace_id = ${workspaceId})
            and cs.engine_key = any(${allowed})`,
 
+    /* Which engines lean on each domain, and whether it is gaining ground.
+     * The page had columns for both and no data behind them: platforms was a
+     * hardcoded empty array and the trend arrow was a hardcoded 1, so every
+     * row showed "—" and an up arrow regardless of what happened. */
     sql`select rc.domain, count(*)::int as citations,
+               count(*) filter (
+                 where ar.asked_at > now() - make_interval(days => ${Math.max(1, Math.floor(days / 2))})
+               )::int as recent,
+               count(*) filter (
+                 where ar.asked_at <= now() - make_interval(days => ${Math.max(1, Math.floor(days / 2))})
+               )::int as prior,
+               array_agg(distinct ar.engine_key) as engines,
                min(ar.asked_at)::date as first_seen, max(ar.asked_at)::date as last_seen
           from run_citations rc join answer_runs ar on ar.id = rc.run_id
          where ar.workspace_id = ${workspaceId}
@@ -265,8 +276,16 @@ export const GET = handler(async (req) => {
     latest: latestRow ?? null,
     series,
     prompts,
-    sources: sources.map((r: { domain: string; citations: number; first_seen: string; last_seen: string }) => ({
+    sources: sources.map((r: {
+      domain: string; citations: number; recent: number; prior: number;
+      engines: string[]; first_seen: string; last_seen: string;
+    }) => ({
       ...r, mine: r.domain === ownHost,
+      engines: r.engines ?? [],
+      // Second half of the window against the first. Null when there is no
+      // earlier half to compare with, so a new domain is not reported as a
+      // hundred-percent riser.
+      delta: r.prior > 0 ? (r.recent - r.prior) / r.prior : (r.recent > 0 ? null : 0),
     })),
     competitors,
     selfMentions: selfCount?.n ?? 0,
