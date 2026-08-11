@@ -157,320 +157,148 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 
 /* ---------- app shell ---------- */
 #app{display:none;min-height:100vh}
-#app.on{display:grid;grid-template-columns:304px minmax(0,1fr)}
+#app.on{display:grid;grid-template-columns:262px minmax(0,1fr)}
 #sb{border-right:1px solid var(--border);background:#08090D;padding:14px 12px;display:flex;flex-direction:column;gap:13px;
   height:100vh;position:sticky;top:0;overflow-y:auto}
 .sb-logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;padding:4px 8px 13px;border-bottom:1px solid var(--border)}
 .mk{width:27px;height:27px;border-radius:8px;flex:none;background:linear-gradient(140deg,#3B82F6,#8B5CF6);
   display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
 /* =====================================================================
-   SIDEBAR — client rail + panel
+   SIDEBAR
    =====================================================================
-   Every tool in this category hides the client behind a dropdown. That suits
-   a product with one brand per account and fights the one this is built for:
-   an agency carrying twenty-five. The rail keeps every client on screen, one
-   click apart, and frees the panel beside it to be about the client that is
-   loaded rather than about choosing one.
+   Written against one question: does this look like it belongs to a company
+   that has been doing this for a decade, or to a side project.
+   The answer is mostly restraint. Enterprise tools earn their weight with
+   structure and discipline — a spine the eye can follow, hairlines instead
+   of cards, tabular figures, tight uppercase eyebrows — not with rounded
+   gradient tiles, which are the single clearest tell of a young product.
+   So: no gradients, radii down from 12px to 5px, one accent, and a rule
+   running the height of the navigation that every item hangs off.
    ===================================================================== */
-#sb{padding:0;gap:0;display:grid;grid-template-columns:62px minmax(0,1fr);
-  background:#07080B;border-right:1px solid #171A21}
+#sb{padding:0;gap:0;background:#07080B;border-right:1px solid #191C24}
 
-/* --- Rail ------------------------------------------------------------- */
-.rail{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 10px;
-  background:#040507;border-right:1px solid #171A21;overflow-y:auto}
-.rail::-webkit-scrollbar{width:0}
-.rail-mk{width:32px;height:32px;border-radius:7px;flex:none;display:grid;place-items:center;
-  background:#2D6BE8;color:#fff;font-size:14px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
-.rail-cl{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%}
-.rail-cl button{position:relative;width:34px;height:34px;border-radius:9px;border:1px solid #1E222C;
-  background:#0D1015;color:#77808F;font-size:12px;font-weight:700;display:grid;place-items:center;
-  letter-spacing:-.02em;transition:border-radius .15s,color .15s,border-color .15s}
-.rail-cl button:hover{color:#C9D2E0;border-color:#2E3441;border-radius:7px}
-/* The active marker sits on the frame edge, so it belongs to the application
-   chrome rather than to the button. */
-.rail-cl button.on{background:#16233A;border-color:#2E5AA8;color:#BBD4FF;border-radius:7px}
-.rail-cl button.on::before{content:"";position:absolute;left:-11px;top:5px;bottom:5px;width:3px;
-  border-radius:0 2px 2px 0;background:#2D6BE8}
-/* The name comes from the native title attribute rather than a styled ::after:
-   the rail scrolls, and a scroll container clips its own overflow, so a CSS
-   tooltip was being cut off by the very element it belonged to. */
-.rail-foot{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:10px}
-.rail-foot button{width:30px;height:30px;border-radius:7px;border:0;background:none;color:#4E5665;
-  display:grid;place-items:center;padding:0}
-.rail-foot button:hover{color:#C9D2E0;background:#10131A}
-.rail-foot svg{width:15px;height:15px}
+/* --- Zone 1: identity ------------------------------------------------- */
+.sb-id{padding:15px 14px 14px;border-bottom:1px solid #191C24;background:#0A0C10}
+.sb-logo{display:flex;align-items:center;gap:9px;padding:0 2px 14px;border:0}
+.mk{width:24px;height:24px;border-radius:5px;flex:none;background:#2D6BE8;
+  display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em}
+.sb-logo .wm{font-size:14px;font-weight:700;letter-spacing:.09em;color:var(--fg)}
 
-/* --- Panel ------------------------------------------------------------ */
-.col{display:flex;flex-direction:column;min-width:0;background:#07080B}
-.col-hd{padding:14px 14px 13px;border-bottom:1px solid #171A21;background:#0A0C10}
-.ch-wrap{position:relative;margin-bottom:13px}
-.ch-top{display:flex;align-items:center;gap:9px;width:100%;min-width:0;text-align:left;
-  background:none;border:0;padding:0;color:var(--fg);border-radius:7px}
-.ch-top:hover{background:#0F1218}
-.ch-top .t{display:grid;gap:2px;min-width:0;flex:1;padding:4px 0 4px 4px}
-.ch-top b{font-size:14px;font-weight:650;letter-spacing:-.015em;color:var(--fg);
+/* Client selector. Square corners and a monogram plate rather than a rounded
+   avatar: this is a record being selected, not a person being greeted. */
+.sb-ws{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;
+  background:#10131A;border:1px solid #212530;border-radius:6px;padding:8px 9px;color:var(--fg)}
+.sb-ws:hover{border-color:#2E3441;background:#141822}
+.sb-ws .sq{width:28px;height:28px;border-radius:4px;flex:none;display:grid;place-items:center;
+  font-size:12px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
+.sb-ws .wt{min-width:0;display:grid;flex:1;gap:2px}
+.sb-ws .wt b{font-size:12.5px;font-weight:600;letter-spacing:-.005em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ch-top .host{font-size:10.5px;color:#5E6675;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ch-top .cv{flex:none;width:15px;height:15px;color:#5A6274;margin-right:4px}
-.ch-top .cv svg{width:100%;height:100%;display:block}
-.wsmenu{display:none}
-.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;
-  background:#10131A;border:1px solid #2E3441;border-radius:8px;padding:4px;
-  box-shadow:0 18px 44px rgba(0,0,0,.6)}
-.wsmenu .list{max-height:264px;overflow-y:auto}
-.wsmenu .add .pl{width:24px;height:24px;border-radius:5px;border:1px dashed #2E3441;
-  display:grid;place-items:center;font-size:13px;color:#6E9BF0;flex:none}
-.wsmenu .add:hover .pl{border-style:solid;border-color:#2E5AA8}
-.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
-  border:0;border-radius:5px;padding:8px 9px;color:var(--fg);font-size:12.5px}
-.wsmenu button:hover{background:#181D27}
-.wsmenu button.on{background:#16233A}
-.wsmenu .sq{width:24px;height:24px;border-radius:5px;background:#16233A;color:#9CC0FF;
-  display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none}
-.wsmenu .t{min-width:0;display:grid;flex:1}
-.wsmenu .t b{font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wsmenu .t i{font-style:normal;font-size:10px;color:#5E6675;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap}
-.wsmenu .ck{margin-left:auto;color:#6E9BF0;font-size:11px}
-.wsmenu .sep{height:1px;background:#212530;margin:4px 2px}
-.wsmenu .add{color:#9CC0FF;font-weight:500}
-.wsmenu .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:#5A6274}
+.sb-ws .wt i{font-style:normal;font-size:10px;color:#6B7385;letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-ws .cv{flex:none;width:14px;height:14px;color:#5A6274}
+.sb-ws .cv svg{width:100%;height:100%;display:block}
 
-/* The reading as a position on a scale, not a sentence. */
+/* The reading, as a meter. A number with a track behind it states a position
+   on a scale; the same number in a sentence states nothing. */
+.sb-meter{margin-top:12px}
 .sb-meter .mrow{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
-.sb-meter .ml{font-size:8.5px;font-weight:700;letter-spacing:.16em;color:#525A69}
+.sb-meter .ml{font-size:9px;font-weight:700;letter-spacing:.15em;color:#5A6274}
+.sb-meter .mu{font-family:var(--mono);font-size:9.5px;color:#4E5665;margin-left:2px}
 .sb-meter .mv{margin-left:auto;font-family:var(--mono);font-variant-numeric:tabular-nums;
   font-size:14px;font-weight:600;letter-spacing:-.02em;color:var(--fg)}
-.sb-meter .mu{font-family:var(--mono);font-size:9px;color:#4A5160;margin-left:2px}
-.sb-meter .mtrack{height:3px;border-radius:2px;background:#151922;overflow:hidden}
+.sb-meter .mtrack{height:3px;border-radius:2px;background:#161A22;overflow:hidden}
 .sb-meter .mtrack i{display:block;height:100%;width:0;background:#2D6BE8;transition:width .45s ease}
 .sb-meter .mtrack i.mid{background:#D89A2B}
 .sb-meter .mtrack i.bad{background:#D4504F}
-.sb-meter .pill{display:flex;align-items:center;gap:6px;margin-top:9px;font-size:10px;color:#5E6675;
-  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-meter .dot{width:5px;height:5px;border-radius:50%;flex:none;background:#525A69}
+.sb-meter .pill{display:flex;align-items:center;gap:6px;margin-top:9px;
+  font-size:10.5px;color:#6B7385;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-meter .dot{width:5px;height:5px;border-radius:50%;flex:none;background:#5A6274}
 .sb-meter .dot.ok{background:#3FA46A}
 .sb-meter .dot.bad{background:#D4504F}
 .sb-meter .dot.run{background:#2D6BE8;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* --- Navigation -------------------------------------------------------- */
-.nav{display:grid;gap:0;padding:10px 10px 8px;overflow-y:auto}
-.nav .sec{font-size:8.5px;font-weight:700;letter-spacing:.17em;color:#474E5C;padding:14px 0 5px 10px}
+/* --- Workspace menu --------------------------------------------------- */
+.sb-wswrap{position:relative}
+.wsmenu{display:none}
+.wsmenu.open{display:block;position:absolute;left:14px;right:14px;top:82px;z-index:40;
+  background:#10131A;border:1px solid #2E3441;border-radius:6px;padding:4px;
+  box-shadow:0 18px 44px rgba(0,0,0,.6);max-height:300px;overflow:auto}
+.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;border-radius:4px;padding:8px 9px;color:var(--fg);font-size:12px}
+.wsmenu button:hover{background:#181D27}
+.wsmenu button.on{background:#16233A}
+.wsmenu .sq{width:22px;height:22px;border-radius:4px;background:#16233A;color:#9CC0FF;
+  display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none}
+.wsmenu .t{min-width:0;display:grid}
+.wsmenu .t b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .t i{font-style:normal;font-size:10px;color:#6B7385;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .ck{margin-left:auto;color:#6E9BF0;font-size:11px}
+.wsmenu .sep{height:1px;background:#212530;margin:4px 2px}
+.wsmenu .add{color:#8590A3}
+.wsmenu .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:#5A6274}
+
+/* --- Zone 2: navigation ----------------------------------------------
+   Every item hangs off a single rule running the height of the column. The
+   active marker sits on that rule rather than floating beside it, which is
+   what turns a list of links into a structure. */
+.nav{display:grid;gap:0;padding:12px 14px 8px;position:relative}
+.nav::before{content:"";position:absolute;left:9px;top:18px;bottom:14px;width:1px;background:#1C2029}
+.nav .sec{font-size:9px;font-weight:700;letter-spacing:.16em;color:#4E5665;
+  padding:15px 0 6px 22px;position:relative}
 .nav .sec:first-child{padding-top:2px}
-.nav a{position:relative;display:flex;align-items:center;gap:9px;padding:7px 9px;
-  border-radius:6px;font-size:12.5px;color:#828C9C;line-height:1.35;letter-spacing:-.005em}
-.nav a:hover{color:var(--fg);background:#0F1218}
-.nav a.on{background:#131A28;color:#EAF0FA;font-weight:500;box-shadow:inset 0 0 0 1px #1E2A40}
-.nav .g{width:16px;height:16px;flex:none;opacity:.5;stroke-width:1.7}
-.nav a:hover .g{opacity:.8}
+.nav a{position:relative;display:flex;align-items:center;gap:9px;padding:7px 9px 7px 22px;
+  border-radius:5px;font-size:12.5px;color:#8590A3;width:100%;line-height:1.35;letter-spacing:-.005em}
+.nav a:hover{color:var(--fg);background:#10131A}
+.nav a.on{background:#111827;color:#EAF0FA;font-weight:500}
+/* The marker sits on the spine, covering it — the rule and the active
+   state are the same line, which is what makes the column read as one
+   structure instead of two decorations. */
+.nav a.on::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;
+  border-radius:2px;background:#2D6BE8}
+.nav .g{width:16px;height:16px;flex:none;opacity:.55;stroke-width:1.7}
+.nav a:hover .g{opacity:.85}
 .nav a.on .g{opacity:1;color:#6E9BF0}
 .nav a span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Volume per section: a column of counts is what separates an index from a
-   menu, and it tells the reader where the work is before they open anything. */
+/* Volume, in tabular figures. A tool that shows how much is inside each
+   section looks like a tool with something inside it. */
 .nav .ct{flex:none;font-family:var(--mono);font-variant-numeric:tabular-nums;
-  font-size:9.5px;color:#474E5C}
-.nav a.on .ct,.nav a:hover .ct{color:#828C9C}
+  font-size:10px;color:#4E5665}
+.nav a.on .ct,.nav a:hover .ct{color:#8590A3}
 
-/* --- Foot -------------------------------------------------------------- */
-.sb-foot{margin-top:auto;display:grid;gap:0;border-top:1px solid #171A21;background:#0A0C10}
-.plan-row{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:11px;color:var(--fg)}
-.plan-row:hover{background:#0F1218}
+/* --- Foot: status bar -------------------------------------------------- */
+.sb-foot{margin-top:auto;display:grid;gap:0;border-top:1px solid #191C24;background:#0A0C10}
+.plan-row{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:11.5px;
+  color:var(--fg);border-bottom:1px solid #191C24}
+.plan-row:hover{background:#10131A}
 .plan-row .pd{width:5px;height:5px;border-radius:50%;background:#3FA46A;flex:none}
 .plan-row b{font-weight:600;letter-spacing:.02em}
-.plan-row .mn{margin-left:auto;font-size:9.5px;color:#525A69}
-.trial{padding:11px 14px}
+.plan-row .mn{margin-left:auto;font-size:10px;color:#5A6274}
+.trial{padding:12px 14px;border-bottom:1px solid #191C24;background:#0C0F15}
 .trial .tr-top{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
-.trial .tr-top b{font-size:11px;font-weight:600}
-.trial .tr-d{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:#5E6675}
-.trial .tr-bar{height:3px;border-radius:2px;background:#151922;overflow:hidden}
+.trial .tr-top b{font-size:11.5px;font-weight:600}
+.trial .tr-d{margin-left:auto;font-family:var(--mono);font-size:10px;color:#6B7385}
+.trial .tr-bar{height:3px;border-radius:2px;background:#161A22;overflow:hidden}
 .trial .tr-bar i{display:block;height:100%;background:#2D6BE8;transition:width .4s ease}
-.trial .btn{margin-top:9px;border-radius:5px;font-size:11.5px;padding:7px 12px;
-  background:#2D6BE8;border-color:#2D6BE8}
-.sb-acct{display:flex;align-items:center;gap:9px;padding:9px 14px 10px;
-  border-top:1px solid #171A21;min-width:0}
-.sb-acct .av{width:25px;height:25px;border-radius:6px;flex:none;display:grid;place-items:center;
-  font-size:9.5px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
-.sb-acct .who{min-width:0;display:grid;gap:1px}
-.sb-acct .who b{font-size:11px;font-weight:600;color:var(--fg);
+.trial .btn{border-radius:5px;font-size:12px;padding:8px 12px;background:#2D6BE8;border-color:#2D6BE8}
+.trial .btn{margin-top:10px}
+.sb-acct{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 14px}
+.sb-acct .av{width:26px;height:26px;border-radius:4px;flex:none;display:grid;place-items:center;
+  font-size:10px;font-weight:700;color:#9CC0FF;background:#16233A;border:1px solid #24375C}
+.sb-acct .who{min-width:0;display:grid;flex:1;gap:1px}
+.sb-acct .who b{font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-acct .who i{font-style:normal;font-size:9.5px;color:#5A6274;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-acct .who i{font-style:normal;font-size:9.5px;color:#4A5160;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-fb,.sb-logo,.sb-ws,.sb-wswrap,.wsmenu{display:none}
+.sb-acct .ics{display:flex;gap:1px;flex:none}
+.sb-acct .ics button{width:26px;height:26px;display:grid;place-items:center;border-radius:4px;
+  background:none;border:0;color:#5A6274;padding:0}
+.sb-acct .ics button:hover{color:var(--fg);background:#181D27}
+.sb-acct .ics svg{width:14px;height:14px;display:block}
+.sb-fb{display:none}
 /* Workspace switcher — anchored to the button so it reads as belonging to it
    rather than floating over the nav. */
-/* =====================================================================
-   DASHBOARD
-   =====================================================================
-   Built as a vertical argument rather than a grid of cards: the report
-   header states whose numbers these are, four figures set the position,
-   then one table says where the brand is losing, and the two sections
-   under it explain that table. A card grid gives every block equal
-   weight, which is exactly the claim this screen should not make.
-   ===================================================================== */
-.dash{
-  --d-bg:#0B0E14; --d-card:#12161F; --d-line:#1E2430; --d-line2:#2A3140;
-  --d-txt:#E9EDF4; --d-txt2:#B7C0CF; --d-mut:#8590A3; --d-mut2:#67707F;
-  --d-up:#35D07F; --d-up-s:rgba(53,208,127,.13);
-  --d-dn:#FF5C5C; --d-dn-s:rgba(255,92,92,.13);
-  --d-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-  --d-sans:inherit;
-  display:grid;gap:13px;
-}
-body.lt .dash{
-  --d-bg:#F6F7F9; --d-card:#FFFFFF; --d-line:#E4E7EC; --d-line2:#D0D5DD;
-  --d-txt:#101828; --d-txt2:#344054; --d-mut:#667085; --d-mut2:#98A2B3;
-  --d-up:#12A150; --d-up-s:#E7F6EC; --d-dn:#D92D20; --d-dn-s:#FDECEA;
-}
-
-/* --- Report header ---------------------------------------------------- */
-.dash-rep{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
-  background:var(--d-card);border:1px solid var(--d-line);border-radius:10px;padding:15px 17px}
-.dash-rep .who{min-width:0;display:grid;gap:3px}
-.dash-rep .who h2{font-size:18px;font-weight:650;letter-spacing:-.02em;color:var(--d-txt);margin:0}
-.dash-rep .who .dm{font-size:12px;color:var(--d-mut)}
-.dash-rep .per{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dash-rep .per .pl{font-family:var(--d-mono);font-size:11px;color:var(--d-mut);
-  border:1px solid var(--d-line);border-radius:6px;padding:7px 10px;background:var(--d-bg)}
-.dash-rep .per .ex{border:1px solid var(--d-line2);background:var(--d-card);color:var(--d-txt2);
-  border-radius:6px;padding:7px 12px;font-size:12px;font-weight:500}
-.dash-rep .per .ex:hover{border-color:#2D6BE8;color:#6E9BF0}
-
-/* --- Position row ------------------------------------------------------ */
-.dash-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
-@media(max-width:980px){.dash-kpi{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.dash-kpi{grid-template-columns:1fr}}
-.dash-k{background:var(--d-card);border:1px solid var(--d-line);border-radius:10px;
-  padding:14px 15px;display:grid;gap:7px;align-content:start}
-.dash-k .lb{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--d-mut);font-weight:500}
-.dash-k .row{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-.dash-k .v{font-family:var(--d-mono);font-variant-numeric:tabular-nums;font-size:27px;
-  font-weight:600;letter-spacing:-.04em;color:var(--d-txt);line-height:1}
-.dash-k .v small{font-size:12.5px;font-weight:400;color:var(--d-mut2);letter-spacing:0}
-.dash-k .sub{font-size:11.5px;color:var(--d-mut2)}
-.dash-k a{color:#6E9BF0;font-weight:500}
-.dash-k .dl{display:inline-flex;align-items:center;gap:4px;font-family:var(--d-mono);
-  font-size:11px;font-weight:500;border-radius:5px;padding:3px 6px}
-.dash-k .dl.up{color:var(--d-up);background:var(--d-up-s)}
-.dash-k .dl.dn{color:var(--d-dn);background:var(--d-dn-s)}
-.dash-k .dl.fl{color:var(--d-mut);background:var(--d-bg)}
-
-/* --- Section shell ----------------------------------------------------- */
-/* Intro line + three-up row, as in the previous build, restyled. */
-.dash-intro{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  font-size:12.5px;color:var(--d-mut);padding:0 2px}
-.dash-intro .chipx{margin-left:auto;font-size:11px;color:var(--d-mut2);
-  border:1px solid var(--d-line);border-radius:6px;padding:5px 10px;background:var(--d-card)}
-.dash-3{display:grid;grid-template-columns:1fr 1.15fr 1.15fr;gap:12px;align-items:stretch}
-@media(max-width:1180px){.dash-3{grid-template-columns:1fr}}
-.dash-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-@media(max-width:1080px){.dash-2{grid-template-columns:1fr}}
-.dash-k .lb i{width:6px;height:6px;border-radius:50%;flex:none;display:inline-block}
-
-/* Platform rows: the state, then the number, then the bar. A locked row keeps
-   the shape so the eye reads the list as one thing, but carries an action
-   instead of a value. */
-.prow{padding:9px 0;border-bottom:1px solid var(--d-line)}
-.prow:last-of-type{border-bottom:0}
-.prow .pl{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.prow .pi{width:7px;height:7px;border-radius:2px;flex:none;background:var(--d-line2)}
-.prow .pi.on{background:#5CC8FF}
-.prow b{font-size:12.5px;font-weight:500;color:var(--d-txt);min-width:0;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prow .pv{margin-left:auto;font-family:var(--d-mono);font-variant-numeric:tabular-nums;
-  font-size:12.5px;font-weight:600;color:var(--d-txt);white-space:nowrap}
-.prow .pv small{font-size:10px;color:var(--d-mut2);font-weight:400}
-.prow .pv.muted{font-family:inherit;font-size:11px;font-weight:400;color:var(--d-mut2)}
-.prow .pv .up{color:#FFB55C}
-.prow .ptrack{height:5px;border-radius:3px;background:var(--d-bg);
-  border:1px solid var(--d-line);overflow:hidden}
-.prow .ptrack i{display:block;height:100%;border-radius:3px;background:#5CC8FF}
-.prow.off{opacity:.55}
-
-.dash-c{background:var(--d-card);border:1px solid var(--d-line);border-radius:10px;overflow:hidden}
-.dash-c > .hd{display:flex;align-items:center;gap:12px;padding:14px 17px;border-bottom:1px solid var(--d-line)}
-.dash-c > .hd h3{font-size:14px;font-weight:600;color:var(--d-txt);margin:0}
-.dash-c > .hd .sub{font-size:11.5px;color:var(--d-mut2);margin-top:2px}
-.dash-c > .hd .rt{margin-left:auto;font-family:var(--d-mono);font-size:11px;color:var(--d-mut2);white-space:nowrap}
-.dash-c > .bd{padding:14px 10px 10px;overflow-x:auto}
-
-/* --- Table ------------------------------------------------------------- */
-.dash-t{width:100%;border-collapse:collapse}
-@media(max-width:820px){.dash-t{min-width:560px}}
-.dash-t th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--d-mut2);padding:0 11px 9px;border-bottom:1px solid var(--d-line);white-space:nowrap}
-.dash-t th.n,.dash-t td.n{text-align:right}
-.dash-t td{padding:10px 11px;border-bottom:1px solid var(--d-line);font-size:12.5px;color:var(--d-txt2)}
-.dash-t tr:last-child td{border-bottom:0}
-.dash-t tbody tr:hover td{background:var(--d-bg)}
-.dash-t td b{font-weight:500;color:var(--d-txt)}
-.dash-t td.n{font-family:var(--d-mono);font-variant-numeric:tabular-nums;color:var(--d-txt);white-space:nowrap}
-.dash-t .tagx{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:5px;
-  background:var(--d-bg);color:var(--d-mut);border:1px solid var(--d-line);white-space:nowrap}
-
-/* --- Priority list: the only accented block on the page ---------------- */
-.dash-c.prio{border-color:#2B3A57}
-.dash-c.prio > .hd{background:linear-gradient(90deg,rgba(45,107,232,.10),transparent)}
-.finding{display:flex;align-items:center;gap:14px;padding:13px 17px;flex-wrap:wrap;
-  border-bottom:1px solid var(--d-line);background:rgba(45,107,232,.05)}
-.finding b{font-size:13.5px;font-weight:650;color:var(--d-txt);letter-spacing:-.015em}
-.finding span{flex:1;min-width:220px;font-size:12.5px;line-height:1.62;color:var(--d-mut)}
-.finding button{flex:none;border:1px solid #2B3A57;background:#131A28;color:#9CC0FF;
-  border-radius:6px;padding:8px 14px;font-size:12px;font-weight:500}
-.finding button:hover{background:#182236;border-color:#3A4E73}
-body.lt .finding button{background:#EAF2FE;border-color:#B6D3FA;color:#1B6EF3}
-
-.dash-t .tagx.hot{background:rgba(255,162,58,.13);color:#FFB55C;border-color:transparent}
-.dash-t .miss{color:#FF6B6B;font-weight:600}
-.dash-t .rr{font-style:normal;font-family:var(--d-mono);font-size:10.5px;color:var(--d-mut2);margin-left:7px}
-/* The gap drawn rather than written: five places behind fills the bar. */
-.dash-t .gapbar{display:inline-block;width:56px;height:6px;border-radius:3px;
-  background:var(--d-bg);border:1px solid var(--d-line);overflow:hidden;vertical-align:middle}
-.dash-t .gapbar i{display:block;height:100%;background:#FFA23A;border-radius:3px;min-width:2px}
-.dash-t .gapbar.full{background:#FF6B6B;border-color:transparent}
-
-  font-size:12.5px;font-weight:600;color:var(--d-txt)}
-
-/* --- Source contest ----------------------------------------------------- */
-.srcs{display:grid;gap:3px;padding:0 7px}
-.src{display:grid;grid-template-columns:20px minmax(0,1.1fr) 1fr 40px;align-items:center;gap:11px;
-  padding:8px 9px;border-radius:7px}
-.src:hover{background:var(--d-bg)}
-.src.mine{background:rgba(45,107,232,.09);box-shadow:inset 0 0 0 1px #22314C}
-body.lt .src.mine{background:#EAF2FE;box-shadow:inset 0 0 0 1px #C7DDFB}
-.src .rk{font-family:var(--d-mono);font-size:10.5px;color:var(--d-mut2);text-align:right}
-.src .dm{font-size:12.5px;color:var(--d-txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.src.mine .dm{color:#6E9BF0;font-weight:500}
-.src .dm i{font-style:normal;font-size:9.5px;background:rgba(45,107,232,.2);color:#9CC0FF;
-  padding:2px 6px;border-radius:4px;margin-left:7px}
-.src .bar{display:block;height:6px;border-radius:3px;background:var(--d-bg);
-  border:1px solid var(--d-line);overflow:hidden}
-.src .bar i{display:block;height:100%;background:var(--d-line2);border-radius:3px}
-.src.mine .bar i{background:#2D6BE8}
-.src .vv{text-align:right;font-family:var(--d-mono);font-size:11.5px;color:var(--d-mut)}
-.dash-c .note{font-size:11.5px;color:var(--d-mut2);line-height:1.65;margin:12px 9px 4px;
-  padding-top:11px;border-top:1px solid var(--d-line)}
-
-/* Mention counts per platform, as a legend rather than a filter control: the
-   list below is short enough that filtering it would be theatre, but knowing
-   which engine produced the mentions is genuinely useful. */
-.mfilter{display:flex;flex-wrap:wrap;gap:6px;padding:0 9px 12px}
-.mf{font-size:11px;color:var(--d-mut);border:1px solid var(--d-line);border-radius:6px;
-  padding:4px 9px;background:var(--d-bg)}
-.mf b{font-family:var(--d-mono);color:var(--d-txt);margin-left:4px}
-.dash-t tr.click{cursor:pointer}
-.dash-t tr.click:hover td b{color:#6E9BF0}
-
-.dash-empty{text-align:center;padding:30px 14px;color:var(--d-mut2);font-size:12.5px}
-.dash-empty .ic{font-size:24px;margin-bottom:8px;opacity:.45}
-
-@media print{
-  #sb,.mobbar,.apphead,.dash-rep .per,.finding button{display:none!important}
-  #app.on{display:block!important}
-  body,.main,.page{background:#fff!important}
-  .dash-c,.dash-k,.dash-rep{break-inside:avoid}
-}
-
 .apphead{display:flex;align-items:center;gap:14px;padding:14px 26px 0;justify-content:flex-end}
 .apphead .hs{font-size:12.5px;color:var(--mute)}
 .apphead .hs b{color:var(--fg);font-weight:600}
@@ -481,6 +309,25 @@ body.lt .src.mine{background:#EAF2FE;box-shadow:inset 0 0 0 1px #C7DDFB}
   color:var(--mute2);font-size:10px;line-height:1;display:inline-grid;place-items:center;margin-left:5px;
   vertical-align:middle;padding:0}
 .qm:hover{color:var(--fg);border-color:var(--mute2)}
+.sb-wswrap{position:relative}
+.wsmenu{display:none}
+.wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;
+  background:var(--card);border:1px solid var(--border);border-radius:11px;padding:5px;
+  box-shadow:0 14px 34px rgba(0,0,0,.42);max-height:290px;overflow:auto}
+.wsmenu button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;border-radius:8px;padding:8px 9px;color:var(--fg);font-size:12.5px}
+.wsmenu button:hover{background:rgba(255,255,255,.04)}
+.wsmenu button.on{background:rgba(59,130,246,.12)}
+.wsmenu .sq{width:22px;height:22px;border-radius:6px;background:rgba(59,130,246,.16);
+  display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+.wsmenu .t{min-width:0;display:grid}
+.wsmenu .t b{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .t i{font-style:normal;font-size:10.5px;color:var(--mute2);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.wsmenu .ck{margin-left:auto;color:#7FB2FF;font-size:11px}
+.wsmenu .sep{height:1px;background:var(--border);margin:5px 2px}
+.wsmenu .add{color:var(--mute)}
+.wsmenu .cnt{margin-left:auto;font-size:10.5px;color:var(--mute2)}
 
 /* Scan strip. Freshness is the first question a returning user has, so it sits
    above the nav rather than buried on the dashboard. */
@@ -689,61 +536,51 @@ svg{display:block;max-width:100%}
 
 <div id="app">
   <aside id="sb">
-    <!-- Two columns, not one.
-         Every tool in this category hides the client behind a dropdown, which
-         suits a product with one brand per account and fights the one this is
-         built for: an agency with twenty-five. The rail puts every client on
-         screen permanently, one click apart, and frees the panel beside it to
-         be about the client currently loaded rather than about choosing one.
-         It is also the reason this cannot be mistaken for the others. -->
-    <div class="rail">
-      <a class="rail-mk" href="#" onclick="go('dashboard');return false" title="YANKI">Y</a>
-      <div class="rail-cl" id="railClients"></div>
-      <!-- An avatar that signs you out is a trap: the picture says "you", the
-           action says "leave". Two labelled icons instead. -->
-      <div class="rail-foot">
-        <button onclick="langMenu()" title="Dil" aria-label="Dil">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
-            stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>
-            <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></svg></button>
-        <button onclick="signOut()" title="Çıkış" aria-label="Çıkış">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
-            stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5"/>
-            <path d="M20 12H9"/><path d="M12 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"/></svg></button>
+    <!-- Two zones, separated by a hard rule. The top zone is identity: the
+         product, and the client whose numbers are on screen. The bottom zone
+         is navigation. A single flat column reads as a list of links; the
+         division is what makes it read as a structured application. -->
+    <div class="sb-id">
+      <div class="sb-logo"><span class="mk">Y</span><span class="wm">YANKI</span></div>
+
+      <button class="sb-ws" onclick="toggleWsMenu()" aria-haspopup="true">
+        <span class="sq" id="wsInitial">A</span>
+        <span class="wt"><b id="wsName">brand</b><i id="wsHost"></i></span>
+        <span class="cv" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5 5 5-5"/></svg></span></button>
+      <div class="wsmenu" id="wsMenu"></div>
+
+      <!-- The client's score and the freshness of the reading, set as a meter
+           rather than a sentence. This is the line an account manager checks
+           before opening anything. -->
+      <div class="sb-meter">
+        <div class="mrow"><span class="ml">GÖRÜNÜRLÜK</span>
+          <span class="mv" id="wsScore">—</span><span class="mu">/100</span></div>
+        <div class="mtrack"><i id="wsScoreBar"></i></div>
+        <div class="pill" id="scanPill"></div>
       </div>
     </div>
 
-    <div class="col">
-      <div class="col-hd">
-        <!-- The brand name is the control. Adding a client belongs where the
-             client is named, not as an anonymous "+" on the far edge where it
-             sits beside avatars and reads as "add avatar". -->
-        <div class="ch-wrap">
-          <button class="ch-top" onclick="toggleWsMenu()" aria-haspopup="true">
-            <span class="t"><b id="wsName">brand</b>
-              <span class="host" id="wsHost"></span></span>
-            <span class="cv" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5 5 5-5"/></svg></span>
-          </button>
-          <div class="wsmenu" id="wsMenu"></div>
-        </div>
-        <div class="sb-meter">
-          <div class="mrow"><span class="ml">GÖRÜNÜRLÜK</span>
-            <span class="mv" id="wsScore">—</span><span class="mu">/100</span></div>
-          <div class="mtrack"><i id="wsScoreBar"></i></div>
-          <div class="pill" id="scanPill"></div>
-        </div>
-      </div>
+    <nav class="nav" id="nav"></nav>
 
-      <nav class="nav" id="nav"></nav>
-
-      <div class="sb-foot">
-        <div id="trialBox"></div>
-        <div class="sb-acct">
-          <span class="av" id="uAv">AC</span>
-          <span class="who"><b id="uName">Demo</b><i id="uMail"></i></span>
-        </div>
+    <div class="sb-foot">
+      <div id="trialBox"></div>
+      <!-- Status bar, not a card: plan and operator on one dense line, the way
+           a workstation tool puts session state at the bottom edge. -->
+      <div class="sb-acct">
+        <span class="av" id="uAv">AC</span>
+        <span class="who"><b id="uName">Demo</b><i id="uMail"></i></span>
+        <span class="ics">
+          <button title="Language" data-i18n-title onclick="langMenu()" aria-label="Language">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>
+              <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></svg></button>
+          <button title="Sign out" data-i18n-title onclick="signOut()" aria-label="Sign out">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5"/>
+              <path d="M20 12H9"/><path d="M12 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"/></svg></button>
+        </span>
       </div>
     </div>
   </aside>
@@ -1095,17 +932,17 @@ const I18N = {
   'Partial':'Kısmi',
   'AI INSIGHTS':'ÖNE ÇIKAN BULGU',
   'Go to action plan':'Aksiyon planını aç',
-  'Visibility Trend':'Görünürlük seyri',
-  'Platform Visibility Score':'Platform bazında görünürlük',
-  'How prominently your brand appears in AI responses (0–100)':'Platform bazında görünürlük puanınız (0–100)',
-  'Recent Mentions':'Son anılmalar',
-  'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın anıldığı sorgular — cevabın tamamı için satıra tıklayın',
-  'Top Citing Domains':'Kaynak rekabeti',
-  'Websites most cited by AI platforms in your industry':'Yapay zekanın bu kategoride dayandığı siteler',
+  'Visibility Trend':'Görünürlük Trendi',
+  'Platform Visibility Score':'Platform Bazında Görünürlük',
+  'How prominently your brand appears in AI responses (0–100)':'Platform bazında görünürlük payınız (0–100)',
+  'Recent Mentions':'Son Anılmalar',
+  'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın geçtiği sorgular — ham cevabı açmak için satıra tıklayın',
+  'Top Citing Domains':'En Çok Atıf Veren Alan Adları',
+  'Websites most cited by AI platforms in your industry':'Sektörünüzde AI platformlarının en çok atıf verdiği siteler',
   'No brand mentions found':'Henüz anılma yok',
-  'See the Opportunities tab for where to start':'Önceliklendirilmiş aksiyonlar Fırsatlar sekmesinde',
+  'See the Opportunities tab for where to start':'Nereden başlayacağınızı Fırsatlar sekmesinde görün',
   'No history yet — the first scan writes today\'s point.':'Henüz geçmiş yok — ilk tarama bugünün noktasını yazar.',
-  'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.',
+  'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Skorlar günlük güncellemeler arasında hafif dalgalanabilir. En doğru sonuç için trendi 4+ hafta takip edin.',
   'Last 7 days':'Son 7 gün',
   'Last 30 days':'Son 30 gün',
   'Updates daily':'Günlük ölçüm',
@@ -1120,52 +957,6 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
-  'yapay zeka platformunda ölçülen görünürlük, ses payı ve rekabet konumunuz.':'yapay zeka platformunda ölçülen görünürlük, ses payı ve rekabet konumunuz.',
-  'Bu tablo rakip listesinden beslenir':'Bu tablo rakip listesinden beslenir',
-  'Ölçüm tamamlandığında rekabet karşılaştırması burada oluşur':'Ölçüm tamamlandığında rekabet karşılaştırması burada oluşur',
-  'Bu iyi haber: eklediğiniz rakiplerin hiçbiri sizden önde değil':'Bu iyi haber: eklediğiniz rakiplerin hiçbiri sizden önde değil',
-  'Sıra':'Sıra',
-  'bugün':'bugün',
-  'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
-  'Ölçüm bekleniyor':'Ölçüm bekleniyor',
-  'yeni':'yeni',
-  'siteniz':'siteniz',
-  'Yapay zeka görünürlük raporu':'Yapay zeka görünürlük raporu',
-  'CSV indir':'CSV indir',
-  'Yazdır':'Yazdır',
-  'Görünürlük':'Görünürlük',
-  'Anılma':'Anılma',
-  'Pazar payı':'Pazar payı',
-  'Site hazırlığı':'Site hazırlığı',
-  'sorguda':'sorguda',
-  'kriter':'kriter',
-  'Veri bekleniyor':'Veri bekleniyor',
-  'Rakip ekleyin →':'Rakip ekleyin →',
-  'Denetimi başlatın →':'Denetimi başlatın →',
-  'Öncelik listesi':'Öncelik listesi',
-  'Rakibin önde olduğu sorgular · satın alma niyeti ve hacme göre':'Rakibin önde olduğu sorgular · satın alma niyeti ve hacme göre',
-  'Aksiyon planı':'Aksiyon planı',
-  'Sorgu':'Sorgu',
-  'Hacim':'Hacim',
-  'Siz':'Siz',
-  'Önde olan':'Önde olan',
-  'gün':'gün',
-  'Kaynak rekabeti':'Kaynak rekabeti',
-  'Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz':'Yapay zekanın bu kategoride dayandığı siteler ve içindeki yeriniz',
-  'Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.':'Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.',
-  'Ölçüm tamamlandığında kaynaklar burada listelenir':'Ölçüm tamamlandığında kaynaklar burada listelenir',
-  'Rekabet açığı':'Rekabet açığı',
-  'Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı':'Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı',
-  'Niyet':'Niyet',
-  'Sizin sıranız':'Sizin sıranız',
-  'Önünüzdeki marka':'Önünüzdeki marka',
-  'Fark':'Fark',
-  'aylık':'aylık',
-  'yok':'yok',
-  'cevapta değilsiniz':'cevapta değilsiniz',
-  'Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.':'Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.',
-  'Takip edilen sorgularda rakip sizi geçmiş değil':'Takip edilen sorgularda rakip sizi geçmiş değil',
-  'Rakip ekledikçe bu tablo dolar':'Rakip ekledikçe bu tablo dolar',
   'ZAYIF':'ZAYIF',
   'GÜÇLÜ':'GÜÇLÜ',
   'GELİŞTİRİLEBİLİR':'GELİŞTİRİLEBİLİR',
@@ -1293,10 +1084,10 @@ const I18N = {
 
 
   '58 checks on your website':'58 teknik kriter',
-  'The last scan collected nothing yet.':'Son ölçümde hiç sonuç toplanmadı.',
+  'The last scan collected nothing yet.':'Henüz veri toplanmadı.',
   'Operator':'Yönetici',
   'platform errors, hidden from customers':'platform hataları, müşteriye gösterilmiyor',
-  'runs had no adjudication model, so tone and recommendation scored zero — the score is capped near 72.':'ölçümde değerlendirme modeli çalışmadı; ton ve tavsiye sıfır puanlandı, skor tavanı 72 civarında kalıyor.',
+  'runs had no adjudication model, so tone and recommendation scored zero — the score is capped near 72.':'koşuda değerlendirme modeli çalışmadı; ton ve tavsiye sıfır puanlandı — skor tavanı 72 civarında kalıyor.',
   'Brand details changed, so earlier results were recalculated. Tone and recommendation data fills in on the next scan.':'Marka bilgileri değişti, önceki sonuçlar yeniden hesaplandı. Ton ve tavsiye verileri bir sonraki taramada tamamlanacak.',
   'Not measured':'Ölçülmedi',
   'Not included in this measurement':'Bu ölçüme dahil edilmedi',
@@ -1352,7 +1143,7 @@ const I18N = {
   'Continue anyway?':'Yine de devam edilsin mi?',
   'Brand settings saved':'Marka ayarları kaydedildi',
   'Check keys':'Anahtarları kontrol et',
-  'Run a scan now':'Yeniden tara',
+  'Run a scan now':'Ölçümü başlat',
   'Scan in progress':'Tarama sürüyor',
   'checks left. Keep this page open; results appear as they arrive.':'kontrol kaldı. Bu sayfayı açık tutun; sonuçlar geldikçe görünür.',
   'Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.':'Her sorgu × platform hücresi, 5 koşunun ortalaması. Ham cevap için satıra tıklayın.',
@@ -2290,30 +2081,6 @@ function adopt(r) {
     auditScore: r.audit ? Number(r.audit.total_score) : 0,
     auditUrl: r.audit ? r.audit.url : r.workspace.domain,
     auditRanAt: r.audit ? r.audit.ran_at : null,
-    /* Where a rival is ahead of us, query by query. Ranked by what it costs to
-       stay behind: buying intent first, then volume, then the size of the gap.
-       Reporting a share-of-voice total and stopping is the category habit; a
-       total says you are losing without saying where, and "where" is the only
-       form of the fact anyone can act on. */
-    gaps: (r.rivalGaps || []).map(g => {
-      const mult = g.intent === 'transactional' ? 1.5
-                 : g.intent === 'brand_defence' ? 1.3
-                 : g.intent === 'comparison' ? 1.2
-                 : g.intent === 'evaluation' ? 1.0 : 0.8;
-      const absent = g.selfRank === null || g.selfRank === 0;
-      const behind = !absent && g.rivalRank !== null && g.rivalRank < g.selfRank;
-      // Absent is worse than behind, and being behind by four places is worse
-      // than by one. Weighted so a high-intent query always outranks a
-      // high-volume informational one.
-      const severity = absent ? 4 : behind ? Math.min(3, g.selfRank - g.rivalRank) : 0;
-      return { ...g, absent, behind, mult,
-               priority: severity * mult * Math.log10(Math.max(10, g.volume)) };
-    })
-      // A row without a query text is a version mismatch between this file and
-      // the API, not a finding. Rendering it prints "undefined" into a client
-      // report, so it is dropped rather than displayed.
-      .filter(g => g.text && (g.absent || g.behind))
-      .sort((a, b) => b.priority - a.priority),
     bots: [],
     opps: r.prompts.map(p => ({
       p: { id: p.id, text: p.text, intent: p.intent, vol: p.volume },
@@ -2598,17 +2365,7 @@ function renderNav(){
   }).join('');
   const brand=S.brand.name||'—';
   $('#wsName').textContent=brand;
-
-  // Client rail. One button per workspace, marked where the active one is.
-  const rail=$('#railClients');
-  if(rail){
-    rail.innerHTML=(S.workspaces||[]).map(w=>{
-      const nm=w.brand_name||'—';
-      return `<button class="${w.id===S.workspaceId?'on':''}"
-        onclick="switchWs('${w.id}')" title="${esc(nm)}" aria-label="${esc(nm)}"
-        >${esc(nm.slice(0,2).toLocaleUpperCase('tr'))}</button>`;
-    }).join('');
-  }
+  $('#wsInitial').textContent=brand.slice(0,1).toLocaleUpperCase('tr');
   const hostEl=$('#wsHost');
   if(hostEl) hostEl.textContent=(S.brand.site||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
   $('#uAv').textContent=(S.user.name||'YK').slice(0,2).toLocaleUpperCase('tr');
@@ -2629,19 +2386,13 @@ function renderNav(){
   const wsBox=$('#wsMenu');
   if(wsBox){
     wsBox.className = S.wsMenu ? 'wsmenu open' : 'wsmenu';
-    // The add row sits outside the scrolling list. Inside it, a customer with
-    // twelve brands has to scroll to the bottom to find "add" — and the one
-    // control that must always be reachable becomes the hardest to reach.
     wsBox.innerHTML = S.wsMenu ? `
-      <div class="list">
-        ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
-           <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
-           <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
-           ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
-      </div>
+      ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
+         <span class="sq">${esc((w.brand_name||'?').slice(0,1).toLocaleUpperCase('tr'))}</span>
+         <span class="t"><b>${esc(w.brand_name||'—')}</b><i>${esc((w.domain||'').replace(/^https?:\/\//,''))}</i></span>
+         ${w.id===S.workspaceId?'<span class="ck">✓</span>':''}</button>`).join('')}
       <div class="sep"></div>
-      <button class="add" onclick="newBrand()">
-        <span class="pl">+</span>${T('Add brand')}
+      <button class="add" onclick="newBrand()">＋ ${T('Add brand')}
         <span class="cnt">${S.workspaces.length}/${cap}</span></button>` : '';
   }
 
@@ -2915,7 +2666,7 @@ VIEWS.dashboard=()=>{
     const k=m.text+'|'+m.engine_key;
     if(seenKey.has(k))return false;
     seenKey.add(k); return true;
-  }).slice(0,8);
+  }).slice(0,6);
   const sc=S.scanState;
 
   const emptyBanner = sc && sc.error && !d.cells.length
@@ -2954,24 +2705,6 @@ VIEWS.dashboard=()=>{
   const sov=d.sov.slice().sort((a,b)=>b.pct-a.pct);
   const myPos=sov.findIndex(x=>x.you)+1;
 
-  const measured=d.plats.filter(p=>!p.locked&&p.measured!==false&&p.checks>0);
-  const promptsSeen=new Set(d.cells.map(c=>c.p.id)).size;
-  const namedPrompts=new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size;
-  const sovMine=(d.sov.find(x=>x.you)||{pct:0}).pct;
-
-  /* Period over period. A report is a comparison; a snapshot is only a reading. */
-  const ser=d.series.slice(-S.range);
-  const delta=(()=>{
-    if(ser.length<6) return null;
-    const k=Math.max(2,Math.floor(ser.length/3));
-    const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
-    const now=avg(ser.slice(-k)), before=avg(ser.slice(-2*k,-k));
-    return isFinite(now)&&isFinite(before) ? now-before : null;
-  })();
-  const chip=v=>v===null
-    ? `<span class="dl fl">${T('yeni')}</span>`
-    : `<span class="dl ${v>0.05?'up':v<-0.05?'dn':'fl'}">${v>0.05?'▲':v<-0.05?'▼':'—'} ${Math.abs(v).toFixed(1)}</span>`;
-
   return `
   ${failBanner}
   ${qualityBanner}
@@ -2981,194 +2714,131 @@ VIEWS.dashboard=()=>{
   ${S.plan==='trial'&&d.plats.length>allowed
      ? upsell(S.lang==='tr'
         ? `${d.plats.length} platformun ${allowed} tanesini takip ediyorsunuz. Diğer ${d.plats.length-allowed} platformda ne söylendiğini görmeden bilemezsiniz.`
-        : `You're tracking ${allowed} of ${d.plats.length} platforms.`)
+        : `You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
      : ''}
+  <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
+    <span>${T('Brand performance across')} ${allowed} ${T('AI platforms — visibility, share of voice and where you stand against competitors.')}</span>
+    <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
-  <div class="dash">
+  <div class="g4">
+    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Visibility score')}
+      ${kpiHelp('visibility')}</div>
+      ${d.ready
+        ? `<div class="v">${d.total.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
+           <div class="d">${d.plats.filter(p=>p.measured!==false&&!p.locked&&p.checks>0).length} ${T('platform')} ·
+             ${new Set(d.cells.map(c=>c.p.id)).size}/${(d.opps||[]).length} ${T('sorgu ölçüldü')}</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d">${T('No scan yet')}</div>`}</div>
 
-    <div class="dash-intro">
-      <span>${allowed} ${T('yapay zeka platformunda ölçülen görünürlük, ses payı ve rekabet konumunuz.')}</span>
-      <span class="chipx">↻ ${T('Updates daily')}</span>
-    </div>
+    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Mention rate')}
+      ${kpiHelp('mention')}</div>
+      ${d.cells.length
+        ? `<div class="v">${d.mentionRate.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
+           <div class="d">${new Set(d.cells.filter(c=>c.m>0).map(c=>c.p.id)).size}/${new Set(d.cells.map(c=>c.p.id)).size} ${T('sorguda görünür')}</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d">${T('Waiting for the first results')}</div>`}</div>
 
-    <div class="dash-kpi">
-      <div class="dash-k"><div class="lb"><i style="background:#5CC8FF"></i>${T('Visibility score')} ${kpiHelp('visibility')}</div>
-        <div class="row"><span class="v">${d.ready?d.total.toFixed(1):'—'}<small>/100</small></span>${d.ready?chip(delta):''}</div>
-        <div class="sub">${d.ready?`${measured.length} ${T('platform')} · ${promptsSeen}/${(d.opps||[]).length} ${T('sorgu ölçüldü')}`:T('Ölçüm bekleniyor')}</div></div>
-      <div class="dash-k"><div class="lb"><i style="background:#35D07F"></i>${T('Mention rate')} ${kpiHelp('mention')}</div>
-        <div class="row"><span class="v">${d.cells.length?d.mentionRate.toFixed(1):'—'}<small>%</small></span></div>
-        <div class="sub">${d.cells.length?`${namedPrompts}/${promptsSeen} ${T('sorguda görünür')}`:T('Veri bekleniyor')}</div></div>
-      <div class="dash-k"><div class="lb"><i style="background:#A78BFA"></i>${T('Share of voice')} ${kpiHelp('sov')}</div>
-        <div class="row"><span class="v">${S.rivals.length?sovMine.toFixed(1):'—'}<small>%</small></span></div>
-        <div class="sub">${S.rivals.length?`${sov.length} ${T('marka içinde')} ${myPos}. ${T('sırada')}`:`<a href="#" onclick="go('rivals');return false">${T('Add competitors →')}</a>`}</div></div>
-      <div class="dash-k"><div class="lb"><i style="background:#FFA23A"></i>${T('Audit score')} ${kpiHelp('audit')}</div>
-        <div class="row"><span class="v">${d.auditRanAt?d.auditScore.toFixed(0):'—'}<small>/100</small></span></div>
-        <div class="sub">${d.auditRanAt?`58 ${T('kriter')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}`:`<a href="#" onclick="go('audit');return false">${T('Run your first audit →')}</a>`}</div></div>
-    </div>
+    <div class="kpi"><div class="t"><i style="background:var(--vio)"></i>${T('Share of voice')}
+      ${kpiHelp('sov')}</div>
+      ${S.rivals.length
+        ? `<div class="v">${(d.sov.find(x=>x.you)||{pct:0}).pct.toFixed(1)}<small style="font-size:15px;color:var(--mute2);font-weight:400">%</small></div>
+           <div class="d">${sov.length} ${T('marka içinde')} ${myPos}. ${T('sırada')}</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d"><a href="#" onclick="go('rivals');return false"
+             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
 
-    <div class="dash-3">
-      <div class="ins ${ins.lvl||''}">
-        <div class="ins-top"><span class="tg">${esc(T(ins.tag||'AI INSIGHTS'))}</span>
-          ${ins.metric?`<span class="ins-m"><b>${esc(ins.metric)}</b>${esc(T(ins.metricLabel||''))}</span>`:''}</div>
-        <div class="hl">${esc(ins.head)}</div>
-        <div class="tx">${esc(ins.body)}</div>
-        <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button>
+    <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}
+      ${kpiHelp('audit')}</div>
+      ${d.auditRanAt
+        ? `<div class="v">${d.auditScore.toFixed(0)}<small style="font-size:15px;color:var(--mute2);font-weight:400"> / 100</small></div>
+           <div class="d">${T('58 checks on your website')} · ${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}</div>`
+        : `<div class="v" style="color:var(--mute2)">—</div>
+           <div class="d"><a href="#" onclick="go('audit');return false"
+             style="color:#93B4FF;display:inline-block;padding:5px 0;font-weight:500">${T('Run your first audit →')}</a></div>`}</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1.1fr 1.15fr;gap:14px" class="dashg">
+    <div class="ins ${ins.lvl||''}">
+      <div class="ins-top">
+        <span class="tg">${esc(T(ins.tag||'AI INSIGHTS'))}</span>
+        ${ins.metric?`<span class="ins-m"><b>${esc(ins.metric)}</b>${esc(T(ins.metricLabel||''))}</span>`:''}
       </div>
+      <div class="hl">${esc(ins.head)}</div>
+      <div class="tx">${esc(ins.body)}</div>
+      <button class="ins-cta" onclick="go('plan')">${T('Go to action plan')} <span>→</span></button></div>
 
-      <div class="dash-c">
-        <div class="hd"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
-          <div class="sub">${T('Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.')}</div></div>
-          <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-        <div class="bd" style="padding:14px 12px 8px">${trendChart(ser)}</div></div>
+    <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
+      <div class="sub">${T('Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.')}</div></div>
+      <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
+      <div class="cb">${lineChart(d.series.slice(-S.range),{xlab:['-'+S.range+'d','-'+Math.round(S.range/2)+'d','today']})}</div></div>
 
-      <div class="dash-c">
-        <div class="hd"><div><h3>${T('Platform Visibility Score')}</h3>
-          <div class="sub">${T('How prominently your brand appears in AI responses (0–100)')}</div></div>
-          <span class="rt">${T('Last 7 days')}</span></div>
-        <div class="bd" style="padding:12px 14px">
-          ${d.plats.map(p=>{
-            // Three states never conflated: locked by plan, measurable but not
-            // measured, and measured. Only the third gets a number — printing a
-            // zero next to a platform nobody asked is the most misleading thing
-            // this screen could do.
-            const st = p.locked ? 'locked'
-                     : !p.configured ? 'nokey'
-                     : p.failing && !p.measured ? 'failing'
-                     : !p.measured ? 'nodata' : 'ok';
-            if(st==='ok') return `
-            <div class="prow"><div class="pl">
-              <span class="pi on"></span><b>${esc(p.n)}</b>
-              <span class="pv">${p.score.toFixed(2)}<small>/100</small></span></div>
-              <div class="ptrack"><i style="width:${Math.max(1.5,p.score)}%"></i></div></div>`;
-            const label = st==='locked'
-              ? `<a href="#" onclick="go('settings');setTimeout(()=>setTab('billing'),30);return false" class="up">${T('Upgrade')}</a>`
-              : (st==='nokey'||st==='failing')
-                  ? (S.isAdmin ? (st==='nokey'?T('No key'):T('Failing')) : T('Not measured'))
-                  : T('No data yet');
-            return `
-            <div class="prow off"><div class="pl">
-              <span class="pi"></span><b>${esc(p.n)}</b>
-              <span class="pv muted">${label}</span></div>
-              <div class="ptrack"></div></div>`;
-          }).join('')}
-          ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
-            <p class="note">${S.isAdmin
-              ? `<b>${T('Operator')}</b> · no key / failing platforms were never measured and do not count towards the score.`
-              : T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`:''}
-        </div></div>
-    </div>
+    <div class="card"><div class="ch"><div><h3>${T('Platform Visibility Score')}</h3>
+      <div class="sub">${T('How prominently your brand appears in AI responses (0–100)')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
+      <div class="cb">${d.plats.map(p=>{
+        // Three states, never conflated: a platform we could not ask must not
+        // show a number, because a zero reads as "invisible there".
+        const state = p.locked ? 'locked'
+                    : !p.configured ? 'nokey'
+                    : p.failing && !p.measured ? 'failing'
+                    : !p.measured ? 'nodata'
+                    : 'ok';
+        if(state==='ok') return `
+        <div class="pvr"><div class="l"><span class="d" style="background:${p.c}33;color:#EDF1F8;border:1px solid ${p.c}66">${p.ab}</span>${p.n}
+          <span class="v">${p.score.toFixed(2)} <small>/ 100</small></span></div>
+          <div class="bar"><i style="width:${p.score}%;background:${p.c}"></i></div></div>`;
+        return `
+        <div class="pvr locked-row"><div class="l"><span class="d" style="background:#1A1D27">${p.ab}</span>${p.n}
+          <span class="v" style="font-size:11px;color:${state==='failing'?'#FCA5A5':'var(--mute2)'}">${
+              state==='locked' ? '🔒 '+T('Upgrade')
+            // A customer cannot fix a missing key or a spent credit balance —
+            // those are our accounts. They see one honest fact: this platform
+            // was not measured, and it is not counted as a zero. The reason is
+            // an operator concern and stays on the operator's screen.
+            : state==='nokey'  ? (S.isAdmin
+                ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
+                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
+            : state==='failing'? (S.isAdmin
+                ? `<span title="Every call to this platform returned an error">⚠ ${T('Failing')}</span>`
+                : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
+            : `<span title="${esc(T('No answers collected yet'))}">◌ ${T('No data yet')}</span>`}</span></div>
+          <div class="bar"></div></div>`;
+      }).join('')}
+      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?(S.isAdmin?`
+        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
+        <b>${T('Operator')}</b> · <b>No key</b> / <b>Failing</b> platforms were never measured and do not
+        count towards the score. <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
+        style="color:#93B4FF">Settings → Integrations</a>.</p>`:`
+        <p style="font-size:11.5px;color:var(--mute);margin-top:10px">
+        ${T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`):''}</div></div>
+  </div>
+  <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}</style>
 
-    <!-- Where a rival is ahead, query by query, ordered by what it costs to
-         stay there. This is the join the product exists to make. -->
-    <div class="dash-c prio">
-      <div class="hd"><div><h3>${T('Rekabet açığı')}</h3>
-        <div class="sub">${T('Rakibin sizden önde olduğu sorgular — satın alma niyeti ve hacme göre sıralı')}</div></div>
-        <span class="rt">${d.gaps.length} ${T('sorgu')}</span></div>
-      <div class="bd">${d.gaps.length?`
-        <table class="dash-t"><thead><tr>
-          <th>${T('Sorgu')}</th><th class="n">${T('Hacim')}</th><th>${T('Niyet')}</th>
-          <th class="n">${T('Siz')}</th><th>${T('Önde olan')}</th><th class="n">${T('Fark')}</th></tr></thead><tbody>
-          ${d.gaps.slice(0,12).map(g=>`<tr>
-            <td><b>${esc(g.text)}</b></td>
-            <td class="n">${nf(g.volume)}</td>
-            <td><span class="tagx ${g.mult>=1.3?'hot':''}">${esc(INTENTS[g.intent]?INTENTS[g.intent].label:g.intent)}</span></td>
-            <td class="n">${g.absent?`<span class="miss">${T('yok')}</span>`:g.selfRank.toFixed(1)}</td>
-            <td>${g.rivalName?esc(g.rivalName):'—'}${g.rivalRank!==null?`<i class="rr">${g.rivalRank.toFixed(1)}</i>`:''}</td>
-            <td class="n">${g.absent?`<span class="gapbar full"></span>`
-              :`<span class="gapbar"><i style="width:${Math.min(100,(g.selfRank-g.rivalRank)/5*100)}%"></i></span>`}</td></tr>`).join('')}
-        </tbody></table>
-        <p class="note">${T('Sıralama hacme değil kayba göre: satın alma amaçlı bir sorguda geride olmak, bilgi amaçlı bir sorguda önde olmaktan daha pahalıdır.')}</p>`
-        :`<div class="dash-empty"><div class="ic">◇</div>
-           ${!S.rivals.length
-             ? `${T('Bu tablo rakip listesinden beslenir')}<br>
-                <span><a href="#" onclick="go('rivals');return false">${T('Add competitors →')}</a></span>`
-             : !promptsSeen
-               ? `${T('Ölçüm tamamlandığında rekabet karşılaştırması burada oluşur')}`
-               : `${T('Takip edilen sorgularda rakip sizi geçmiş değil')}<br>
-                  <span>${T('Bu iyi haber: eklediğiniz rakiplerin hiçbiri sizden önde değil')}</span>`}
-           </div>`}</div>
-    </div>
+  <div class="g2">
+    <div class="card"><div class="ch"><div><h3>${T('Recent Mentions')}</h3>
+      <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
+      <div class="cb">
+        <div class="pills" style="margin-bottom:12px"><button class="on">${T('All')}</button>
+          ${d.plats.filter(p=>!p.locked).map(p=>
+            `<button onclick="toast('${p.n}: ${p.mentions} mentions')">${p.ab} ${p.n} <b style="opacity:.7">${p.mentions}</b></button>`).join('')}</div>
+        ${recent.length?recent.map(m=>{
+            const pl=d.plats.find(x=>x.id===m.engine_key)||{c:'#3B82F6',ab:'◆',n:m.engine_key};
+            return `<div class="mnt" style="border-left-color:${pl.c}" onclick="answerModal(${m.id})">
+          <span class="chip">${pl.ab} ${pl.n}</span>
+          <span class="q">${esc(m.text)}</span>
+          <span class="ago">${m.rank?'rank '+m.rank:''}</span></div>`}).join('')
+          :`<div class="empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
+             <span style="font-size:12px">${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
 
-    <div class="dash-2">
-      <div class="dash-c">
-        <div class="hd"><div><h3>${T('Recent Mentions')}</h3>
-          <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div>
-          <span class="rt">${T('Last 7 days')}</span></div>
-        <div class="bd">
-          ${d.plats.filter(p=>!p.locked).length?`
-            <div class="mfilter">${d.plats.filter(p=>!p.locked).map(p=>
-              `<span class="mf">${esc(p.n)} <b>${p.mentions}</b></span>`).join('')}</div>`:''}
-          ${recent.length?`
-          <table class="dash-t"><thead><tr>
-            <th>${T('Sorgu')}</th><th>${T('Platform')}</th><th class="n">${T('Sıra')}</th></tr></thead><tbody>
-            ${recent.map(m=>{
-              const pl=d.plats.find(x=>x.id===m.engine_key)||{n:m.engine_key};
-              return `<tr class="click" onclick="answerModal(${m.id})">
-                <td><b>${esc(m.text)}</b></td>
-                <td><span class="tagx">${esc(pl.n)}</span></td>
-                <td class="n">${m.rank?'#'+m.rank:'—'}</td></tr>`}).join('')}
-          </tbody></table>`
-          :`<div class="dash-empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
-             <span>${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
-
-      <div class="dash-c">
-        <div class="hd"><div><h3>${T('Top Citing Domains')}</h3>
-          <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div>
-          <span class="rt">${T('Last 7 days')}</span></div>
-        <div class="bd">${d.sources.length?`
-          <div class="srcs">${d.sources.slice(0,10).map((x,i)=>`
-            <div class="src ${x.mine?'mine':''}">
-              <span class="rk">${i+1}</span>
-              <span class="dm">${esc(x.d)}${x.mine?`<i>${T('siteniz')}</i>`:''}</span>
-              <span class="bar"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span>
-              <span class="vv">${x.v}</span></div>`).join('')}</div>
-          ${!d.sources.some(x=>x.mine)?`<p class="note">${T('Bu listede siteniz yok. Yapay zeka bu kategoride başka kaynaklara dayanıyor; kaynak olmak, anılmaktan daha kalıcı bir kazanımdır.')}</p>`:''}`
-          :`<div class="dash-empty"><div class="ic">◈</div>${T('No citations collected yet')}</div>`}</div></div>
-    </div>
-
+    <div class="card"><div class="ch"><div><h3>${T('Top Citing Domains')}</h3>
+      <div class="sub">${T('Websites most cited by AI platforms in your industry')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
+      <div class="cb">${d.sources.slice(0,8).map((s,i)=>`
+        <div class="cdr"><span class="i">${i+1}</span>
+          <span class="f" style="background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
+          <span class="n">${s.d}${s.mine?' <span class="chip pri">yours</span>':''}
+            <span class="bar" style="margin-top:5px"><i style="width:${d.sources.length?s.v/(d.sources[0].v||1)*100:0}%"></i></span></span>
+          <span class="v">${s.v}</span></div>`).join('')}</div></div>
   </div>`;
 };
-function trendChart(ser){
-  if(!ser || ser.length<2) return `<div class="dash-empty"><div class="ic">◜</div>
-    ${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
-  /* Sized for the narrow column it actually sits in. At 680×190 the viewBox
-     was scaled down to roughly half, which took the 10px axis labels with it
-     and left them unreadable. A smaller box means the text renders near its
-     intended size. */
-  const W=380,H=170,PL=30,PR=10,PT=12,PB=24;
-  const lo=Math.min(...ser), hi=Math.max(...ser);
-  // Round to a step that suits the range, so the axis reads 0/8/16 rather than
-  // 0/0/0 when everything sits under five points.
-  const span=Math.max(1,hi-lo);
-  const step=span<8?2:span<25?5:10;
-  const y0=Math.max(0,Math.floor((lo-span*0.3)/step)*step);
-  const y1=Math.min(100,Math.ceil((hi+span*0.3)/step)*step);
-  const sx=i=>PL+i/(ser.length-1)*(W-PL-PR);
-  const sy=v=>PT+(1-(v-y0)/((y1-y0)||1))*(H-PT-PB);
-  const line=ser.map((v,i)=>(i?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1)).join(' ');
-  const area=`${line} L ${sx(ser.length-1).toFixed(1)} ${H-PB} L ${PL} ${H-PB} Z`;
-  const up=ser[ser.length-1]>=ser[0];
-  const col=up?'#35D07F':'#FF6B6B';
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:200px;display:block" role="img"
-    aria-label="${esc(T('Visibility Trend'))}">
-    <defs><linearGradient id="tgr" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${col}" stop-opacity=".20"/>
-      <stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
-    ${[y0,(y0+y1)/2,y1].map(t=>`
-      <line x1="${PL}" x2="${W-PR}" y1="${sy(t).toFixed(1)}" y2="${sy(t).toFixed(1)}"
-        stroke="currentColor" stroke-opacity=".12"/>
-      <text x="${PL-7}" y="${(sy(t)+3.5).toFixed(1)}" text-anchor="end" font-size="9"
-        fill="currentColor" fill-opacity=".5">${t.toFixed(0)}</text>`).join('')}
-    <path d="${area}" fill="url(#tgr)"/>
-    <path d="${line}" fill="none" stroke="${col}" stroke-width="2"
-      stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="${sx(ser.length-1).toFixed(1)}" cy="${sy(ser[ser.length-1]).toFixed(1)}" r="3.5" fill="${col}"/>
-    <text x="${PL}" y="${H-6}" font-size="9" fill="currentColor" fill-opacity=".5">-${S.range} ${T('gün')}</text>
-    <text x="${W-PR}" y="${H-6}" text-anchor="end" font-size="9"
-      fill="currentColor" fill-opacity=".5">${T('bugün')}</text>
-  </svg>`;
-}
-
 function insightText(){
   const d=S.data,b=S.brand;
   // Only platforms we actually measured can be called the weakest. Naming an
