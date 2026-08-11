@@ -93,6 +93,28 @@ export const GET = handler(async (req) => {
            and ar.engine_key = any(${allowed})
          order by ar.asked_at desc limit 12`,
 
+
+    sql`select id, status, scan_date, queued_jobs, started_at, finished_at, error,
+               (select count(*)::int from scan_jobs j
+                 where j.scan_id = scans.id and j.done_at is null and j.attempts < 4) as pending,
+               (select count(*)::int from scan_jobs j
+                 where j.scan_id = scans.id and j.done_at is null and j.attempts >= 4) as failed,
+               -- Report an error the moment it happens, not after four retries.
+               -- A wrong key otherwise hides behind "scan in progress" for minutes.
+               (select json_agg(distinct jsonb_build_object('engine', j.engine_key, 'error', left(j.error, 200)))
+                  from scan_jobs j
+                 where j.scan_id = scans.id and j.error is not null and j.done_at is null) as failures
+          from scans where workspace_id = ${workspaceId} order by scan_date desc limit 1`,
+
+    sql`select a.id, a.url, a.ran_at, a.total_score,
+               coalesce(json_agg(json_build_object(
+                 'key', f.factor_key, 'category', f.category, 'label', f.label,
+                 'status', f.status, 'detail', f.detail, 'fix', f.fix
+               ) order by f.category) filter (where f.factor_key is not null), '[]') as factors
+          from audits a left join audit_factors f on f.audit_id = a.id
+         where a.workspace_id = ${workspaceId}
+         group by a.id order by a.ran_at desc limit 1`,
+
     /**
      * Per-query competitive gap: for every tracked query, the rival that ranks
      * best in the answers, and how that compares with us.
@@ -135,27 +157,6 @@ export const GET = handler(async (req) => {
         left join rival_rank r on r.prompt_id = p.id and r.pos = 1
        where p.workspace_id = ${workspaceId} and p.active
        order by p.volume desc`,
-
-    sql`select id, status, scan_date, queued_jobs, started_at, finished_at, error,
-               (select count(*)::int from scan_jobs j
-                 where j.scan_id = scans.id and j.done_at is null and j.attempts < 4) as pending,
-               (select count(*)::int from scan_jobs j
-                 where j.scan_id = scans.id and j.done_at is null and j.attempts >= 4) as failed,
-               -- Report an error the moment it happens, not after four retries.
-               -- A wrong key otherwise hides behind "scan in progress" for minutes.
-               (select json_agg(distinct jsonb_build_object('engine', j.engine_key, 'error', left(j.error, 200)))
-                  from scan_jobs j
-                 where j.scan_id = scans.id and j.error is not null and j.done_at is null) as failures
-          from scans where workspace_id = ${workspaceId} order by scan_date desc limit 1`,
-
-    sql`select a.id, a.url, a.ran_at, a.total_score,
-               coalesce(json_agg(json_build_object(
-                 'key', f.factor_key, 'category', f.category, 'label', f.label,
-                 'status', f.status, 'detail', f.detail, 'fix', f.fix
-               ) order by f.category) filter (where f.factor_key is not null), '[]') as factors
-          from audits a left join audit_factors f on f.audit_id = a.id
-         where a.workspace_id = ${workspaceId}
-         group by a.id order by a.ran_at desc limit 1`,
   ]);
 
   // Measurement quality. `degraded` is written per run when the judge could
