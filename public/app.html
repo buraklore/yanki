@@ -269,21 +269,25 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
    is not a report, it is a reading.
    ===================================================================== */
 .dash{
+  /* Slate, not the blue-black of a generic admin theme, and a sky/amber pair
+     instead of the blue-violet gradient every SaaS dashboard ships with.
+     Sky carries measurement, amber carries the thing that needs a decision. */
+  --d-bg:#0B0E14; --d-card:#12161F; --d-line:#1E2430; --d-line2:#2A3140;
+  --d-txt:#E9EDF4; --d-txt2:#B7C0CF; --d-mut:#8590A3; --d-mut2:#67707F;
+  --d-pri:#5CC8FF; --d-pri-s:rgba(92,200,255,.13);
+  --d-up:#35D07F; --d-up-s:rgba(53,208,127,.13);
+  --d-dn:#FF5C5C; --d-dn-s:rgba(255,92,92,.13);
+  --d-acc:#FFA23A;
+  --d-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  display:grid;gap:14px;
+}
+body.lt .dash{
   --d-bg:#F6F7F9; --d-card:#FFFFFF; --d-line:#E4E7EC; --d-line2:#D0D5DD;
   --d-txt:#101828; --d-txt2:#344054; --d-mut:#667085; --d-mut2:#98A2B3;
   --d-pri:#1B6EF3; --d-pri-s:#EAF2FE;
   --d-up:#12A150; --d-up-s:#E7F6EC;
   --d-dn:#D92D20; --d-dn-s:#FDECEA;
-  --d-acc:#FF7A2F;
-  --d-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-  display:grid;gap:14px;
-}
-body:not(.lt) .dash{
-  --d-bg:#0C0E13;--d-card:#111319;--d-line:#20232E;--d-line2:#2A2E3C;
-  --d-txt:#F3F5F9;--d-txt2:#C6CCD9;--d-mut:#949CAD;--d-mut2:#7C8598;
-  --d-pri:#5B8DFF;--d-pri-s:rgba(59,130,246,.14);
-  --d-up:#4ADE80;--d-up-s:rgba(34,197,94,.14);
-  --d-dn:#F87171;--d-dn-s:rgba(239,68,68,.14);
+  --d-acc:#E07C00;
 }
 .dash .num{font-family:var(--d-mono);font-variant-numeric:tabular-nums}
 
@@ -356,6 +360,24 @@ body:not(.lt) .dash{
   background:var(--d-bg);color:var(--d-mut);border:1px solid var(--d-line)}
 .dash-t .you{background:var(--d-pri-s);color:var(--d-pri);border-color:transparent}
 .dash-t tr.click{cursor:pointer}
+
+/* Win / loss marker on the query table. A query where you are named is not
+   the same kind of row as one where you are absent, and colour is the only
+   thing that survives a squint across forty rows. */
+.dash-t .st{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;white-space:nowrap}
+.dash-t .st i{width:7px;height:7px;border-radius:50%;flex:none;font-style:normal}
+.dash-t .st.win i{background:var(--d-up)}
+.dash-t .st.win{color:var(--d-up)}
+.dash-t .st.lose i{background:var(--d-line2)}
+.dash-t .st.lose{color:var(--d-mut2)}
+.dash-t tr.me td{background:var(--d-pri-s)}
+.dash-t tr.me b{color:var(--d-pri)}
+.dash-t .rkbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;
+  border-radius:6px;font-family:var(--d-mono);font-size:11.5px;
+  background:var(--d-bg);border:1px solid var(--d-line);color:var(--d-txt2)}
+.dash-t .rkbadge.top{background:var(--d-up-s);border-color:transparent;color:var(--d-up)}
+.dash-scroll{max-height:340px;overflow-y:auto}
+.dash-scroll::-webkit-scrollbar{width:7px}
 
 .dash-note{font-size:11.5px;color:var(--d-mut2);padding:11px 17px 0;line-height:1.6}
 .dash-empty{text-align:center;padding:30px 14px;color:var(--d-mut2);font-size:12.5px}
@@ -1017,6 +1039,19 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Sorgu performansı':'Sorgu performansı',
+  'Takip edilen her sorgu için görünürlük durumunuz — satıra tıklayın':'Takip edilen her sorgu için görünürlük durumunuz — satıra tıklayın',
+  'Durum':'Durum',
+  'Anılıyor':'Anılıyor',
+  'Anılmıyor':'Anılmıyor',
+  'Henüz ölçülmüş sorgu yok':'Henüz ölçülmüş sorgu yok',
+  'Rakip karşılaştırması':'Rakip karşılaştırması',
+  'Aynı sorgularda kim ne kadar anılıyor':'Aynı sorgularda kim ne kadar anılıyor',
+  'Marka':'Marka',
+  'Anılma':'Anılma',
+  'Ort. sıra':'Ort. sıra',
+  'siz':'siz',
+  'Karşılaştırma için rakip ekleyin':'Karşılaştırma için rakip ekleyin',
   'Yapay zeka görünürlük raporu':'Yapay zeka görünürlük raporu',
   'CSV indir':'CSV indir',
   'Yazdır / PDF':'Yazdır / PDF',
@@ -2745,6 +2780,24 @@ VIEWS.dashboard=()=>{
     return `<span class="dt ${cls}">${ar} ${Math.abs(v).toFixed(1)}${unit}</span>`;
   };
 
+  /* One row per query, folded across platforms. The cell grid is
+     prompt × platform, but a marketer thinks in queries: "am I in the answer
+     for 'en iyi dijital ajans'". Best rank and best score win the fold, so a
+     query counts as covered if any platform surfaced you. */
+  const byPrompt=(()=>{
+    const m=new Map();
+    for(const c of d.cells){
+      const k=c.p.id, cur=m.get(k);
+      const row=cur||{text:c.p.text,named:false,rank:null,score:0,runId:null};
+      if(c.m>0) row.named=true;
+      if(c.rank && (row.rank===null || c.rank<row.rank)) row.rank=c.rank;
+      if(c.score>row.score){ row.score=c.score; row.runId=c.runId||row.runId; }
+      if(!row.runId && c.runId) row.runId=c.runId;
+      m.set(k,row);
+    }
+    return [...m.values()].sort((a,b)=>(b.named-a.named)||(b.score-a.score));
+  })();
+
   const sovMine=(d.sov.find(x=>x.you)||{pct:0}).pct;
   const period=`${new Date(Date.now()-S.range*864e5).toLocaleDateString('tr-TR')} – ${new Date().toLocaleDateString('tr-TR')}`;
   const host=(S.brand.site||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
@@ -2856,23 +2909,50 @@ VIEWS.dashboard=()=>{
         </div></div>
     </div>
 
+    <!-- The query table. For an account manager this is the working surface:
+         one row per tracked query, whether the brand made it into the answer,
+         and where. Everything above summarises it; this is where the work
+         actually gets decided. -->
+    <div class="dash-c">
+      <div class="hd"><div><h3>${T('Sorgu performansı')}</h3>
+        <div class="sub">${T('Takip edilen her sorgu için görünürlük durumunuz — satıra tıklayın')}</div></div>
+        <span class="rt">${byPrompt.filter(r=>r.named).length}/${byPrompt.length} ${T('sorguda görünür')}</span></div>
+      <div class="bd" style="padding:14px 6px 6px">
+        ${byPrompt.length?`<div class="dash-scroll"><table class="dash-t"><thead><tr>
+          <th>${T('Query')}</th><th>${T('Durum')}</th><th class="n">${T('Sıra')}</th>
+          <th>${T('Görünürlük')}</th><th class="n">${T('Skor')}</th></tr></thead><tbody>
+          ${byPrompt.map(r=>`<tr class="${r.runId?'click':''}" ${r.runId?`onclick="answerModal(${r.runId})"`:''}>
+            <td><b style="color:var(--d-txt);font-weight:500">${esc(r.text)}</b></td>
+            <td><span class="st ${r.named?'win':'lose'}"><i></i>${r.named?T('Anılıyor'):T('Anılmıyor')}</span></td>
+            <td class="n">${r.rank?`<span class="rkbadge ${r.rank<=3?'top':''}">${r.rank}</span>`:'—'}</td>
+            <td><span class="mb"><i style="width:${Math.max(2,r.score)}%"></i></span></td>
+            <td class="n">${r.score.toFixed(1)}</td></tr>`).join('')}
+        </tbody></table></div>`
+        :`<div class="dash-empty"><div class="ic">◎</div>${T('Henüz ölçülmüş sorgu yok')}</div>`}</div></div>
+
     <div class="dash-2">
+      <!-- Competitor benchmark. Absent from this screen until now, which meant
+           the dashboard could tell you your score but not whether it was good.
+           A number without a peer group is not a verdict. -->
       <div class="dash-c">
-        <div class="hd"><div><h3>${T('Recent Mentions')}</h3>
-          <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div>
-          <span class="rt">${T('Last 7 days')}</span></div>
+        <div class="hd"><div><h3>${T('Rakip karşılaştırması')}</h3>
+          <div class="sub">${T('Aynı sorgularda kim ne kadar anılıyor')}</div></div></div>
         <div class="bd" style="padding:14px 6px 6px">
-          ${recent.length?`<table class="dash-t"><thead><tr>
-            <th>${T('Query')}</th><th>${T('Platform')}</th><th class="n">${T('Sıra')}</th></tr></thead><tbody>
-            ${recent.map(m=>{
-              const pl=d.plats.find(x=>x.id===m.engine_key)||{n:m.engine_key};
-              return `<tr class="click" onclick="answerModal(${m.id})">
-                <td><b style="color:var(--d-txt);font-weight:500">${esc(m.text)}</b></td>
-                <td><span class="tagx">${esc(pl.n)}</span></td>
-                <td class="n">${m.rank?'#'+m.rank:'—'}</td></tr>`}).join('')}
-            </tbody></table>`
-          :`<div class="dash-empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
-             <span>${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
+          ${sov.length>1?`<table class="dash-t"><thead><tr>
+            <th class="n">#</th><th>${T('Marka')}</th><th>${T('Pay')}</th>
+            <th class="n">${T('Anılma')}</th><th class="n">${T('Ort. sıra')}</th></tr></thead><tbody>
+            ${sov.map((x,i)=>{
+              const raw=(S.rawCompetitors||[]).find(c=>c.name===x.n);
+              const mr=x.you?null:(raw&&raw.meanRank?Number(raw.meanRank):null);
+              return `<tr class="${x.you?'me':''}">
+                <td class="n">${i+1}</td>
+                <td><b>${esc(x.n)}${x.you?` <span class="tagx you">${T('siz')}</span>`:''}</b></td>
+                <td><span class="mb ${x.you?'':'acc'}"><i style="width:${Math.max(2,x.pct)}%"></i></span></td>
+                <td class="n">${x.v}</td>
+                <td class="n">${mr?mr.toFixed(1):'—'}</td></tr>`}).join('')}
+          </tbody></table>`
+          :`<div class="dash-empty"><div class="ic">◇</div>${T('Karşılaştırma için rakip ekleyin')}<br>
+             <span><a href="#" onclick="go('rivals');return false" style="color:var(--d-pri)">${T('Add competitors →')}</a></span></div>`}</div></div>
 
       <div class="dash-c">
         <div class="hd"><div><h3>${T('Top Citing Domains')}</h3>
@@ -2880,9 +2960,9 @@ VIEWS.dashboard=()=>{
         <div class="bd" style="padding:14px 6px 6px">
           ${d.sources.length?`<table class="dash-t"><thead><tr>
             <th>${T('Domain')}</th><th>${T('Pay')}</th><th class="n">${T('Atıf')}</th></tr></thead><tbody>
-            ${d.sources.slice(0,8).map(x=>`<tr>
+            ${d.sources.slice(0,8).map(x=>`<tr class="${x.mine?'me':''}">
               <td><span class="pn"><b>${esc(x.d)}</b>${x.mine?`<span class="tagx you">${T('siteniz')}</span>`:''}</span></td>
-              <td><span class="mb ${x.mine?'acc':''}"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span></td>
+              <td><span class="mb ${x.mine?'':'acc'}"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span></td>
               <td class="n">${x.v}</td></tr>`).join('')}
             </tbody></table>`
           :`<div class="dash-empty"><div class="ic">◈</div>${T('No citations collected yet')}</div>`}</div></div>
@@ -4258,12 +4338,15 @@ function relTime(iso){
  * light on the projector in a client meeting.
  */
 function applyTheme(){
-  const dark = localStorage.getItem('yanki-theme')==='dark';
-  document.body.classList.toggle('lt', !dark);
+  // Dark is the default: this screen is read all day by people who keep it
+  // open beside a dozen other tabs. Light stays one click away for the
+  // moments it goes into a deck or onto a projector.
+  const light = localStorage.getItem('yanki-theme')==='light';
+  document.body.classList.toggle('lt', light);
 }
 function toggleTheme(){
-  const dark = localStorage.getItem('yanki-theme')==='dark';
-  localStorage.setItem('yanki-theme', dark ? 'light' : 'dark');
+  const light = localStorage.getItem('yanki-theme')==='light';
+  localStorage.setItem('yanki-theme', light ? 'dark' : 'light');
   applyTheme();
 }
 
