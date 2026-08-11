@@ -1165,7 +1165,8 @@ const I18N = {
   'Pick a plan before your trial ends.':'Deneme süreniz bitmeden bir plan seçin.',
   'Manage plan':'Planı yönet','plan':'plan',
   'All platforms and modules unlocked.':'Tüm platformlar ve modüller açık.',
-  "Your brand's visibility overview across":'Markanızın görünürlük özeti:',
+  'Brand performance across':'Marka performansınız:',
+  'AI platforms — visibility, share of voice and where you stand against competitors.':'yapay zeka platformunda. Görünürlük, ses payı ve rakipler karşısındaki konumunuz.',
   'AI platforms. Scores, trends and latest scan results at a glance.':
     'AI platformunda. Skorlar, trendler ve son tarama sonuçları tek bakışta.',
   'of':'/','brands':'marka',
@@ -2192,8 +2193,6 @@ const KPI_HELP = {
     b: [
       ['Neyi ölçer', '0 ile 100 arası bir puan. 100 demek: sorduğumuz her soruda, her platformda, ilk sırada anılıyorsunuz ve kaynak olarak siteniz gösteriliyor. 0 demek: hiçbir cevapta adınız geçmiyor.'],
       ['Nasıl hesaplanır', 'Beş şeyin ağırlıklı ortalaması: adınızın anılması (%30), cevabın neresinde anıldığınız (%22), sitenizin kaynak gösterilmesi (%20), tavsiye edilme biçiminiz (%18) ve anılma tonu (%10).'],
-      ['Hata payı nedir', 'Yapay zeka aynı soruya her seferinde birebir aynı cevabı vermez. Bu yüzden her soruyu birkaç kez soruyoruz. ± işaretinin yanındaki sayı, sonuçların ne kadar oynadığını gösterir. Küçük olması ölçümün oturduğu anlamına gelir; büyük olması cevapların istikrarsız olduğu.'],
-      ['Ne iyidir', 'Sektörünüze göre değişir. Önemli olan tek bir günün puanı değil, dört haftalık yön. Bir günlük 2-3 puanlık oynama gürültüdür.'],
     ],
   },
   mention: {
@@ -2360,7 +2359,7 @@ VIEWS.dashboard=()=>{
         : `You're tracking ${allowed} of ${d.plats.length} platforms. You can't know what the other ${d.plats.length-allowed} are saying without seeing them.`)
      : ''}
   <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
-    <span>${T("Your brand's visibility overview across")} ${allowed} ${T('AI platforms. Scores, trends and latest scan results at a glance.')}</span>
+    <span>${T('Brand performance across')} ${allowed} ${T('AI platforms — visibility, share of voice and where you stand against competitors.')}</span>
     <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
   <div class="g4">
