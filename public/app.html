@@ -406,6 +406,16 @@ body.lt .src.mine{background:#EAF2FE;box-shadow:inset 0 0 0 1px #C7DDFB}
 .dash-c .note{font-size:11.5px;color:var(--d-mut2);line-height:1.65;margin:12px 9px 4px;
   padding-top:11px;border-top:1px solid var(--d-line)}
 
+/* Mention counts per platform, as a legend rather than a filter control: the
+   list below is short enough that filtering it would be theatre, but knowing
+   which engine produced the mentions is genuinely useful. */
+.mfilter{display:flex;flex-wrap:wrap;gap:6px;padding:0 9px 12px}
+.mf{font-size:11px;color:var(--d-mut);border:1px solid var(--d-line);border-radius:6px;
+  padding:4px 9px;background:var(--d-bg)}
+.mf b{font-family:var(--d-mono);color:var(--d-txt);margin-left:4px}
+.dash-t tr.click{cursor:pointer}
+.dash-t tr.click:hover td b{color:#6E9BF0}
+
 .dash-empty{text-align:center;padding:30px 14px;color:var(--d-mut2);font-size:12.5px}
 .dash-empty .ic{font-size:24px;margin-bottom:8px;opacity:.45}
 
@@ -1078,6 +1088,9 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Sıra':'Sıra',
+  'bugün':'bugün',
+  'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
   'Ölçüm bekleniyor':'Ölçüm bekleniyor',
   'yeni':'yeni',
   'siteniz':'siteniz',
@@ -2871,7 +2884,7 @@ VIEWS.dashboard=()=>{
     const k=m.text+'|'+m.engine_key;
     if(seenKey.has(k))return false;
     seenKey.add(k); return true;
-  }).slice(0,6);
+  }).slice(0,8);
   const sc=S.scanState;
 
   const emptyBanner = sc && sc.error && !d.cells.length
@@ -3010,8 +3023,43 @@ VIEWS.dashboard=()=>{
               <span class="sv">${on?p.score.toFixed(1):T('ölçülmedi')}</span></div>
             ${on?miniSpark(es):`<div class="flat"></div>`}</div>`;
         }).join('')}
-      </div></div>
+      </div>
+      ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
+        <p class="note">${S.isAdmin
+          ? `<b>${T('Operator')}</b> · no key / failing platforms were never measured and do not count towards the score.`
+          : T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`:''}
+      </div>
     </div>
+
+    <div class="dash-c">
+      <div class="hd"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
+        <div class="sub">${T('Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.')}</div></div>
+        <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
+      <div class="bd" style="padding:16px 14px 10px">${trendChart(ser)}</div></div>
+
+    <!-- Answers, reachable. The score is an argument; this is the evidence
+         behind it, and a reader who cannot open the sentence that produced a
+         number has to take the number on faith. -->
+    <div class="dash-c">
+      <div class="hd"><div><h3>${T('Recent Mentions')}</h3>
+        <div class="sub">${T('Prompts where your brand was mentioned — click a row to open the raw answer')}</div></div>
+        <span class="rt">${namedPrompts}/${promptsSeen}</span></div>
+      <div class="bd">
+        ${d.plats.filter(p=>!p.locked&&p.mentions>0).length?`
+          <div class="mfilter">${d.plats.filter(p=>!p.locked&&p.mentions>0).map(p=>
+            `<span class="mf">${esc(p.n)} <b>${p.mentions}</b></span>`).join('')}</div>`:''}
+        ${recent.length?`
+        <table class="dash-t"><thead><tr>
+          <th>${T('Sorgu')}</th><th>${T('Platform')}</th><th class="n">${T('Sıra')}</th></tr></thead><tbody>
+          ${recent.map(m=>{
+            const pl=d.plats.find(x=>x.id===m.engine_key)||{n:m.engine_key};
+            return `<tr class="click" onclick="answerModal(${m.id})">
+              <td><b>${esc(m.text)}</b></td>
+              <td><span class="tagx">${esc(pl.n)}</span></td>
+              <td class="n">${m.rank?'#'+m.rank:'—'}</td></tr>`}).join('')}
+        </tbody></table>`
+        :`<div class="dash-empty"><div class="ic">◎</div>${T('No brand mentions found')}<br>
+           <span>${T('See the Opportunities tab for where to start')}</span></div>`}</div></div>
 
     <!-- Sources framed as a contest rather than a leaderboard: who the models
          lean on in this category, and whether you are among them. -->
@@ -3030,6 +3078,48 @@ VIEWS.dashboard=()=>{
     </div>
   </div>`;
 };
+/**
+ * Trend chart.
+ *
+ * The shared lineChart() pins the axis to 0–100, which is right for a gauge
+ * and wrong for a trend: a brand moving 6 → 15 draws a flat line hugging the
+ * floor, and the reader concludes nothing is happening when the score has in
+ * fact more than doubled. This frames the data it was given and labels the
+ * range it is showing, so the shape is readable and the scale is not a lie.
+ */
+function trendChart(ser){
+  if(!ser || ser.length<2) return `<div class="dash-empty"><div class="ic">◜</div>
+    ${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
+  const W=680,H=190,PL=40,PR=14,PT=14,PB=26;
+  const lo=Math.min(...ser), hi=Math.max(...ser);
+  const pad=Math.max(2,(hi-lo)*0.25);
+  const y0=Math.max(0,Math.floor((lo-pad)/5)*5), y1=Math.min(100,Math.ceil((hi+pad)/5)*5);
+  const sx=i=>PL+i/(ser.length-1)*(W-PL-PR);
+  const sy=v=>PT+(1-(v-y0)/((y1-y0)||1))*(H-PT-PB);
+  const line=ser.map((v,i)=>(i?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1)).join(' ');
+  const area=`${line} L ${sx(ser.length-1).toFixed(1)} ${H-PB} L ${PL} ${H-PB} Z`;
+  const up=ser[ser.length-1]>=ser[0];
+  const col=up?'#35D07F':'#FF6B6B';
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:200px;display:block" role="img"
+    aria-label="${esc(T('Visibility Trend'))}">
+    <defs><linearGradient id="tgr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${col}" stop-opacity=".20"/>
+      <stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${[y0,(y0+y1)/2,y1].map(t=>`
+      <line x1="${PL}" x2="${W-PR}" y1="${sy(t).toFixed(1)}" y2="${sy(t).toFixed(1)}"
+        stroke="currentColor" stroke-opacity=".12"/>
+      <text x="${PL-9}" y="${(sy(t)+4).toFixed(1)}" text-anchor="end" font-size="10"
+        fill="currentColor" fill-opacity=".45">${t.toFixed(0)}</text>`).join('')}
+    <path d="${area}" fill="url(#tgr)"/>
+    <path d="${line}" fill="none" stroke="${col}" stroke-width="2"
+      stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${sx(ser.length-1).toFixed(1)}" cy="${sy(ser[ser.length-1]).toFixed(1)}" r="3.5" fill="${col}"/>
+    <text x="${PL}" y="${H-7}" font-size="10" fill="currentColor" fill-opacity=".45">-${S.range}g</text>
+    <text x="${W-PR}" y="${H-7}" text-anchor="end" font-size="10"
+      fill="currentColor" fill-opacity=".45">${T('bugün')}</text>
+  </svg>`;
+}
+
 /** One trace, no axes, no grid — it lives inside a 150px cell and the number
  *  beside it carries the value. Shape is the only job here. */
 function miniSpark(ser){
