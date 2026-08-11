@@ -954,6 +954,7 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Sorgular kuyruğa alınıyor':'Sorgular kuyruğa alınıyor',
   'ZAYIF':'ZAYIF',
   'GÜÇLÜ':'GÜÇLÜ',
   'GELİŞTİRİLEBİLİR':'GELİŞTİRİLEBİLİR',
@@ -2625,17 +2626,23 @@ function scanProgress(){
 }
 
 function scanningScreen(){
-  const p=scanProgress();
+  // Null until the server has answered with a queue size. Showing "0 / 0" in
+  // that gap would read as a finished scan that found nothing.
+  const p=scanProgress()||{pending:null,total:null,done:null,pct:null};
   const pct=p.pct===null?null:Math.min(99,Math.max(2,p.pct));
   return head(T('Collecting answers'),
     T('We are asking each AI platform your prompts. The dashboard opens as soon as every check is in.'))+
   `<div class="card"><div class="cb" style="padding:34px 26px;text-align:center">
     <div style="font-size:34px;margin-bottom:6px">◐</div>
     <div style="font-size:30px;font-weight:600;letter-spacing:-.5px">
-      ${p.total ? `${p.done} <span style="color:var(--mute2);font-weight:400">/ ${p.total}</span>` : p.pending}
+      ${p.pending===null ? '…'
+        : p.total ? `${p.done} <span style="color:var(--mute2);font-weight:400">/ ${p.total}</span>`
+        : p.pending}
     </div>
     <div style="font-size:13.5px;color:var(--mute);margin-top:5px">
-      ${p.total ? T('checks completed') : `${p.pending} ${T('checks remaining')}`}</div>
+      ${p.pending===null ? T('Sorgular kuyruğa alınıyor')
+        : p.total ? T('checks completed')
+        : `${p.pending} ${T('checks remaining')}`}</div>
 
     ${pct===null?'':`<div style="height:8px;border-radius:99px;background:var(--card2);border:1px solid var(--border);
       margin:22px auto 10px;max-width:460px;overflow:hidden">
@@ -2646,7 +2653,8 @@ function scanningScreen(){
       ${T('Each prompt is asked several times per platform, because AI answers vary between runs. Averaging them is what makes the score stable.')}
     </div>
     <div style="font-size:12.5px;color:var(--mute);margin-top:16px">
-      ${p.pending} ${T('remaining')} · ${T('you can close this page; the scan continues')}
+      ${p.pending===null ? T('you can close this page; the scan continues')
+        : `${p.pending} ${T('remaining')} · ${T('you can close this page; the scan continues')}`}
     </div>
   </div></div>`;
 }
@@ -2656,8 +2664,11 @@ VIEWS.dashboard=()=>{
   // Nothing partial. While checks are outstanding the dashboard is a progress
   // screen, because a half-summed average is not a smaller truth — it is a
   // different number that happens to look like the real one.
+  // The progress screen owns the view from the moment the button is pressed,
+  // not from the moment the server confirms. Otherwise the dashboard sits
+  // there showing yesterday's numbers while a scan is being queued.
   const prog=scanProgress();
-  if(prog) return scanningScreen();
+  if(prog || S.scanBusy) return scanningScreen();
 
   const d=S.data,allowed=d.plats.filter(p=>!p.locked).length;
   const ins=insightText();
@@ -4170,22 +4181,28 @@ async function setPlan(p){
  */
 async function rescan(){
   if(S.scanBusy || !S.workspaceId) return;
+  // Switch the screen first. The request below can take a while, and a button
+  // that only produces a toast reads as a button that did nothing.
   S.scanBusy = true; render();
   try{
-    const r = await api.post('/api/scan',{workspaceId:S.workspaceId, warm:true});
+    // warm:false. With warming on, this call drains a batch server-side and
+    // does not answer for up to forty seconds — the whole point of the
+    // progress screen is lost if the first number arrives after it. The queue
+    // is drained by pollScan() instead, which is what makes the counter move.
+    const r = await api.post('/api/scan',{workspaceId:S.workspaceId, warm:false});
     if(r.jobs){
-      toast(`${T('Scan started')} — ${r.jobs} ${T('checks queued')}`);
       await loadResults({silent:true});
-      pollScan();
+      render();
+      pollScan();          // clears S.scanBusy once real progress arrives
     }else{
       // enqueueScan reports why it queued nothing. Passing that through beats
       // a generic "done" that leaves the operator staring at an empty chart.
+      S.scanBusy = false; render();
       toast(r.reason ? `${T('Nothing to scan')}: ${r.reason}` : T('Nothing to scan'), 'error');
     }
   }catch(e){
-    toast(e.message, 'error');
-  }finally{
     S.scanBusy = false; render();
+    toast(e.message, 'error');
   }
 }
 
@@ -4344,12 +4361,18 @@ function pollScan(){
         finally{ ticking=false; }
       }
       await loadResults({silent:true});
+      const pending=S.scanState?Number(S.scanState.pending||0):0;
+      // Hand the screen back to the dashboard the moment the queue empties.
+      // Without this the busy flag set by rescan() never clears and the
+      // progress screen stays up after the scan has finished.
+      if(pending<=0) S.scanBusy=false;
       render();
-      const pending=S.scanState?S.scanState.pending:0;
       if(pending>0 && rounds<80) pollTimer=setTimeout(step,900);
+      else if(rounds>=80) S.scanBusy=false;
     }catch(e){
       // Transient failures are expected while providers are being called.
       if(rounds<80) pollTimer=setTimeout(step,6000);
+      else { S.scanBusy=false; render(); }
     }
   };
   pollTimer=setTimeout(step,600);
