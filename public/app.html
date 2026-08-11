@@ -341,6 +341,9 @@ body.lt .dash{
    The table is the deliverable. Ahrefs and SEMrush put one on every screen
    because it is the thing a client can be walked through line by line. */
 .dash-t{width:100%;border-collapse:collapse}
+.dash-t{table-layout:auto}
+.dash-t col.bar{width:26%}
+.dash-t col.sm{width:74px}
 .dash-t th{text-align:left;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
   color:var(--d-mut2);padding:0 12px 9px;border-bottom:1px solid var(--d-line);white-space:nowrap}
 .dash-t th.n,.dash-t td.n{text-align:right}
@@ -352,9 +355,14 @@ body.lt .dash{
 .dash-t .pn{display:flex;align-items:center;gap:9px;min-width:0}
 .dash-t .pn i{width:8px;height:8px;border-radius:2px;flex:none;font-style:normal;background:var(--d-line2)}
 .dash-t .pn b{font-weight:500;color:var(--d-txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dash-t .mb{height:6px;border-radius:3px;background:var(--d-bg);overflow:hidden;min-width:70px}
-.dash-t .mb i{display:block;height:100%;border-radius:3px;background:var(--d-pri)}
-.dash-t .mb.acc i{background:var(--d-acc)}
+/* A <span> is inline, and an inline box ignores height and width — the bars
+   were rendering as slabs of background with no fill. display:block is the
+   whole fix. */
+.dash-t .dbar{display:block;width:100%;min-width:60px;height:7px;border-radius:4px;
+  background:var(--d-bg);border:1px solid var(--d-line);overflow:hidden}
+.dash-t .dbar i{display:block;height:100%;border-radius:3px;background:var(--d-pri);
+  min-width:2px;transition:width .3s ease}
+.dash-t .dbar.acc i{background:var(--d-acc)}
 .dash-t .idle td{color:var(--d-mut2)}
 .dash-t .tagx{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:5px;
   background:var(--d-bg);color:var(--d-mut);border:1px solid var(--d-line)}
@@ -376,7 +384,22 @@ body.lt .dash{
   border-radius:6px;font-family:var(--d-mono);font-size:11.5px;
   background:var(--d-bg);border:1px solid var(--d-line);color:var(--d-txt2)}
 .dash-t .rkbadge.top{background:var(--d-up-s);border-color:transparent;color:var(--d-up)}
-.dash-scroll{max-height:340px;overflow-y:auto}
+/* Narrow screens: a data table that squeezes is a table that lies — the score
+   column was simply falling off the right edge. Give it a floor width and let
+   the card scroll sideways, the way every reporting tool does on a phone. */
+.dash-c > .bd{overflow-x:auto}
+/* The floor width is only needed where the viewport is the constraint. Applied
+   unconditionally it also crushed the narrow right-hand column on desktop and
+   pushed its last column out of sight. */
+@media(max-width:820px){.dash-t{min-width:500px}}
+@media(max-width:560px){
+  .dash-rep{flex-direction:column;align-items:stretch}
+  .dash-rep .per{margin-left:0}
+  .dash-rep .per .pl{flex:1}
+}
+.dash-scroll{max-height:360px;overflow-y:auto;position:relative}
+.dash-scroll::after{content:"";position:sticky;bottom:0;display:block;height:26px;
+  background:linear-gradient(transparent,var(--d-card));pointer-events:none;margin-top:-26px}
 .dash-scroll::-webkit-scrollbar{width:7px}
 
 .dash-note{font-size:11.5px;color:var(--d-mut2);padding:11px 17px 0;line-height:1.6}
@@ -987,7 +1010,7 @@ const I18N = {
   'Audit':'Denetim',
   'Tools':'Araçlar',
   'Settings':'Ayarlar',
-  'Mentions':'Bahsetmeler',
+  'Mentions':'Anılmalar',
   'Platforms':'Platformlar',
   'Sources':'Kaynaklar',
   'Opportunities':'Fırsatlar',
@@ -1039,6 +1062,7 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'bugün':'bugün',
   'Sorgu performansı':'Sorgu performansı',
   'Takip edilen her sorgu için görünürlük durumunuz — satıra tıklayın':'Takip edilen her sorgu için görünürlük durumunuz — satıra tıklayın',
   'Durum':'Durum',
@@ -2709,14 +2733,6 @@ VIEWS.dashboard=()=>{
 
   const d=S.data,allowed=d.plats.filter(p=>!p.locked).length;
   const ins=insightText();
-  // One row per prompt+engine. The same prompt is asked several times, and
-  // listing every run makes six repeats look like six separate findings.
-  const seenKey=new Set();
-  const recent=(d.recent||[]).filter(m=>{
-    const k=m.text+'|'+m.engine_key;
-    if(seenKey.has(k))return false;
-    seenKey.add(k); return true;
-  }).slice(0,6);
   const sc=S.scanState;
 
   const emptyBanner = sc && sc.error && !d.cells.length
@@ -2799,6 +2815,11 @@ VIEWS.dashboard=()=>{
   })();
 
   const sovMine=(d.sov.find(x=>x.you)||{pct:0}).pct;
+  // Our own mean rank was never computed, so the highlighted row showed a dash
+  // next to competitors that had numbers — it read as missing data rather than
+  // as our own position. The cells already carry it.
+  const myRanks=d.cells.filter(c=>c.m>0&&c.rank).map(c=>c.rank);
+  const myMeanRank=myRanks.length?myRanks.reduce((a,b)=>a+b,0)/myRanks.length:null;
   const period=`${new Date(Date.now()-S.range*864e5).toLocaleDateString('tr-TR')} – ${new Date().toLocaleDateString('tr-TR')}`;
   const host=(S.brand.site||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
 
@@ -2878,7 +2899,7 @@ VIEWS.dashboard=()=>{
         <div class="hd"><div><h3>${T('Visibility Trend')}</h3>
           <div class="sub">${T('Vertical axis: your score out of 100. Horizontal axis: time, today on the right. Day-to-day wobble is normal — read the four-week direction.')}</div></div>
           ${kpiHelp('trend')}<span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-        <div class="bd">${lineChart(ser,{xlab:['-'+S.range+'d','-'+Math.round(S.range/2)+'d','today']})}</div></div>
+        <div class="bd">${trendChart(ser)}</div></div>
 
       <div class="dash-c">
         <div class="hd"><div><h3>${T('Platform Visibility Score')}</h3>
@@ -2891,7 +2912,7 @@ VIEWS.dashboard=()=>{
                        : p.failing&&!p.measured?'failing' : !p.measured?'nodata':'ok';
               if(st==='ok') return `<tr>
                 <td><span class="pn"><i style="background:var(--d-pri)"></i><b>${esc(p.n)}</b></span></td>
-                <td><span class="mb"><i style="width:${Math.max(2,p.score)}%"></i></span></td>
+                <td><span class="dbar"><i style="width:${Math.max(2,p.score)}%"></i></span></td>
                 <td class="n">${p.score.toFixed(1)}</td></tr>`;
               const lb = st==='locked'?T('Upgrade')
                 : (st==='nokey'||st==='failing')
@@ -2899,7 +2920,8 @@ VIEWS.dashboard=()=>{
                     : T('No data yet');
               return `<tr class="idle">
                 <td><span class="pn"><i></i><b>${esc(p.n)}</b></span></td>
-                <td colspan="2" class="n"><span class="tagx">${lb}</span></td></tr>`;
+                <td><span class="tagx">${lb}</span></td>
+                <td class="n">—</td></tr>`;
             }).join('')}
           </tbody></table>
           ${d.plats.some(p=>!p.locked&&(!p.configured||(!p.measured&&p.active)))?`
@@ -2925,7 +2947,7 @@ VIEWS.dashboard=()=>{
             <td><b style="color:var(--d-txt);font-weight:500">${esc(r.text)}</b></td>
             <td><span class="st ${r.named?'win':'lose'}"><i></i>${r.named?T('Anılıyor'):T('Anılmıyor')}</span></td>
             <td class="n">${r.rank?`<span class="rkbadge ${r.rank<=3?'top':''}">${r.rank}</span>`:'—'}</td>
-            <td><span class="mb"><i style="width:${Math.max(2,r.score)}%"></i></span></td>
+            <td><span class="dbar"><i style="width:${Math.max(2,r.score)}%"></i></span></td>
             <td class="n">${r.score.toFixed(1)}</td></tr>`).join('')}
         </tbody></table></div>`
         :`<div class="dash-empty"><div class="ic">◎</div>${T('Henüz ölçülmüş sorgu yok')}</div>`}</div></div>
@@ -2943,11 +2965,14 @@ VIEWS.dashboard=()=>{
             <th class="n">${T('Anılma')}</th><th class="n">${T('Ort. sıra')}</th></tr></thead><tbody>
             ${sov.map((x,i)=>{
               const raw=(S.rawCompetitors||[]).find(c=>c.name===x.n);
-              const mr=x.you?null:(raw&&raw.meanRank?Number(raw.meanRank):null);
+              // S.rawCompetitors holds the API row untouched, so the field is
+              // snake_case here; camelCase silently produced a column of dashes.
+              const mrv=raw?(raw.mean_rank??raw.meanRank):null;
+              const mr=x.you?myMeanRank:(mrv?Number(mrv):null);
               return `<tr class="${x.you?'me':''}">
                 <td class="n">${i+1}</td>
                 <td><b>${esc(x.n)}${x.you?` <span class="tagx you">${T('siz')}</span>`:''}</b></td>
-                <td><span class="mb ${x.you?'':'acc'}"><i style="width:${Math.max(2,x.pct)}%"></i></span></td>
+                <td><span class="dbar ${x.you?'':'acc'}"><i style="width:${Math.max(2,x.pct)}%"></i></span></td>
                 <td class="n">${x.v}</td>
                 <td class="n">${mr?mr.toFixed(1):'—'}</td></tr>`}).join('')}
           </tbody></table>`
@@ -2962,13 +2987,57 @@ VIEWS.dashboard=()=>{
             <th>${T('Domain')}</th><th>${T('Pay')}</th><th class="n">${T('Atıf')}</th></tr></thead><tbody>
             ${d.sources.slice(0,8).map(x=>`<tr class="${x.mine?'me':''}">
               <td><span class="pn"><b>${esc(x.d)}</b>${x.mine?`<span class="tagx you">${T('siteniz')}</span>`:''}</span></td>
-              <td><span class="mb ${x.mine?'':'acc'}"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span></td>
+              <td><span class="dbar ${x.mine?'':'acc'}"><i style="width:${d.sources[0].v?x.v/d.sources[0].v*100:0}%"></i></span></td>
               <td class="n">${x.v}</td></tr>`).join('')}
             </tbody></table>`
           :`<div class="dash-empty"><div class="ic">◈</div>${T('No citations collected yet')}</div>`}</div></div>
     </div>
   </div>`;
 };
+/**
+ * Trend chart for the dashboard.
+ *
+ * The shared lineChart() pins the axis to 0–100, which is right for a gauge
+ * and wrong for a trend: a brand moving 6 → 15 draws a flat line hugging the
+ * floor, and the reader concludes nothing is happening when in fact the score
+ * has more than doubled. This one frames the data it was given and says what
+ * range it is showing, so the shape is readable and the scale is not a lie.
+ */
+function trendChart(ser){
+  if(!ser || ser.length<2) return `<div class="dash-empty"><div class="ic">◜</div>
+    ${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
+  const W=680,H=180,PL=42,PR=14,PT=14,PB=26;
+  const lo=Math.min(...ser), hi=Math.max(...ser);
+  const pad=Math.max(2,(hi-lo)*0.25);
+  const y0=Math.max(0,Math.floor((lo-pad)/5)*5), y1=Math.min(100,Math.ceil((hi+pad)/5)*5);
+  const sx=i=>PL+i/(ser.length-1)*(W-PL-PR);
+  const sy=v=>PT+(1-(v-y0)/((y1-y0)||1))*(H-PT-PB);
+  const line=ser.map((v,i)=>(i?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1)).join(' ');
+  const area=`${line} L ${sx(ser.length-1).toFixed(1)} ${H-PB} L ${PL} ${H-PB} Z`;
+  const ticks=[y0,(y0+y1)/2,y1];
+  const last=ser[ser.length-1], first=ser[0];
+  const up=last>=first;
+  const col=up?'var(--d-up)':'var(--d-dn)';
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:190px;display:block" role="img"
+    aria-label="${esc(T('Visibility Trend'))}">
+    <defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${up?'#35D07F':'#FF5C5C'}" stop-opacity=".22"/>
+      <stop offset="1" stop-color="${up?'#35D07F':'#FF5C5C'}" stop-opacity="0"/></linearGradient></defs>
+    ${ticks.map(t=>`<line x1="${PL}" x2="${W-PR}" y1="${sy(t).toFixed(1)}" y2="${sy(t).toFixed(1)}"
+        stroke="currentColor" stroke-opacity=".12"/>
+      <text x="${PL-9}" y="${(sy(t)+4).toFixed(1)}" text-anchor="end" font-size="10"
+        fill="currentColor" fill-opacity=".45" font-family="var(--d-mono)">${t.toFixed(0)}</text>`).join('')}
+    <path d="${area}" fill="url(#tg)"/>
+    <path d="${line}" fill="none" stroke="${col}" stroke-width="2"
+      stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${sx(ser.length-1).toFixed(1)}" cy="${sy(last).toFixed(1)}" r="3.5" fill="${col}"/>
+    <text x="${PL}" y="${H-7}" font-size="10" fill="currentColor" fill-opacity=".45"
+      font-family="var(--d-mono)">-${S.range}g</text>
+    <text x="${W-PR}" y="${H-7}" text-anchor="end" font-size="10" fill="currentColor" fill-opacity=".45"
+      font-family="var(--d-mono)">${T('bugün')}</text>
+  </svg>`;
+}
+
 function insightText(){
   const d=S.data,b=S.brand;
   // Only platforms we actually measured can be called the weakest. Naming an
