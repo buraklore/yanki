@@ -335,6 +335,16 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .sb-scan button{flex:none;font-size:11.5px;padding:5px 9px}
 .sb-scan button:disabled{opacity:.5}
 .sb-foot{margin-top:auto;display:grid;gap:10px;padding-top:10px}
+/* Provenance line: what was measured and when. */
+.ranline{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ranline .rn{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--mute2);white-space:nowrap}
+.ranline .rn .d{width:6px;height:6px;border-radius:50%;background:var(--border2);flex:none}
+.ranline .rn .d.ok{background:#4ADE80}
+.ranline .rn b{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:11.5px;font-weight:500;color:var(--fg2)}
+.ranline .rn em{font-style:normal;color:var(--mute2)}
+@media(max-width:720px){.ranline{gap:10px}.ranline .rn em{display:none}}
+
 .trial{border:1px solid var(--border);border-radius:12px;padding:12px;
   background:linear-gradient(160deg,rgba(59,130,246,.1),var(--card2))}
 .trial .tr-top{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
@@ -954,6 +964,9 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Son tarama':'Son tarama',
+  'Son denetim':'Son denetim',
+  'hiç çalışmadı':'hiç çalışmadı',
   'Sorgular kuyruğa alınıyor':'Sorgular kuyruğa alınıyor',
   'ZAYIF':'ZAYIF',
   'GÜÇLÜ':'GÜÇLÜ',
@@ -2731,6 +2744,22 @@ VIEWS.dashboard=()=>{
      : ''}
   <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute);flex-wrap:wrap">
     <span>${T('Brand performance across')} ${allowed} ${T('AI platforms — visibility, share of voice and where you stand against competitors.')}</span>
+    <!-- When each thing last ran. Both come from the database — scans.finished_at
+         and audits.ran_at — so they survive a reload, a new session and a
+         different device. A dashboard that cannot say when its numbers were
+         taken is asking to be trusted on nothing. -->
+    <span class="ranline">
+      <span class="rn"><i class="d ${sc&&sc.finished_at?'ok':''}"></i>${T('Son tarama')}
+        <b>${sc&&sc.finished_at
+              ? `${new Date(sc.finished_at).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}`
+              : T('hiç çalışmadı')}</b>
+        ${sc&&sc.finished_at?`<em>${relTime(sc.finished_at)}</em>`:''}</span>
+      <span class="rn"><i class="d ${d.auditRanAt?'ok':''}"></i>${T('Son denetim')}
+        <b>${d.auditRanAt
+              ? `${new Date(d.auditRanAt).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}`
+              : T('hiç çalışmadı')}</b>
+        ${d.auditRanAt?`<em>${relTime(d.auditRanAt)}</em>`:''}</span>
+    </span>
     <span class="chip" style="margin-left:auto">↻ ${T('Updates daily')}</span></div>
 
   <div class="g4">
