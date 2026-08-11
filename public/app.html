@@ -347,6 +347,46 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 14px}
 .keepopen b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:#FDE68A}
 
+/* --- Sources page --- */
+/* Your own row is the one the reader came to find, so it is marked on the
+   frame rather than tinted like every other highlight in the app. */
+.stbl tr.me td{background:rgba(59,130,246,.08)}
+.stbl tr.me td:first-child{box-shadow:inset 3px 0 0 #3B82F6}
+.stbl tbody tr:hover td{background:rgba(255,255,255,.03)}
+.stbl tr.me:hover td{background:rgba(59,130,246,.12)}
+.stbl .rk{color:var(--mute2);font-family:var(--mono)}
+.stbl .dn{display:flex;align-items:center;gap:9px;min-width:0}
+.stbl .dn b{font-weight:500;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stbl tr.me .dn b{color:#BBD1FF}
+.stbl .fav{width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;
+  font-size:10px;font-weight:700;color:#E4E8F0;background:rgba(255,255,255,.07);border:1px solid var(--border2)}
+.stbl .fav.me{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.42);color:#BBD1FF}
+.stbl .tagme{font-size:10px;padding:2px 7px;border-radius:5px;flex:none;
+  background:rgba(59,130,246,.2);color:#BBD1FF}
+.stbl .sbar{display:block;height:8px;border-radius:4px;background:var(--card2);
+  border:1px solid var(--border);overflow:hidden}
+.stbl .sbar i{display:block;height:100%;border-radius:3px;background:#8B5CF6;min-width:2px}
+.stbl tr.me .sbar i{background:#3B82F6}
+.stbl .cnt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--fg)}
+.stbl .more{font-size:10.5px;color:var(--mute2);margin-left:4px}
+.stbl .mut{color:var(--mute2)}
+/* Direction of travel, from the second half of the window against the first.
+   The old arrow was hardcoded to point up on every row. */
+.sdelta{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+.sdelta.up{color:#4ADE80}
+.sdelta.dn{color:#F87171}
+.sdelta.flat,.sdelta.new{color:var(--mute2)}
+
+.srcwarn{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;
+  background:var(--card);border:1px solid var(--border);border-left:3px solid #F59E0B;
+  border-radius:12px;padding:15px 18px}
+.srcwarn.ok{border-left-color:#3B82F6}
+.srcwarn b{font-size:14px;font-weight:650;color:var(--fg);letter-spacing:-.015em}
+.srcwarn span{flex:1;min-width:240px;font-size:12.5px;line-height:1.65;color:var(--mute)}
+.srcwarn button{flex:none;border:1px solid var(--border2);background:var(--card2);color:var(--fg2);
+  border-radius:8px;padding:9px 15px;font-size:12.5px;font-weight:500}
+.srcwarn button:hover{border-color:var(--pri);color:#93B4FF}
+
 /* --- Platform page --- */
 /* Loss bars. The length is what the gap costs the total score, so a heavy
    platform at 25 outranks a light one at 0 — which is the ordering an agency
@@ -1068,6 +1108,33 @@ const I18N = {
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
   'Rescan':'Yeniden tara',
+  'Aksiyon planı':'Aksiyon planı',
+  'yeni':'yeni',
+  'siteniz':'siteniz',
+  'Atıf':'Atıf',
+  'Yapay zeka bu kategoride hangi sitelere dayanıyor. Bu liste, kaynak gösterilmek için nereye girmeniz gerektiğini söyler.':'Yapay zeka bu kategoride hangi sitelere dayanıyor. Bu liste, kaynak gösterilmek için nereye girmeniz gerektiğini söyler.',
+  'Siteniz kaçıncı':'Siteniz kaçıncı',
+  'kaynak içinde':'kaynak içinde',
+  'listede yok':'listede yok',
+  'Atıf payınız':'Atıf payınız',
+  'atıf':'atıf',
+  'henüz atıf yok':'henüz atıf yok',
+  'Önünüzdeki site':'Önünüzdeki site',
+  'sizden çok atıf alıyor':'sizden çok atıf alıyor',
+  'Takip edilen kaynak':'Takip edilen kaynak',
+  'son':'son',
+  'Siteniz bu listede yok':'Siteniz bu listede yok',
+  'Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak anılmaktan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.':'Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak anılmaktan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.',
+  'site sizden önde':'site sizden önde',
+  'Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.':'Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.',
+  'Kaynak sıralaması':'Kaynak sıralaması',
+  'Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim':'Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim',
+  'Alan adı':'Alan adı',
+  'Sayı':'Sayı',
+  'Kullanan platformlar':'Kullanan platformlar',
+  'İlk görülme':'İlk görülme',
+  'Son':'Son',
+  'Modeller sizi çoğunlukla kendi sitenizden değil, üçüncü taraf kaynaklardan öğrenir. Bu yüzden listenin üstündeki alan adlarında bulunmamak, kendi sitenizdeki bir eksikten daha pahalıdır.':'Modeller sizi çoğunlukla kendi sitenizden değil, üçüncü taraf kaynaklardan öğrenir. Bu yüzden listenin üstündeki alan adlarında bulunmamak, kendi sitenizdeki bir eksikten daha pahalıdır.',
   'bugün':'bugün',
   'gün':'gün',
   'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
@@ -2249,7 +2316,13 @@ function adopt(r) {
     mentionRate: latest ? Number(latest.mention_rate) : 0,
     citationRate: latest ? Number(latest.citation_rate) : 0,
     sov,
-    sources: (r.sources || []).map(s => ({ d: s.domain, v: s.citations, mine: s.mine, t: '', plats: [], first: s.first_seen, last: s.last_seen, trend: 1 })),
+    sources: (r.sources || []).map(s => ({
+      d: s.domain, v: s.citations, mine: s.mine,
+      first: s.first_seen, last: s.last_seen,
+      delta: s.delta === undefined ? 0 : s.delta,
+      // Engine keys resolved to the platform objects the UI already styles.
+      plats: (s.engines || []).map(k => plats.find(p => p.id === k)).filter(Boolean),
+    })),
     series: (r.series || []).map(x => Number(x.score)),
     seriesDates: (r.series || []).map(x => x.scan_date),
     audit,
@@ -3467,32 +3540,82 @@ function exportPlats(){
 /* ---------- KAYNAKLAR ---------- */
 VIEWS.sources=()=>{
   const d=S.data;
+  const sub=T('Yapay zeka bu kategoride hangi sitelere dayanıyor. Bu liste, kaynak gösterilmek için nereye girmeniz gerektiğini söyler.');
+
   // Before the first scan produces citations this list is empty, which is a
   // normal state, not an error.
   if(!d.sources.length){
-    return head(T('Sources'),T('Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.'))+
+    return head(T('Sources'),sub)+
       `<div class="card"><div class="empty"><div class="ic">⊕</div>
-        <b style="color:var(--fg);font-size:15px">${T("No citations collected yet")}</b>
+        <b style="color:var(--fg);font-size:15px">${T('No citations collected yet')}</b>
         <p style="margin-top:8px;max-width:52ch;margin-inline:auto">${T(`Sources appear once a scan finishes and the platforms cite pages in their answers. If a scan has run and this is still empty, no platform cited any source.`)}</p></div></div>`;
   }
+
   const mx=d.sources[0].v||1;
-  return head(T('Sources'),T('Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.'),
-    rangeSel()+`<button class="btn b-pri b-sm" onclick="exportSources()">${T('⭳ Export Sources')}</button>`)+
-  `<div class="card"><div class="cb"><div class="tw"><table>
-    <thead><tr><th>#</th><th>${T("Domain")}</th><th style="width:38%">Citations</th><th class="n">Count</th><th class="n">Trend</th>
-      <th>Platforms</th><th class="n">First</th><th class="n">Last</th></tr></thead>
-    <tbody>${d.sources.map((s,i)=>`<tr>
-      <td class="n">${i+1}</td>
-      <td><span style="display:flex;align-items:center;gap:9px">
-        <span class="cdr-f" style="width:21px;height:21px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;background:${s.mine?'rgba(59,130,246,.22)':'rgba(255,255,255,.08)'};color:${s.mine?'#BBD1FF':'#E4E8F0'};border:1px solid ${s.mine?'rgba(59,130,246,.4)':'var(--border2)'}">${ini(s.d)}</span>
-        ${s.d}${s.mine?' <span class="chip pri">${T(`your site`)}</span>':''}</span></td>
-      <td><span class="bar"><i style="width:${s.v/(mx||1)*100}%;background:${s.mine?'#3B82F6':'#8B5CF6'}"></i></span></td>
-      <td class="n">${s.v}</td>
-      <td class="n ${s.trend>0?'ok':'bad'}">${s.trend>0?'↑':'↓'}</td>
-      <td>${s.plats.slice(0,2).map(p=>`<span class="chip" style="border-color:${p.c}44">${p.ab} ${p.n}</span>`).join(' ')||'<span class="mut">—</span>'}</td>
-      <td class="n mut">${s.first}</td><td class="n mut">${s.last}</td></tr>`).join('')}</tbody></table></div>
-    <p style="font-size:12.5px;color:var(--mute);margin-top:14px">${T('Models learn about you mostly from third-party sources, not your own site. Being absent from the domains at the top of this list is your biggest structural gap — it appears as a task in the')}
-      <a href="#" onclick="go('plan');return false" style="color:var(--pri)">${T('action plan')}</a>.</p></div></div>`;
+  const total=d.sources.reduce((a,x)=>a+x.v,0);
+  const mine=d.sources.find(x=>x.mine);
+  const myRank=mine?d.sources.indexOf(mine)+1:null;
+  const myShare=mine&&total?mine.v/total*100:0;
+  // Domains ahead of you that you are not on. This is the working list: the
+  // shortest route to being cited is to appear where the models already look.
+  const ahead=d.sources.filter(x=>!x.mine&&(!mine||x.v>mine.v));
+
+  const dl=x=>{
+    if(x.delta===null) return `<span class="sdelta new">${T('yeni')}</span>`;
+    const v=x.delta*100;
+    if(Math.abs(v)<5) return `<span class="sdelta flat">—</span>`;
+    return `<span class="sdelta ${v>0?'up':'dn'}">${v>0?'▲':'▼'} %${Math.abs(v).toFixed(0)}</span>`;
+  };
+
+  return head(T('Sources'),sub,
+    rangeSel()+`<button class="btn b-gh b-sm" onclick="exportSources()">${T('⭳ Download CSV')}</button>`)+
+  `<div class="g4">
+    <div class="kpi"><div class="t">${T('Siteniz kaçıncı')}</div>
+      <div class="v">${myRank?`${myRank}.`:'—'}</div>
+      <div class="d">${myRank?`${d.sources.length} ${T('kaynak içinde')}`:T('listede yok')}</div></div>
+    <div class="kpi"><div class="t">${T('Atıf payınız')}</div>
+      <div class="v">${myShare.toFixed(1)}<span style="font-size:15px;color:var(--mute2)">%</span></div>
+      <div class="d">${mine?`${mine.v}/${total} ${T('atıf')}`:T('henüz atıf yok')}</div></div>
+    <div class="kpi"><div class="t">${T('Önünüzdeki site')}</div>
+      <div class="v">${ahead.length}</div>
+      <div class="d">${T('sizden çok atıf alıyor')}</div></div>
+    <div class="kpi"><div class="t">${T('Takip edilen kaynak')}</div>
+      <div class="v">${d.sources.length}</div>
+      <div class="d">${T('son')} ${S.range} ${T('gün')}</div></div>
+  </div>
+
+  ${!mine?`<div class="srcwarn">
+      <b>${T('Siteniz bu listede yok')}</b>
+      <span>${T('Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak anılmaktan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.')}</span>
+      <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`
+   :ahead.length?`<div class="srcwarn ok">
+      <b>${ahead.length} ${T('site sizden önde')}</b>
+      <span>${T('Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.')}</span>
+      <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`:''}
+
+  <div class="card">
+    <div class="ch"><div><h3>${T('Kaynak sıralaması')}</h3>
+      <div class="sub">${T('Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim')}</div></div>
+      <span class="rt">${T('Son')} ${S.range} ${T('gün')}</span></div>
+    <div class="tw"><table class="stbl"><thead><tr>
+      <th class="n">#</th><th>${T('Alan adı')}</th><th style="width:28%">${T('Atıf')}</th>
+      <th class="n">${T('Sayı')}</th><th class="n">${T('Değişim')}</th>
+      <th>${T('Kullanan platformlar')}</th><th class="n">${T('İlk görülme')}</th></tr></thead>
+    <tbody>${d.sources.map((x,i)=>`<tr class="${x.mine?'me':''}">
+      <td class="n rk">${i+1}</td>
+      <td><span class="dn"><span class="fav ${x.mine?'me':''}">${ini(x.d)}</span>
+        <b>${esc(x.d)}</b>${x.mine?`<span class="tagme">${T('siteniz')}</span>`:''}</span></td>
+      <td><span class="sbar"><i style="width:${x.v/mx*100}%"></i></span></td>
+      <td class="n cnt">${x.v}</td>
+      <td class="n">${dl(x)}</td>
+      <td>${x.plats.length
+        ? x.plats.slice(0,3).map(p=>`<span class="chip" style="border-color:${p.c}44">${p.ab} ${esc(p.n)}</span>`).join(' ')
+          +(x.plats.length>3?`<span class="more">+${x.plats.length-3}</span>`:'')
+        : '<span class="mut">—</span>'}</td>
+      <td class="n mut">${x.first?new Date(x.first).toLocaleDateString('tr-TR'):'—'}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="mnote">${T('Modeller sizi çoğunlukla kendi sitenizden değil, üçüncü taraf kaynaklardan öğrenir. Bu yüzden listenin üstündeki alan adlarında bulunmamak, kendi sitenizdeki bir eksikten daha pahalıdır.')}</p>
+  </div>`;
 };
 function exportSources(){
   const rows=[['Domain','Citations','Is yours']];
