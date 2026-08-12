@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { requireSession, requireWorkspace, handler } from '@/lib/auth';
+import { enforce } from '@/lib/rate-limit';
 import { extractAttributes, attributeMatrix, attributeCoverage } from '@/lib/attributes';
 
 export const dynamic = 'force-dynamic';
@@ -31,5 +32,8 @@ export const POST = handler(async (req) => {
   const s = await requireSession();
   const { workspaceId } = Body.parse(await req.json());
   await requireWorkspace(s, workspaceId);
+  // Each batch is up to 20 model calls. The screen pulls automatically while
+  // the operator reads, so an unmetered endpoint here bills on its own.
+  await enforce('attributes', s.orgId);
   return Response.json(await extractAttributes(workspaceId, { limit: 20, budgetMs: 45_000 }));
 });
