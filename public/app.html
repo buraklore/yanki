@@ -1195,6 +1195,42 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Üretiliyor…':'Üretiliyor…',
+  'yeni sorgu eklendi':'yeni sorgu eklendi',
+  'şablonlardan':'şablonlardan',
+  'Yeni sorgu yok — öneriler zaten listenizde':'Yeni sorgu yok — öneriler zaten listenizde',
+  'Deneme süreniz doldu. Ölçüm durdu; devam etmek için bir plan seçin.':'Deneme süreniz doldu. Ölçüm durdu; devam etmek için bir plan seçin.',
+  'Deneme':'Deneme',
+  'gün kaldı':'gün kaldı',
+  'süresi doldu':'süresi doldu',
+  'Kullanım özeti':'Kullanım özeti',
+  'Planınızdaki her hakkın güncel kullanımı. Sorgu, rakip ve marka sayıları anlıktır; denetim hakkı her ayın başında sıfırlanır.':'Planınızdaki her hakkın güncel kullanımı. Sorgu, rakip ve marka sayıları anlıktır; denetim hakkı her ayın başında sıfırlanır.',
+  'Kullanım verisi yüklenemedi — sayfayı yenileyin.':'Kullanım verisi yüklenemedi — sayfayı yenileyin.',
+  'AI Sorguları':'AI Sorguları',
+  'marka başına en fazla':'marka başına en fazla',
+  'Rakipler':'Rakipler',
+  'Markalar':'Markalar',
+  'GEO Denetimi':'GEO Denetimi',
+  'her ay sıfırlanır':'her ay sıfırlanır',
+  'Planlar':'Planlar',
+  'AI sorgusu':'AI sorgusu',
+  'rakip':'rakip',
+  'marka':'marka',
+  '3 platform · haftalık ölçüm':'3 platform · haftalık ölçüm',
+  '8 platform · günlük ölçüm':'8 platform · günlük ölçüm',
+  'GEO denetimi/ay':'GEO denetimi/ay',
+  'müşteri markası':'müşteri markası',
+  'sorgu / marka':'sorgu / marka',
+  'Beyaz etiket':'Beyaz etiket',
+  'En çok tercih edilen':'En çok tercih edilen',
+  'ay':'ay',
+  'Mevcut planınız':'Mevcut planınız',
+  'Bu plana geç':'Bu plana geç',
+  'Ödeme yöntemi':'Ödeme yöntemi',
+  'Yapay zeka görünürlüğüne yeni başlayan markalar için':'Yapay zeka görünürlüğüne yeni başlayan markalar için',
+  'Daha derin analize ihtiyaç duyan büyüyen markalar için':'Daha derin analize ihtiyaç duyan büyüyen markalar için',
+  'İleri düzey gereksinimleri olan kurumlar için':'İleri düzey gereksinimleri olan kurumlar için',
+  'Kendi markanız altında müşterilerinize sunun':'Kendi markanız altında müşterilerinize sunun',
   'yok':'yok',
   'Her sorgu için fırsat skoru: aylık hacim, ne kadarında göründüğünüz ve satın alma niyeti bir araya gelir. Yüksek skor, çok aranan ama sizin bulunmadığınız bir soru demektir.':'Her sorgu için fırsat skoru: aylık hacim, ne kadarında göründüğünüz ve satın alma niyeti bir araya gelir. Yüksek skor, çok aranan ama sizin bulunmadığınız bir soru demektir.',
   'Hiç görünmediğiniz sorgu':'Hiç görünmediğiniz sorgu',
@@ -1957,7 +1993,7 @@ const S = {
   workspaceId: null, plan: 'trial', planLimits: null, org: null, role: 'owner',
   user: { name: '', mail: '' },
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
-  workspaces: [], wsMenu: false, scanBusy: false, quality: null, isAdmin: false,
+  workspaces: [], wsMenu: false, scanBusy: false, quality: null, isAdmin: false, usage: null,
   mFilter: 'all', mPlat: '',
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
@@ -2219,7 +2255,7 @@ function obS5(){
         </span>
         <button class="btn b-gh b-sm" style="flex:none" onclick="editPrompt(${i})">${T(`Edit`)}</button>
       </div>`).join('')
-     :'<div class="empty" style="padding:26px">${T(`No suggestions yet — write your own below.`)}</div>'}
+     :`<div class="empty" style="padding:26px">${T('No suggestions yet — write your own below.')}</div>`}
 
     <label style="display:block;font-size:13px;font-weight:500;margin:20px 0 7px">${T("+ Your own prompts")}</label>
     <p style="font-size:12px;color:var(--mute);margin-bottom:9px">${T(`Write them exactly as a customer would type them. One per line — paste a whole list if you have one.`)}</p>
@@ -4098,16 +4134,32 @@ async function delPrompt(id){
   try{ await api.del(`/api/prompts?id=${encodeURIComponent(id)}`); await loadResults(); toast(T('Prompt deleted')); }
   catch(e){ toast(e.message); }
 }
+/**
+ * Each press is one model completion. The server caps this at 15/hour per
+ * organisation, but the button also has to stop taking presses while a request
+ * is in flight — otherwise an impatient double-click spends twice and the
+ * second reply overwrites the first for no benefit.
+ */
+let regenBusy=false;
 async function regen(){
+  if(regenBusy) return;
+  regenBusy=true;
+  const btn=document.querySelector('button[onclick="regen()"]');
+  const label=btn?btn.textContent:null;
+  if(btn){ btn.disabled=true; btn.textContent=T('Üretiliyor…'); }
   try{
     const r=await api.post('/api/prompts/generate',{workspaceId:S.workspaceId});
     const added=await api.post('/api/prompts',{workspaceId:S.workspaceId,
       prompts:r.prompts.map(p=>({text:p.text,intent:p.intent,volume:p.volume,source:'ai'}))});
     await loadResults();
     toast(added.added
-      ? `${added.added} new prompt${added.added===1?'':'s'} added${r.source==='template'?' (from templates)':''}`
-      : 'No new prompts — the suggestions were already in your list');
+      ? `${added.added} ${T('yeni sorgu eklendi')}${r.source==='template'?` (${T('şablonlardan')})`:''}`
+      : T('Yeni sorgu yok — öneriler zaten listenizde'));
   }catch(e){ toast(e.message,'error'); }
+  finally{
+    regenBusy=false;
+    if(btn){ btn.disabled=false; if(label) btn.textContent=label; }
+  }
 }
 function newPromptModal(){
   openModal(T('New prompt'),`<div class="fld"><label>${T("Prompt text")}</label>
@@ -4615,7 +4667,7 @@ VIEWS.settings=()=>{
         <p style="font-size:12.5px;color:var(--mute)">${T(`Alternative names AI may use for your brand. This lets us track mentions across every variation, and it is critical for brands with non-ASCII characters.`)}</p></div>
         <div><div class="taglist" style="margin-bottom:12px">${S.variants.length?S.variants.map((v,i)=>
           `<span class="tagx">${esc(v)}<button onclick="S.variants.splice(${i},1);render()">×</button></span>`).join('')
-          :'<span class="mut" style="font-size:13px">${T(`No variants yet. Add variants to improve detection quality.`)}</span>'}</div>
+          :`<span class="mut" style="font-size:13px">${T('No variants yet. Add variants to improve detection quality.')}</span>`}</div>
         <div style="display:flex;gap:9px"><input class="in" id="vv" placeholder="e.g. THY, Turkish Air"
           onkeydown="if(event.key==='Enter'){addVar2()}"><button class="btn b-pri" onclick="addVar2()">+</button></div>
         ${suggestedVariants().length?`<div style="margin-top:11px">
@@ -4658,34 +4710,77 @@ VIEWS.settings=()=>{
         </div></div>`;
     setTimeout(()=>loadEngines(false),50);
   }else{
-    const lim={trial:{q:5,r:1,a:2,c:1},starter:{q:40,r:5,a:4,c:5},pro:{q:150,r:15,a:25,c:20},business:{q:500,r:50,a:100,c:60}}[S.plan];
-    const use=(a,b2)=>`<div style="margin-bottom:14px"><div style="display:flex;font-size:12.5px;margin-bottom:6px">
-      <span style="flex:1;color:var(--mute)">${a[0]}</span><b class="mono">${a[1]} / ${a[2]}</b></div>
-      <div class="bar"><i style="width:${Math.min(100,a[1]/a[2]*100)}%;background:${a[1]/a[2]>.85?'#EF4444':'#22C55E'}"></i></div></div>`;
-    body=`${S.plan==='trial'?`<div class="banner" style="margin-bottom:16px"><span>⏳</span>
-      <span>${T('Trial')} — 7 ${T('days left')}</span><span class="r chip">7 ${T('days left')}</span></div>`:''}
-      <div class="g2" style="margin-bottom:26px"><div><h4 style="font-size:15px;margin-bottom:6px">Usage Summary</h4>
-        <p style="font-size:12.5px;color:var(--mute)">${T(`Track current usage of every feature in your plan.`)}</p></div>
-        <div>${use(['AI Prompts',S.prompts.length,lim.q])}${use(['Competitors',S.rivals.length,lim.r])}
-             ${use(['GEO Audits',1,lim.a])}${use(['Content Writer',0,lim.c])}</div></div>
-      <h4 style="font-size:15px;margin-bottom:14px">Plans</h4>
+    /* Usage against the real caps.
+     *
+     * Both halves used to be invented. The caps lived in a table here that had
+     * no entry for growth or agency — so the whole tab threw for customers on
+     * either plan — and the consumption figures were literals: audits always
+     * "1", content always "0". A customer sitting on their monthly audit limit
+     * saw 1/10 and got a refusal with no warning. Caps now come from the plan,
+     * counts from /api/auth/me, and both are labelled with the period they
+     * cover. */
+    const cap = S.planLimits || {};
+    const u = S.usage || {};
+    const dleft = trialDaysLeft();
+
+    const bar = (label, used, max, note) => {
+      const pct = max ? Math.min(100, used / max * 100) : 0;
+      const col = pct >= 90 ? '#F87171' : pct >= 70 ? '#FBBF24' : '#4ADE80';
+      return `<div style="margin-bottom:15px">
+        <div style="display:flex;align-items:baseline;font-size:12.5px;margin-bottom:6px">
+          <span style="flex:1;color:var(--mute)">${esc(label)}</span>
+          <b class="mono" style="color:${pct>=90?'#F87171':'var(--fg)'}">${nf(used)} / ${max===null?'∞':nf(max)}</b></div>
+        <div class="bar"><i style="width:${pct}%;background:${col}"></i></div>
+        ${note?`<div style="font-size:11px;color:var(--mute2);margin-top:5px">${esc(note)}</div>`:''}
+      </div>`;
+    };
+
+    const periodLabel = u.period
+      ? new Date(u.period).toLocaleDateString('tr-TR',{month:'long',year:'numeric'})
+      : '';
+
+    body = `${S.plan==='trial'&&dleft!==null?`
+      <div class="banner" style="margin-bottom:16px;${dleft<=2?'border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.07)':''}">
+        <span>⏳</span>
+        <span>${dleft<=0
+          ? T('Deneme süreniz doldu. Ölçüm durdu; devam etmek için bir plan seçin.')
+          : `${T('Deneme')} — ${dleft} ${T('gün kaldı')}`}</span>
+        <span class="r chip">${dleft<=0?T('süresi doldu'):`${dleft} ${T('gün')}`}</span></div>`:''}
+
+      <div class="g2" style="margin-bottom:26px">
+        <div><h4 style="font-size:15px;margin-bottom:6px">${T('Kullanım özeti')}</h4>
+          <p style="font-size:12.5px;color:var(--mute)">${T('Planınızdaki her hakkın güncel kullanımı. Sorgu, rakip ve marka sayıları anlıktır; denetim hakkı her ayın başında sıfırlanır.')}</p>
+          ${S.usage?'':`<p style="font-size:12px;color:#FBBF24;margin-top:10px">${T('Kullanım verisi yüklenemedi — sayfayı yenileyin.')}</p>`}</div>
+        <div>
+          ${bar(T('AI Sorguları'), u.prompts||0, cap.prompts||0, `${T('marka başına en fazla')} ${nf(cap.prompts||0)}`)}
+          ${bar(T('Rakipler'), u.competitors||0, cap.competitors||0, null)}
+          ${bar(T('Markalar'), u.workspaces||0, cap.workspaces||0, null)}
+          ${bar(T('GEO Denetimi'), u.audits||0, cap.auditsPerMonth||0, periodLabel?`${periodLabel} · ${T('her ay sıfırlanır')}`:null)}
+        </div></div>
+
+      <h4 style="font-size:15px;margin-bottom:14px">${T('Planlar')}</h4>
       <div class="g4">${[
-        ['starter','Starter','₺2,490','For small brands starting with AI visibility',['40 AI prompts','5 competitors','5 platforms · weekly','4 GEO audits/mo','5 content pieces/mo']],
-        ['pro','Growth','₺12,900','For growing brands that need deeper analysis',['150 AI prompts','15 competitors','7 platforms · daily','25 GEO audits/mo','20 content pieces/mo','Bot analytics + API']],
-        ['business','Business','₺34,900','For enterprises with advanced requirements',['500 AI prompts','50 competitors','7 platforms · daily · 15 languages','100 GEO audits/mo','60 content pieces/mo','SSO · log delivery']],
-        ['agency','Agency','₺89,000','Resell to your clients under your own brand',['10 client workspaces','150 prompts per client','White label + your own domain','Unlimited pitch reports','Automated monthly PDF']]
+        ['starter','Starter','₺2.490',T('Yapay zeka görünürlüğüne yeni başlayan markalar için'),
+          [`40 ${T('AI sorgusu')}`,`5 ${T('rakip')}`,T('3 platform · haftalık ölçüm'),`10 ${T('GEO denetimi/ay')}`,`1 ${T('marka')}`]],
+        ['growth','Growth','₺12.900',T('Daha derin analize ihtiyaç duyan büyüyen markalar için'),
+          [`150 ${T('AI sorgusu')}`,`15 ${T('rakip')}`,T('8 platform · günlük ölçüm'),`30 ${T('GEO denetimi/ay')}`,`3 ${T('marka')}`]],
+        ['business','Business','₺34.900',T('İleri düzey gereksinimleri olan kurumlar için'),
+          [`500 ${T('AI sorgusu')}`,`50 ${T('rakip')}`,T('8 platform · günlük ölçüm'),`100 ${T('GEO denetimi/ay')}`,`10 ${T('marka')}`]],
+        ['agency','Agency','₺89.000',T('Kendi markanız altında müşterilerinize sunun'),
+          [`25 ${T('müşteri markası')}`,`150 ${T('sorgu / marka')}`,`50 ${T('rakip')}`,`200 ${T('GEO denetimi/ay')}`,T('Beyaz etiket')]]
       ].map(p=>`<div class="card" style="${S.plan===p[0]?'border-color:var(--pri)':''}"><div class="cb">
-        ${p[0]==='pro'?'<span class="chip pri" style="margin-bottom:8px">Most Popular</span>':''}
+        ${p[0]==='growth'?`<span class="chip pri" style="margin-bottom:8px">${T('En çok tercih edilen')}</span>`:''}
         <h4 style="font-size:17px">${p[1]}</h4>
         <p style="font-size:12px;color:var(--mute);min-height:40px;margin-top:4px">${p[3]}</p>
-        <div style="font-size:26px;font-weight:600;letter-spacing:-.04em;margin:8px 0 2px">${p[2]}<span style="font-size:13px;color:var(--mute);font-weight:400">/ay</span></div>
+        <div style="font-size:26px;font-weight:600;letter-spacing:-.04em;margin:8px 0 2px">${p[2]}<span style="font-size:13px;color:var(--mute);font-weight:400">/${T('ay')}</span></div>
         <ul style="list-style:none;padding:0;margin:14px 0 16px">${p[4].map(f=>
           `<li style="font-size:12.8px;padding:5px 0;color:var(--fg2);display:grid;grid-template-columns:16px 1fr;gap:7px">
             <span style="color:var(--pri)">✓</span><span>${f}</span></li>`).join('')}</ul>
         <button class="btn ${S.plan===p[0]?'b-gh':'b-pri'} b-full b-sm" ${S.plan===p[0]?'disabled':''}
-          onclick="setPlan('${p[0]}')">${S.plan===p[0]?'Current plan':'Get started'}</button></div></div>`).join('')}</div>
+          onclick="setPlan('${p[0]}')">${S.plan===p[0]?T('Mevcut planınız'):T('Bu plana geç')}</button></div></div>`).join('')}</div>
+
       <div class="card" style="margin-top:16px"><div class="cb" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <div><b style="font-size:14px">Payment Method</b>
+        <div><b style="font-size:14px">${T('Ödeme yöntemi')}</b>
           <p style="font-size:12.5px;color:var(--mute)">${T(`No payment method on file. Add one to keep your subscription active.`)}</p></div>
         <button class="btn b-gh b-sm" style="margin-left:auto" onclick="toast(T('Redirects to the payment provider'))">${T('Add Payment Method')}</button></div></div>`;
   }
@@ -4732,14 +4827,14 @@ function addVar2(){const v=$('#vv').value.trim();if(!v)return;
  */
 async function loadEngines(probe){
   const box=$('#engBox'); if(!box) return;
-  if(probe) box.innerHTML='<div class="empty"><div class="ic">◉</div>${T("Testing every provider…")}</div>';
+  if(probe) box.innerHTML=`<div class="empty"><div class="ic">◉</div>${T('Testing every provider…')}</div>`;
   let d;
   try{ d=await api.get('/api/engines'+(probe?'?test=1':'')); }
   catch(e){ box.innerHTML=`<div class="empty">${esc(e.message)}</div>`; return; }
 
   const badge=e=>{
     if(!e.configured) return '<span class="chip">No key</span>';
-    if(!e.planOk) return '<span class="chip warn">${T("Above your plan")}</span>';
+    if(!e.planOk) return `<span class="chip warn">${T('Above your plan')}</span>`;
     if(!e.test)   return '<span class="chip ok">Key present</span>';
     return e.test.ok
       ? `<span class="chip ok">Working${e.test.latencyMs?' · '+e.test.latencyMs+'ms':''}</span>`
@@ -4830,6 +4925,8 @@ async function saveBrand(){
 }
 
 async function setPlan(p){
+  // The API only accepts trial|starter|growth|business; Agency is contracted,
+  // not self-served, so it never reaches the endpoint.
   if(p==='agency'){ toast(T('Agency plan is handled by our sales team')); return; }
   try{
     await api.post('/api/org/plan',{plan:p});
@@ -4972,7 +5069,7 @@ async function boot(){
   // Full name if we have one; otherwise the local part of the address, since
   // a 30-character email overflows the sidebar and tells the user nothing.
   S.user={name: me.user.fullName || me.user.email.split('@')[0], mail: me.user.email};
-  S.plan=me.org.plan; S.planLimits=me.limits; S.org=me.org; S.role=me.role;
+  S.plan=me.org.plan; S.planLimits=me.limits; S.usage=me.usage||null; S.org=me.org; S.role=me.role;
   S.workspaces=me.workspaces||[];
   S.isAdmin=me.isAdmin===true;
   // A visitor who switched the marketing site to English arrives with ?lang=en
