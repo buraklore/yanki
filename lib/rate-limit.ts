@@ -45,6 +45,11 @@ export const LIMITS = {
   sourceClassify: { max: 10, window: 60 * 60 },
   /* Manual corrections are cheap but this is not a data-entry tool. */
   sourceCorrect:  { max: 60, window: 60 * 60 },
+
+  /* Onboarding site analysis: one page fetch, three model calls and one live
+   * engine query per run. Generous enough that a customer can retype a domain
+   * they mistyped, tight enough that the endpoint cannot be looped. */
+  siteAnalyze: { max: 12, window: 60 * 60 },
 } satisfies Record<string, Limit>;
 
 /** Client IP, trusting the proxy header Vercel sets. */
