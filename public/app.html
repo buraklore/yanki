@@ -430,6 +430,25 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
 .markopts b{font-size:13px;font-weight:500}
 .markopts i{font-style:normal;font-size:11.5px;color:var(--mute2)}
 
+/* Kurulum analizi — adımlar tek tek görünür.
+   Boş bir yükleniyor çemberi otuz saniyeyi bir dakika gibi hissettirir; ne
+   yapıldığını göstermek beklemeyi kısaltmaz ama katlanılır kılar. */
+.anabox{display:grid;gap:11px;padding:22px 4px 8px}
+.anastep{display:flex;align-items:center;gap:11px;font-size:13.5px;color:var(--mute2)}
+.anastep .d{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;
+  font-size:11px;border:1.5px solid var(--border2);color:transparent}
+.anastep.done{color:var(--fg2)}
+.anastep.done .d{background:rgba(74,222,128,.16);border-color:transparent;color:#4ADE80}
+.anastep.now{color:var(--fg)}
+.anastep.now .d{border-color:var(--pri);border-right-color:transparent;
+  animation:anaspin .8s linear infinite}
+@keyframes anaspin{to{transform:rotate(360deg)}}
+
+/* Rakip kaynağı: ölçümle mi bulundu, model mi tahmin etti. */
+.rvsrc{font-size:10.5px;padding:2px 7px;border-radius:5px;margin-left:8px;white-space:nowrap}
+.rvsrc.ai_answer{background:rgba(74,222,128,.13);color:#7EE2A8}
+.rvsrc.model{background:rgba(245,158,11,.13);color:#FCD34D}
+
 /* Kaynak türü rozeti. Renk tek bir şeyi kodlar: girilebilir mi. */
 .kchip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;
   border:1px solid var(--border);background:var(--card2);color:var(--mute)}
@@ -1221,6 +1240,28 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Adım':'Adım',
+  '← Geri':'← Geri',
+  'Site':'Site',
+  'Bilgiler':'Bilgiler',
+  'Sorgular':'Sorgular',
+  'Hazır':'Hazır',
+  'Markanızı ekleyelim':'Markanızı ekleyelim',
+  'Sitenizin adresini ve ülkenizi girin — gerisini sizin için otomatik dolduralım.':'Sitenizin adresini ve ülkenizi girin — gerisini sizin için otomatik dolduralım.',
+  'Web sitesi':'Web sitesi',
+  'Marka sitenizin alan adı':'Marka sitenizin alan adı',
+  'Ülke':'Ülke',
+  'Ana pazarınız':'Ana pazarınız',
+  'Siteyi analiz et':'Siteyi analiz et',
+  'Bu işlem birkaç dakika sürebilir.':'Bu işlem birkaç dakika sürebilir.',
+  'Web sitesi zorunlu':'Web sitesi zorunlu',
+  'Siteniz analiz ediliyor…':'Siteniz analiz ediliyor…',
+  'Site içeriği okunuyor…':'Site içeriği okunuyor…',
+  'Marka ve başlık çıkarılıyor…':'Marka ve başlık çıkarılıyor…',
+  'Kategori ve dil belirleniyor…':'Kategori ve dil belirleniyor…',
+  'Yapay zekaya kategori sorusu soruluyor…':'Yapay zekaya kategori sorusu soruluyor…',
+  'Rakipler cevaptan çıkarılıyor…':'Rakipler cevaptan çıkarılıyor…',
+  'Sorgu önerileri hazırlanıyor…':'Sorgu önerileri hazırlanıyor…',
   'kaynağın türü belirlenemedi':'kaynağın türü belirlenemedi',
   'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.':'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.',
   'Otomatik çöz':'Otomatik çöz',
@@ -2147,39 +2188,112 @@ function platAllowed(p){return p.active!==undefined ? p.active : !p.locked}
 /* =====================================================================
    ONBOARDING
    ===================================================================== */
-const STEPS=['Workspace','Identity','Variants','Competitors','Prompts','Done'];
+/* Kurulumdaki ülke listesi. Kodlar lib/sectors.ts içindeki COUNTRIES ile aynı;
+   sunucu ISO kodu bekliyor, ekranda ad gösteriliyor. */
+const OB_COUNTRIES = [
+  ['TR','Türkiye'],['DE','Almanya'],['GB','Birleşik Krallık'],['US','ABD'],
+  ['NL','Hollanda'],['AE','Birleşik Arap Emirlikleri'],['FR','Fransa'],
+  ['IT','İtalya'],['ES','İspanya'],['SA','Suudi Arabistan'],['AZ','Azerbaycan'],
+];
+
+/* Dört adım. Eskiden altıydı ve ilk üçü kullanıcının sitesinde zaten yazan
+   bilgileri elle doldurtuyordu; o adımlar analize devredildi. */
+const STEPS=['Site','Bilgiler','Sorgular','Hazır'];
 
 function renderOb(){
-  $('#obStep').textContent=`${T('Step')} ${S.step} / 6`;
-  $('#obProg').style.width=(S.step/6*100)+'%';
+  const N=STEPS.length;
+  $('#obStep').textContent=`${T('Adım')} ${S.step} / ${N}`;
+  $('#obProg').style.width=(S.step/N*100)+'%';
   $('#obDots').innerHTML=STEPS.map((_,i)=>`<i class="${i<S.step?'on':''}"></i>`).join('');
   $('#stepper').innerHTML=STEPS.map((s,i)=>{
     const n=i+1,cls=n<S.step?'dn':n===S.step?'on':'';
     return `<div class="st ${cls}"><div style="position:relative"><div class="n">${n<S.step?'✓':n}</div>
-      <div class="lb" style="left:50%">${s}</div></div>${i<5?'<span class="ln"></span>':''}</div>`}).join('');
-  ({1:obS1,2:obS2,3:obS3,4:obS4,5:obS5,6:obS6})[S.step]();
+      <div class="lb" style="left:50%">${T(s)}</div></div>${i<STEPS.length-1?'<span class="ln"></span>':''}</div>`}).join('');
+  // 3. ve 4. eski adımlar (varyantlar, rakipler) analize devredildi; rakipler
+  // artık Sorgular adımında onaylanıyor, varyantlar Ayarlar'dan düzenlenebilir.
+  ({1:obS1,2:obS2,3:obS5,4:obS6})[S.step]();
   localise(document.body);
 }
 
+/**
+ * Adım 1 — tek girdi: alan adı.
+ *
+ * Önceki kurulum yedi alanı elle doldurtuyordu: marka adı, site, sektör, ülke,
+ * şehir, açıklama, rakipler. Kullanıcının zaten bildiği ve sitesinde yazan
+ * şeyleri yazdırmak, ilk ölçümü görmeden vazgeçmenin en yaygın sebebidir.
+ * Artık site okunuyor ve geri kalan her şey doldurulmuş olarak geliyor —
+ * kullanıcı yazmıyor, onaylıyor.
+ */
 function obS1(){
-  $('#obCard').innerHTML=`<div class="ob-ic">▤</div><h2>${T("Set Up Your Hub")}</h2>
-  <p class="lead">${T(`Let's configure your project workspace`)}</p>
+  $('#obCard').innerHTML=`<div class="ob-ic">◎</div><h2>${T('Markanızı ekleyelim')}</h2>
+  <p class="lead">${T('Sitenizin adresini ve ülkenizi girin — gerisini sizin için otomatik dolduralım.')}</p>
   <div class="ob-form">
-    <div class="fld"><label>${T(`Project / Brand Name`)}</label>
-      <input class="in" id="i1" value="${esc(S.brand.name)}" placeholder="${esc(T(`e.g. Acme Commerce`))}">
-      <div class="hint">${T(`This is how your project will appear in the dashboard`)}</div></div>
-    <div class="fld"><label>${T("Your website")}</label>
-      <input class="in" id="i2" value="${esc(S.brand.site)}" placeholder="https://www.example.com">
-      <div class="hint">${T(`We'll track brand visibility for this domain`)}</div></div>
-    <button class="btn b-pri b-full b-lg" onclick="obNext1()">${T(`Continue`)}</button>
+    <div class="fld"><label>${T('Web sitesi')}</label>
+      <input class="in" id="i2" value="${esc((S.brand.site||'').replace(/^https?:\/\//,''))}"
+        placeholder="ornekmarka.com" onkeydown="if(event.key==='Enter')obNext1()">
+      <div class="hint">${T('Marka sitenizin alan adı')}</div></div>
+    <div class="fld"><label>${T('Ülke')}</label>
+      <select class="in" id="i1c">${OB_COUNTRIES.map(([code,ad])=>
+        `<option value="${code}" ${(S.brand.countryCode||'TR')===code?'selected':''}>${esc(ad)}</option>`).join('')}</select>
+      <div class="hint">${T('Ana pazarınız')}</div></div>
+    <button class="btn b-pri b-full b-lg" id="anaBtn" onclick="obNext1()">${T('Siteyi analiz et')}</button>
+    <div class="hint" style="text-align:center;margin-top:10px">${T('Bu işlem birkaç dakika sürebilir.')}</div>
   </div>`;
 }
-async function obNext1(){
-  const n=$('#i1').value.trim(), site=$('#i2').value.trim();
-  if(!n) return toast(T('Brand name is required'));
-  S.brand.name=n; S.brand.site=site;
-  S.step=2; renderOb();
+
+/* Analiz adımları — kullanıcı ne beklediğini bilsin diye tek tek gösterilir.
+   Boş bir yükleniyor çemberi, otuz saniyeyi bir dakika gibi hissettirir. */
+const ANA_ADIM = [
+  'Site içeriği okunuyor…',
+  'Marka ve başlık çıkarılıyor…',
+  'Kategori ve dil belirleniyor…',
+  'Yapay zekaya kategori sorusu soruluyor…',
+  'Rakipler cevaptan çıkarılıyor…',
+  'Sorgu önerileri hazırlanıyor…',
+];
+function anaProgress(i){
+  const box=$('#anaBox'); if(!box) return;
+  box.innerHTML=ANA_ADIM.map((t,n)=>`
+    <div class="anastep ${n<i?'done':n===i?'now':''}">
+      <span class="d">${n<i?'✓':''}</span><span>${T(t)}</span></div>`).join('');
 }
+
+async function obNext1(){
+  const raw=$('#i2').value.trim();
+  if(!raw) return toast(T('Web sitesi zorunlu'));
+  const cc=$('#i1c').value;
+
+  $('#obCard').innerHTML=`<div class="ob-ic">◎</div><h2>${T('Markanızı ekleyelim')}</h2>
+    <p class="lead">${T('Siteniz analiz ediliyor…')}</p>
+    <div class="anabox" id="anaBox"></div>`;
+  let step=0; anaProgress(0);
+  // Adımlar gerçek işin ilerlemesine değil, beklenen süreye göre ilerler —
+  // sunucu ara durum bildirmiyor. Son adımda durur, cevap gelince tamamlanır.
+  const tick=setInterval(()=>{ if(step<ANA_ADIM.length-1) anaProgress(++step); }, 2600);
+
+  try{
+    const r=await api.post('/api/onboarding/analyze',{domain:raw,countryCode:cc,language:S.lang});
+    clearInterval(tick); anaProgress(ANA_ADIM.length);
+    S.brand.name=r.brandName; S.brand.site=r.domain; S.brand.sector=r.sector;
+    S.brand.sectorTerm=r.sectorTerm; S.brand.desc=r.description;
+    S.brand.country=r.country; S.brand.countryCode=r.countryCode; S.brand.title=r.siteTitle;
+    /* Sorgular doğrudan adım 3'ün listesine yazılır: analiz onları zaten
+     * markanın kategorisi, ülkesi ve rakipleriyle üretti — kullanıcı yeniden
+     * üretilmesini beklemesin, hepsi işaretli gelsin. */
+    S.prompts=(r.prompts||[]).map(x=>({...x, on:true}));
+    S.promptSource='ai';
+    S.aiRivals=r.competitors||[];
+    S.discoveryQuery=r.discoveryQuery||null;
+    S.anaWarnings=r.warnings||[];
+    S.rivals=(r.competitors||[]).map(c=>({n:c.name, src:c.source}));
+    S.step=2; renderOb();
+  }catch(e){
+    clearInterval(tick);
+    toast(e.message,'error');
+    S.step=1; renderOb();
+  }
+}
+
 function obS2(){
   $('#obCard').innerHTML=`<div class="ob-ic">◎</div><h2>${T("Define Your Identity")}</h2>
   <p class="lead">${T(`Help us understand your business so we can build better AI monitoring prompts`)}</p>
@@ -2281,7 +2395,7 @@ function obS4(){
       <div class="in2"><input class="in" placeholder="Competitor name" value="${esc(r.n)}" oninput="S.rivals[${i}].n=this.value">
       <input class="in" placeholder="competitor.com" value="${esc(r.d)}" oninput="S.rivals[${i}].d=this.value"></div></div>`).join('')}
     <button class="btn b-gh b-full b-sm" onclick="S.rivals.push({n:'',d:''});renderOb()">${T(`+ Add Another Competitor`)}</button>
-    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=3;renderOb()">← Back</button>
+    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=2;renderOb()">${T('← Geri')}</button>
       <button class="btn b-pri b-lg" onclick="obNext4()">Continue</button></div>
     <div style="text-align:center;margin-top:14px"><button class="btn b-gh b-sm" style="border:0;background:none;color:var(--mute)"
       onclick="S.rivals=[];obNext4()">${T("Skip this step")}</button></div>
@@ -2304,7 +2418,7 @@ async function obNext4(){
       return;
     }
   }
-  S.step=5;renderOb();
+  S.step=3;renderOb();
 }
 
 async function regenOnboarding(){
@@ -2363,7 +2477,7 @@ function obS5(){
 
     <div class="info" style="margin-top:18px">${T(`💡 A prompt that names your brand only proves the model can read. Keep the brand out of them — except the trust question, which is there on purpose to show what is said when someone checks up on you.`)}</div>
 
-    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=4;renderOb()">← Back</button>
+    <div class="ob-nav"><button class="btn b-gh b-lg" onclick="S.step=2;renderOb()">${T('← Geri')}</button>
       <button class="btn b-pri b-lg" ${sel?'':'disabled'} onclick="obFinish()">Continue (${sel})</button></div>
   </div>`;
 }
@@ -2440,7 +2554,7 @@ async function obFinish(){
     });
     S.prompts=chosen;
     S.firstScan=res;
-    S.step=6;renderOb();
+    S.step=4;renderOb();
   }catch(e){
     toast(e.message);
     if(btn){btn.disabled=false;btn.textContent=`Continue (${chosen.length})`;}
