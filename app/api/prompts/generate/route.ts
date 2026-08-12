@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { requireSession, requireWorkspace, handler } from '@/lib/auth';
+import { enforce } from '@/lib/rate-limit';
 import { generatePrompts, checkMix, type Intent } from '@/lib/prompts';
 import { generatePromptsWithAI, aiPromptsAvailable } from '@/lib/prompt-ai';
 import { COUNTRIES } from '@/lib/sectors';
@@ -17,6 +18,9 @@ export const POST = handler(async (req) => {
   const s = await requireSession();
   const { workspaceId } = Body.parse(await req.json());
   const ws = await requireWorkspace(s, workspaceId);
+  // One click, one completion. Without a ceiling, a held button or a retry
+  // loop spends provider credit as fast as the browser can issue requests.
+  await enforce('promptGen', s.orgId);
 
   // Prompts are written in the market's language, so the country name must be
   // localised too — "Turkey'deki" is not a Turkish sentence.
