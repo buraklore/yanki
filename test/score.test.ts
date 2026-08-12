@@ -1,11 +1,33 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import {
-  WEIGHTS, prominence, scoreCell, aggregate, shareOfVoice,
+  WEIGHTS, ENGINE_WEIGHT, prominence, scoreCell, aggregate, shareOfVoice,
   promptWeight, needsMoreRuns, type Run, type Cell,
 } from '../lib/score';
 
 const run = (o: Partial<Run> = {}): Run => ({
   mentioned: true, rank: 1, cited: true, recommendation: 'primary', sentiment: 1, ...o,
+});
+
+describe('engine weights', () => {
+  it('sum to exactly 1 — the Platforms screen presents each as a % of the score', () => {
+    const total = Object.values(ENGINE_WEIGHT).reduce((a, b) => a + b, 0);
+    expect(total).toBeCloseTo(1, 9);
+  });
+
+  it('match the seed in schema.sql — the two drifted once and nobody noticed', () => {
+    const sqlText = readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8');
+    const block = sqlText.slice(sqlText.indexOf('insert into engines'));
+    const seeded: Record<string, number> = {};
+    for (const m of block.matchAll(/\('(\w+)',\s*'[^']+',\s*([\d.]+),/g)) {
+      seeded[m[1]] = Number(m[2]);
+    }
+    // Same set of engines, same numbers, in both places.
+    expect(Object.keys(seeded).sort()).toEqual(Object.keys(ENGINE_WEIGHT).sort());
+    for (const [key, w] of Object.entries(ENGINE_WEIGHT)) {
+      expect(seeded[key], `weight for ${key}`).toBeCloseTo(w, 9);
+    }
+  });
 });
 
 describe('weights', () => {
