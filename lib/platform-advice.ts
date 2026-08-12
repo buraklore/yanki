@@ -1,4 +1,5 @@
 import { sql } from './db';
+import { classifyDomains, type SourceKind } from './source-kind';
 
 /**
  * platform-advice.ts — why you are weak on *this* platform, and what to do.
@@ -71,20 +72,56 @@ interface Ctx {
   brand: string;
   host: string;
   label: string;
-  topSources: { domain: string; count: number; ours: boolean }[];
+  /** `kind` ile birlikte: bir kaynağa nasıl girileceği türüne göre değişir. */
+  topSources: { domain: string; count: number; ours: boolean; kind: SourceKind }[];
   rival?: { name: string; mentions: number };
   mentionRate: number;
   citationRate: number;
   meanRank: number | null;
 }
 
-const src = (c: Ctx, n = 2) =>
+/**
+ * Kaynak adları — ama yalnızca GİRİLEBİLİR olanlar.
+ *
+ * Eskiden bu yardımcı en çok atıf alan iki alan adını döndürüyordu ve tavsiye
+ * "şunların editörlerine ulaşın" diyordu. Gerçek müşteri verisinde kaynakların
+ * %40'ı girilemez sınıfta: rakip ajans siteleri ve satıcı blogları. semrush.com
+ * bir SaaS şirketinin kendi blogudur — editörüne yazıp listeye girilmez.
+ *
+ * Artık ulaşılabilir kaynaklar önce gelir; hiç yoksa çağıran taraf tavsiyeyi
+ * kaynak adı üzerinden kurmaz.
+ */
+const reachableSrc = (c: Ctx, n = 2) =>
+  c.topSources
+    .filter(s => !s.ours && REACHABLE_KINDS.has(s.kind))
+    .slice(0, n)
+    .map(s => s.domain);
+
+/** Girilemeyen kaynaklar: neden çalışılamadığını açıklamak için. */
+const blockedSrc = (c: Ctx, n = 3) =>
+  c.topSources
+    .filter(s => !s.ours && !REACHABLE_KINDS.has(s.kind))
+    .slice(0, n)
+    .map(s => s.domain);
+
+/**
+ * Sadece durumu anlatan yerler için: en çok atıf alan kaynaklar, türü ne olursa
+ * olsun. "Trafiğin gittiği yer orası" bir tespittir; oraya girilip girilemediği
+ * o cümlenin doğruluğunu değiştirmez.
+ */
+const anySrc = (c: Ctx, n = 2) =>
   c.topSources.filter(s => !s.ours).slice(0, n).map(s => s.domain);
+
+const REACHABLE_KINDS = new Set<SourceKind>([
+  'directory', 'marketplace', 'review', 'publication',
+  'community', 'self_publish', 'authority',
+]);
 
 const listOr = (arr: string[], fallback: string) => arr.length ? arr.join(', ') : fallback;
 
 /** Advice shared by every engine, specialised below. */
-const generic: Playbook = {
+/** Test edilebilir olması için dışa aktarıldı; davranış aynı. */
+export const generic: Playbook = {
   not_measured: () => ({
     headline: 'Bu platform ölçülmedi',
     why: 'Anahtar tanımlı değil ya da planınızın üstünde. Buradaki boşluk bir skor değil, eksik bir ölçüm.',
@@ -103,22 +140,45 @@ const generic: Playbook = {
       ],
     }],
   }),
-  absent: c => ({
-    headline: 'Bu platformda neredeyse hiç geçmiyorsunuz',
-    why: `${c.label} sizi tanımıyor. Kendi sitenizdeki içerik bunu tek başına çözmez; model markayı üçüncü taraf kaynaklardan öğrenir.`,
-    actions: [{
-      title: `${listOr(src(c), 'sektör kaynakları')} üzerinde varlık kurun`,
-      detail: 'Bu platformun bu sorgularda en çok okuduğu kaynaklar bunlar ve hiçbirinde yoksunuz.',
-      steps: [
-        'Bu kaynaklardaki liste ve karşılaştırma yazılarına dahil olmak için editörlerine ulaşın',
-        'Sektörünüzde konuşulan forum ve inceleme sitelerinde kurumsal hesap açın',
-        'Kategorinizle ilgili sorulara markanızı zorlamadan, bilgiyle katkı verin',
-      ],
-    }],
-  }),
+  absent: c => {
+    /* Girilebilir kaynak var mı? Varsa adıyla söylenir ve o kaynağın türüne
+     * uygun adım verilir. Yoksa kaynak adı üzerinden tavsiye kurulmaz —
+     * "semrush.com üzerinde varlık kurun" diye bir iş yoktur. */
+    const acik = reachableSrc(c, 2);
+    const kapali = blockedSrc(c, 3);
+    return {
+      headline: 'Bu platformda neredeyse hiç geçmiyorsunuz',
+      why: `${c.label} sizi tanımıyor. Kendi sitenizdeki içerik bunu tek başına çözmez; model markayı üçüncü taraf kaynaklardan öğrenir.`,
+      actions: acik.length
+        ? [{
+            title: `${listOr(acik, 'sektör kaynakları')} üzerinde yer alın`,
+            detail: 'Bu platformun okuduğu kaynaklar arasında kayda açık olanlar bunlar — profil veya başvuru yolu var.',
+            steps: [
+              'Profil oluşturun; hizmet, sektör ve konum alanlarını eksiksiz doldurun',
+              'Tamamlanmış işleri örnek olay olarak ekleyin, sonucu sayıyla verin',
+              'Kayıt sonrası müşterilerinizden platform üzerinden değerlendirme isteyin',
+              ...(kapali.length
+                ? [`${listOr(kapali, 'diğer kaynaklar')} bir şirketin kendi içeriğidir — oraya profil açılamaz, uğraşmayın`]
+                : []),
+            ],
+          }]
+        : [{
+            title: 'Girilebilir kaynak listesi oluşturun',
+            detail: kapali.length
+              ? `Bu platformun en çok okuduğu kaynaklar (${listOr(kapali, 'rakip siteleri')}) şirketlerin kendi siteleri — oraya dışarıdan girilemez.`
+              : 'Bu platformun bu sorgularda hangi kaynakları okuduğu henüz yeterince ölçülmedi.',
+            steps: [
+              'Sektörünüzün dizinlerine kaydolun — kayıt açık olan her listeye girin',
+              'Wikidata kaydınızı oluşturun; marka kimliğini modelin gözünde netleştirir',
+              'Sektör yayınlarına ürün tanıtımı değil, kendi verinizi içeren bir konu önerin',
+              'Kaynaklar ekranında türü belirlenmemiş alan adlarını işaretleyin — hangi kapıların açık olduğunu böyle çıkarırız',
+            ],
+          }],
+    };
+  },
   mentioned_uncited: c => ({
     headline: 'Anılıyorsunuz ama kaynak gösterilmiyorsunuz',
-    why: `${c.label} markanızı biliyor, ancak cevabı ${listOr(src(c), 'başka sitelerden')} besliyor. Trafiğin gittiği yer orası.`,
+    why: `${c.label} markanızı biliyor, ancak cevabı ${listOr(anySrc(c), 'başka sitelerden')} besliyor. Trafiğin gittiği yer orası.`,
     actions: [{
       title: 'Sayfalarınızı alıntılanabilir hale getirin',
       detail: 'Model, doğrudan cevap veren ve atıfı kolay olan sayfaları kaynak seçer.',
@@ -178,7 +238,7 @@ const PLAYBOOKS: Record<string, Partial<Playbook>> = {
     }),
     mentioned_uncited: c => ({
       headline: 'Perplexity sizi anıyor ama başka siteyi kaynak gösteriyor',
-      why: `Perplexity her iddiayı bir bağlantıya dayandırır. Şu an o bağlantılar ${listOr(src(c), 'üçüncü taraflar')}.`,
+      why: `Perplexity her iddiayı bir bağlantıya dayandırır. Şu an o bağlantılar ${listOr(anySrc(c), 'üçüncü taraflar')}.`,
       actions: [{
         title: 'Alıntılanabilir sayfa yapısı kurun',
         detail: 'Perplexity, tek bir paragrafta net cevap veren sayfaları tercih eder.',
@@ -216,7 +276,10 @@ const PLAYBOOKS: Record<string, Partial<Playbook>> = {
         title: 'Web genelinde marka bahsi hacmini artırın',
         detail: 'Bu platformda belirleyici olan backlink değil, markanızın kategoriyle birlikte anıldığı bağımsız içerik sayısıdır.',
         steps: [
-          `${listOr(src(c), 'sektör yayınları')} üzerinde yer almak için editörlere ulaşın`,
+          // Yalnızca kayda açık kaynak varsa adıyla önerilir.
+          ...(reachableSrc(c, 2).length
+            ? [`${listOr(reachableSrc(c, 2), 'sektör yayınları')} üzerinde yer alın — kayıt veya başvuru yolu açık`]
+            : ['Sektörünüzün dizin ve yayınlarına kaydolun; kayda açık her listeye girin']),
           'Wikipedia veya Wikidata varlığı oluşturun — kimlik netliğini belirgin şekilde artırır',
           'LinkedIn şirket sayfası, Crunchbase ve sektör dizinlerinde tutarlı isim kullanın',
           'Organization schema’da sameAs ile bu profillerin tümünü bağlayın',
@@ -309,11 +372,30 @@ export async function platformAdvice(
      group by ar.engine_key, rc.domain
      order by n desc`;
 
-  const byEngineSources = new Map<string, { domain: string; count: number; ours: boolean }[]>();
-  for (const r of sources as unknown as { engine_key: string; domain: string; n: number }[]) {
+  /* Kaynakları türüne göre sınıflandır.
+   *
+   * Tavsiye metni buna bağlı: bir dizine profil açılır, bir rakibin sitesine
+   * hiç girilemez. Sınıflandırma müşteriler arası ortak tabloda önbelleklenir.
+   * allowLlm:false — bu fonksiyon Aksiyon Planı ekranını besler ve bir model
+   * yanıtı beklemesi doğru olmaz; bilinmeyen kaynak 'unknown' kalır ve
+   * girilemez sayılır, yani hakkında tavsiye üretilmez. */
+  const rows = sources as unknown as { engine_key: string; domain: string; n: number }[];
+  const rivalRows = await sql<{ domain: string | null }[]>`
+    select domain from competitors where workspace_id = ${workspaceId} and active`;
+  const kinds = await classifyDomains([...new Set(rows.map(r => r.domain))], {
+    rivalDomains: rivalRows.map(r => r.domain).filter((d): d is string => !!d),
+    ownDomain: host,
+    allowLlm: false,
+  });
+
+  const byEngineSources = new Map<string, { domain: string; count: number; ours: boolean; kind: SourceKind }[]>();
+  for (const r of rows) {
     const list = byEngineSources.get(r.engine_key) ?? [];
     if (list.length < 8) {
-      list.push({ domain: r.domain, count: r.n, ours: r.domain.endsWith(host) });
+      list.push({
+        domain: r.domain, count: r.n, ours: r.domain.endsWith(host),
+        kind: kinds.get(r.domain)?.kind ?? 'unknown',
+      });
     }
     byEngineSources.set(r.engine_key, list);
   }
