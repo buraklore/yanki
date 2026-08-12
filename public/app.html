@@ -347,6 +347,36 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 14px}
 .keepopen b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:#FDE68A}
 
+/* --- Opportunities --- */
+/* Absent is a different kind of row from "covered a bit", so it gets a word
+   rather than a 0% the eye slides past. */
+.ocov{font-family:var(--mono);font-size:12px}
+.ocov.none{color:#F87171}
+.ocov.part{color:#FBBF24}
+.ocov.good{color:#4ADE80}
+/* The opportunity number carries its own bar, so the column ranks itself. */
+.oscore{position:relative;display:inline-block;min-width:34px;text-align:right;
+  font-family:var(--mono);font-weight:600;color:var(--fg);padding-bottom:5px}
+.oscore::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--pri) var(--w),transparent var(--w))}
+.otbl td b{font-weight:500;color:var(--fg)}
+.otbl tbody tr:hover td{background:rgba(255,255,255,.025)}
+
+/* --- Audit page --- */
+/* Status as a glyph in a fixed slot: forty-eight rows scan faster by shape
+   than by reading "Pass / Partial / Fail" on each one. */
+.frow{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.frow:last-child{border-bottom:0}
+.fst{width:20px;height:20px;border-radius:6px;flex:none;display:grid;place-items:center;
+  font-size:11px;font-weight:700}
+.fst.pass{background:rgba(74,222,128,.14);color:#4ADE80}
+.fst.partial{background:rgba(251,191,36,.14);color:#FBBF24}
+.fst.fail{background:rgba(248,113,113,.14);color:#F87171}
+.fn{flex:1;min-width:0;font-size:13px;color:var(--fg2);display:grid;gap:2px}
+.fn i{font-style:normal;font-size:11.5px;color:var(--mute2)}
+.acc-h h5{font-size:13.5px;font-weight:600;margin:0;color:var(--fg)}
+.acc-h .sb2{font-size:11.5px;color:var(--mute2);margin-top:2px}
+
 /* --- Sources page --- */
 /* Your own row is the one the reader came to find, so it is marked on the
    frame rather than tinted like every other highlight in the app. */
@@ -1107,7 +1137,108 @@ const I18N = {
   'No key':'Anahtar yok',
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
+  // ---- GEO site denetimi: kategoriler ----
+  'Accessibility and rendering':'Erişilebilirlik ve sayfa çizimi',
+  'Entity and identity clarity':'Marka kimliği netliği',
+  'Structured data':'Yapılandırılmış veri',
+  'Answer-ready content structure':'Cevaba hazır içerik yapısı',
+  'Citability':'Kaynak gösterilebilirlik',
+  'Freshness and maintenance':'Güncellik ve bakım',
+
+  // ---- GEO site denetimi: kriterler ----
+  'Content visible without JavaScript (SSR)':'İçerik JavaScript olmadan görünüyor',
+  'robots.txt open to AI bots':'robots.txt yapay zeka botlarına açık',
+  'llms.txt published':'llms.txt yayında',
+  'sitemap.xml up to date':'sitemap.xml güncel',
+  'No 4xx/5xx errors':'4xx/5xx hatası yok',
+  'Short redirect chains':'Yönlendirme zinciri kısa',
+  'Correct canonical':'Kanonik adres doğru',
+  'TTFB < 800ms':'İlk yanıt süresi 800 ms altında',
+  'Reasonable page weight':'Sayfa boyutu makul',
+  'No CDN bot blocking':'CDN botları engellemiyor',
+  'Organization schema present':'Organization şeması var',
+  'sameAs link graph':'sameAs bağlantı ağı',
+  'Consistent brand name usage':'Marka adı tutarlı kullanılmış',
+  'Logo ImageObject markup':'Logo ImageObject işaretlemesi',
+  'Founder / contact details':'Kurucu ve iletişim bilgileri',
+  'Wikidata or Wikipedia entry':'Wikidata veya Wikipedia kaydı',
+  'Google Business profile consistency':'Google İşletme profili tutarlı',
+  'LinkedIn company page match':'LinkedIn şirket sayfası eşleşiyor',
+  'Brand name variants appear on page':'Marka adı varyantları sayfada geçiyor',
+  'No schema validation errors':'Şema doğrulama hatası yok',
+  'JSON-LD format used':'JSON-LD biçimi kullanılmış',
+  '40–60 word direct answer in first paragraph':'İlk paragrafta 40–60 kelimelik doğrudan cevap',
+  'H2/H3 headings in question form':'H2/H3 başlıkları soru biçiminde',
+  'Definition block present':'Tanım bloğu var',
+  'Comparison table':'Karşılaştırma tablosu',
+  'Bullet lists used':'Madde listeleri kullanılmış',
+  'One topic per page':'Sayfa başına tek konu',
+  'Content is chunkable':'İçerik parçalara ayrılabiliyor',
+  'Meaningful section/article tags':'Anlamlı section/article etiketleri',
+  'Heading hierarchy is not broken':'Başlık hiyerarşisi bozuk değil',
+  'Highlighted summary box':'Öne çıkarılmış özet kutusu',
+  'Meaningful image alt text':'Görsellerde anlamlı alt metin',
+  'Original statistics or data':'Özgün istatistik veya veri',
+  'External source citations':'Dış kaynak atıfları',
+  'Expert opinion or quote':'Uzman görüşü veya alıntı',
+  'Density of numeric claims':'Sayısal ifade yoğunluğu',
+  'Unique terminology defined':'Kendine özgü terimler tanımlanmış',
+  'Publication date visible':'Yayın tarihi görünür',
+  'Author biography':'Yazar tanıtımı',
+  'Update log':'Güncelleme kaydı',
+  'Updated in the last 90 days':'Son 90 günde güncellenmiş',
+  'Date markers visible':'Tarih işaretleri görünür',
+  'No broken links':'Kırık bağlantı yok',
+  'No orphan pages':'Bağlantısız sayfa yok',
+  'Archived content labelled':'Arşiv içeriği etiketlenmiş',
+  'Sitemap lastmod correct':'Site haritası lastmod değeri doğru',
+  'Evidence of a content calendar':'İçerik takvimi izi',
+  'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'yok':'yok',
+  'Her sorgu için fırsat skoru: aylık hacim, ne kadarında göründüğünüz ve satın alma niyeti bir araya gelir. Yüksek skor, çok aranan ama sizin bulunmadığınız bir soru demektir.':'Her sorgu için fırsat skoru: aylık hacim, ne kadarında göründüğünüz ve satın alma niyeti bir araya gelir. Yüksek skor, çok aranan ama sizin bulunmadığınız bir soru demektir.',
+  'Hiç görünmediğiniz sorgu':'Hiç görünmediğiniz sorgu',
+  'aylık arama hacmi':'aylık arama hacmi',
+  'Kısmen göründüğünüz':'Kısmen göründüğünüz',
+  'bazı cevaplarda var, çoğunda yok':'bazı cevaplarda var, çoğunda yok',
+  'En yüksek fırsat':'En yüksek fırsat',
+  'Takip edilen sorgu':'Takip edilen sorgu',
+  'Sorguları düzenle →':'Sorguları düzenle →',
+  'Öncelikli sorgu fırsatları':'Öncelikli sorgu fırsatları',
+  'Fırsat skoru yüksek olan sorgular önce gelir. “İçerik üret” o sorgu için hazır bir brief çıkarır.':'Fırsat skoru yüksek olan sorgular önce gelir. “İçerik üret” o sorgu için hazır bir brief çıkarır.',
+  'Aylık hacim':'Aylık hacim',
+  'İçerik uyumu':'İçerik uyumu',
+  'Önerilen aksiyon':'Önerilen aksiyon',
+  'Fırsat':'Fırsat',
+  'Fırsat skoru hacmi tek başına değil, kaybı ölçer: çok aranan ve hiç görünmediğiniz bir sorgu, orta hacimli ama zaten önde olduğunuz bir sorgudan önce gelir.':'Fırsat skoru hacmi tek başına değil, kaybı ölçer: çok aranan ve hiç görünmediğiniz bir sorgu, orta hacimli ama zaten önde olduğunuz bir sorgudan önce gelir.',
+  'Explainer guide':'Açıklayıcı rehber',
+  'Comparison table':'Karşılaştırma tablosu',
+  'Trust page + FAQ':'Güven sayfası + SSS',
+  'Product/service page':'Ürün/hizmet sayfası',
+  'Category landing page':'Kategori sayfası',
+  'örn. en iyi ... firmaları hangileri':'örn. en iyi ... firmaları hangileri',
+  'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlığı. 58 kriter, 6 başlıkta.':'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlığı. 58 kriter, 6 başlıkta.',
+  'Denetlenecek adres':'Denetlenecek adres',
+  'Bu site henüz denetlenmedi':'Bu site henüz denetlenmedi',
+  'Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve kaynak gösterilmenizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.':'Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve kaynak gösterilmenizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.',
+  'Site hazırlık skoru':'Site hazırlık skoru',
+  'sağlıklı':'sağlıklı',
+  'iyileştirilebilir':'iyileştirilebilir',
+  'ciddi teknik eksik':'ciddi teknik eksik',
+  'Karşılanan kriter':'Karşılanan kriter',
+  'kısmi':'kısmi',
+  'başarısız':'başarısız',
+  'karşılandı':'karşılandı',
+  'En zayıf başlık':'En zayıf başlık',
+  'kriter karşılanmıyor':'kriter karşılanmıyor',
+  'Bu eksikler yapay zekanın sitenizi okumasını ve kaynak göstermesini doğrudan engelliyor. Her biri Aksiyon Planı’nda etkiye göre sıralanmış bir iş kalemi olarak duruyor.':'Bu eksikler yapay zekanın sitenizi okumasını ve kaynak göstermesini doğrudan engelliyor. Her biri Aksiyon Planı’nda etkiye göre sıralanmış bir iş kalemi olarak duruyor.',
+  'En zayıf başlık üstte. Başlığa tıklayın, hangi kriterin kaldığını görün.':'En zayıf başlık üstte. Başlığa tıklayın, hangi kriterin kaldığını görün.',
+  'Nasıl düzeltilir':'Nasıl düzeltilir',
+  'Görünürlük skoru sonucu ölçer — yapay zekanın ne söylediğini. Bu skor sebebi ölçer — sitenizin okunabilirliğini. Sebebi düzeltmek sonucu zamanla yukarı çeker; tersi işlemez.':'Görünürlük skoru sonucu ölçer — yapay zekanın ne söylediğini. Bu skor sebebi ölçer — sitenizin okunabilirliğini. Sebebi düzeltmek sonucu zamanla yukarı çeker; tersi işlemez.',
+  'Hızlı düzeltmeler':'Hızlı düzeltmeler',
+  'Denetimde en sık başarısız olan üç kriter için hazır dosya üretin':'Denetimde en sık başarısız olan üç kriter için hazır dosya üretin',
+  'Denetim tamamlandı':'Denetim tamamlandı',
+  'bu ay kalan hak':'bu ay kalan hak',
   'Aksiyon planı':'Aksiyon planı',
   'yeni':'yeni',
   'siteniz':'siteniz',
@@ -1399,10 +1530,10 @@ const I18N = {
   'volume':'hacim',
   'domain cited as source':'alan adı kaynak gösterildi',
   'when mentioned':'bahsedildiğinde',
-  'Mention matrix':'Bahsetme matrisi',
-  'Mention rate, prominence, citation, recommendation strength and sentiment are measured separately':'Bahsetme oranı, belirginlik, atıf, tavsiye gücü ve duygu ayrı ayrı ölçülür',
+  'Mention matrix':'Anılma matrisi',
+  'Mention rate, prominence, citation, recommendation strength and sentiment are measured separately':'Anılma oranı, cevaptaki konum, kaynak gösterilme, tavsiye gücü ve ton ayrı ayrı ölçülür',
   'Sentiment':'Duygu',
-  'Mention Distribution':'Bahsetme Dağılımı',
+  'Mention Distribution':'Anılma Dağılımı',
   'Share of your brand mentions coming from each AI platform':'Marka bahsetmelerinizin her AI platformundan gelen payı',
   'Daily visibility scores per platform':'Platform bazlı günlük görünürlük skorları',
   'Platform Details':'Platform Detayları',
@@ -1442,7 +1573,7 @@ const I18N = {
   'Search competitors...':'Rakip ara...',
   'Name':'Ad',
   'Website':'Web sitesi',
-  'Mention count':'Bahsetme',
+  'Mention count':'Anılma',
   'Avg. rank':'Ort. sıra',
   'Remove':'Kaldır',
   'you':'siz',
@@ -2427,9 +2558,12 @@ function buildActions() {
   (d.audit || []).forEach(c => c.facs.forEach(f => { if (f.st === 'fail') fails.push({ ...f, cat: c.n }); }));
 
   // Failing audit factors that ship a fix are the cheapest wins available.
+  // Factor and category names come from the server in English; the action plan
+  // has to translate them the same way the audit screen does, or a Turkish
+  // panel prints "Accessibility and rendering" in the middle of a task list.
   fails.filter(f => f.fix).slice(0, 4).forEach((f, i) => push(
-    f.n,
-    `${f.cat} · ${f.detail || T('Failing')}`,
+    T(f.n),
+    `${T(f.cat)} · ${f.detail || T('Failing')}`,
     (4.6 - i * 0.5).toFixed(1),
     i === 0 ? `1 ${T('hour')}` : `1–3 ${T('days')}`,
     `+${4 - i} ${T('prompts')}`,
@@ -3424,7 +3558,7 @@ VIEWS.mentions=()=>{
   </div>`;
 };
 function exportMentions(){
-  const rows=[['Prompt','Platform','Intent','Mention %','Rank','Cited','Sentiment','Score','CI']];
+  const rows=[['Sorgu','Platform','Niyet','Anılma %','Sıra','Kaynak','Ton','Skor','Ölçüm payı']];
   S.data.cells.forEach(c=>rows.push([c.p.text,c.pl.n,c.p.intent,
     (c.m*100).toFixed(0),c.rank||'',c.c>0?'yes':'no',c.sg.toFixed(2),c.score.toFixed(1),c.ci.toFixed(1)]));
   dl('yanki-mentions.csv',csv(rows),'text/csv;charset=utf-8');
@@ -3532,7 +3666,7 @@ VIEWS.platforms=()=>{
   </div>`;
 };
 function exportPlats(){
-  const rows=[['Platform','Score','Weight','Mentions','Citations','Total checks']];
+  const rows=[['Platform','Skor','Ağırlık','Anılma','Kaynak','Toplam kontrol']];
   S.data.plats.filter(p=>!p.locked).forEach(p=>rows.push([p.n,p.score.toFixed(2),p.w,p.mentions,p.cites,p.checks]));
   dl('yanki-platforms.csv',csv(rows),'text/csv;charset=utf-8');
 }
@@ -3618,7 +3752,7 @@ VIEWS.sources=()=>{
   </div>`;
 };
 function exportSources(){
-  const rows=[['Domain','Citations','Is yours']];
+  const rows=[['Alan adı','Atıf','Sizin siteniz']];
   S.data.sources.forEach(s=>rows.push([s.d,s.v,s.mine?'yes':'no']));
   dl('yanki-sources.csv',csv(rows),'text/csv;charset=utf-8');
 }
@@ -3626,28 +3760,52 @@ function exportSources(){
 /* ---------- FIRSATLAR ---------- */
 VIEWS.opps=()=>{
   const d=S.data;
-  return head(T('Opportunities'),T('Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.'))+
-  `<div class="card"><div class="ch"><div><h3>${T('Prioritised prompt opportunities')}</h3>
-    <div class="sub">${T('The "Generate content" button drafts a brief for that prompt')}</div></div>
-    <span class="rt"><button class="btn b-gh b-sm" onclick="exportOpps()">⭳ CSV</button></span></div>
-  <div class="tw"><table><thead><tr><th>${T(`Prompt`)}</th><th>${T(`Intent`)}</th><th class="n">Est. volume</th>
-    <th class="n">${T("Coverage")}</th><th class="n">Sources</th><th>Content fit</th><th>${T(`Suggested action`)}</th>
-    <th class="n">Opportunity</th><th></th></tr></thead>
-  <tbody>${d.opps.map(o=>`<tr>
-    <td style="max-width:260px">${esc(o.p.text.replace(/"/g,''))}</td>
+  const rows=d.opps.slice().sort((a,b)=>b.opp-a.opp);
+  const open=rows.filter(o=>o.cover===0);
+  const partial=rows.filter(o=>o.cover>0&&o.cover<0.6);
+  const volOpen=open.reduce((a,o)=>a+(o.p.vol||0),0);
+
+  return head(T('Opportunities'),
+    T('Her sorgu için fırsat skoru: aylık hacim, ne kadarında göründüğünüz ve satın alma niyeti bir araya gelir. Yüksek skor, çok aranan ama sizin bulunmadığınız bir soru demektir.'))+
+  `<div class="g4">
+    <div class="kpi"><div class="t">${T('Hiç görünmediğiniz sorgu')}</div>
+      <div class="v">${open.length}</div>
+      <div class="d">${nf(volOpen)} ${T('aylık arama hacmi')}</div></div>
+    <div class="kpi"><div class="t">${T('Kısmen göründüğünüz')}</div>
+      <div class="v">${partial.length}</div>
+      <div class="d">${T('bazı cevaplarda var, çoğunda yok')}</div></div>
+    <div class="kpi"><div class="t">${T('En yüksek fırsat')}</div>
+      <div class="v">${rows.length?rows[0].opp:'—'}</div>
+      <div class="d">${rows.length?esc(rows[0].p.text.slice(0,34)):'—'}</div></div>
+    <div class="kpi"><div class="t">${T('Takip edilen sorgu')}</div>
+      <div class="v">${rows.length}</div>
+      <div class="d"><a href="#" onclick="go('prompts');return false">${T('Sorguları düzenle →')}</a></div></div>
+  </div>
+
+  <div class="card"><div class="ch"><div><h3>${T('Öncelikli sorgu fırsatları')}</h3>
+    <div class="sub">${T('Fırsat skoru yüksek olan sorgular önce gelir. “İçerik üret” o sorgu için hazır bir brief çıkarır.')}</div></div>
+    <span class="rt"><button class="btn b-gh b-sm" onclick="exportOpps()">${T('⭳ Download CSV')}</button></span></div>
+  <div class="tw"><table class="otbl"><thead><tr>
+    <th>${T('Sorgu')}</th><th>${T('Niyet')}</th><th class="n">${T('Aylık hacim')}</th>
+    <th class="n">${T('Görünürlük')}</th><th>${T('İçerik uyumu')}</th><th>${T('Önerilen aksiyon')}</th>
+    <th class="n">${T('Fırsat')}</th><th></th></tr></thead>
+  <tbody>${rows.map(o=>`<tr>
+    <td style="max-width:270px"><b>${esc(o.p.text.replace(/"/g,''))}</b></td>
     <td><span class="chip">${intentLabel(o.p.intent)}</span></td>
     <td class="n">${nf(o.p.vol)}</td>
-    <td class="n" style="color:${o.cover>.5?'#4ADE80':o.cover>0?'#FBBF24':'#F87171'}">${(o.cover*100).toFixed(0)}%</td>
-    <td class="n">${o.srcCount}</td>
+    <td class="n">${o.cover===0
+      ? `<span class="ocov none">${T('yok')}</span>`
+      : `<span class="ocov ${o.cover>=0.6?'good':'part'}">%${(o.cover*100).toFixed(0)}</span>`}</td>
     <td><span class="chip ${o.fit==='High'?'ok':o.fit==='Medium'?'warn':''}">${T(o.fit)}</span></td>
-    <td class="mut" style="font-size:12.5px">${o.act}</td>
-    <td class="n" style="font-weight:600;color:var(--pri)">${o.opp}</td>
+    <td class="mut" style="font-size:12.5px">${T(o.act)}</td>
+    <td class="n"><span class="oscore" style="--w:${Math.min(100,o.opp)}%">${o.opp}</span></td>
     <td><button class="btn b-gh b-sm" onclick="writerFor('${o.p.id}')">${T('Generate content')} ✦</button></td></tr>`).join('')}
-  </tbody></table></div></div>`;
+  </tbody></table></div>
+  <p class="mnote">${T('Fırsat skoru hacmi tek başına değil, kaybı ölçer: çok aranan ve hiç görünmediğiniz bir sorgu, orta hacimli ama zaten önde olduğunuz bir sorgudan önce gelir.')}</p></div>`;
 };
 function exportOpps(){
-  const rows=[['Prompt','Intent','Volume','Coverage','Sources','Fit','Action','Opportunity']];
-  S.data.opps.forEach(o=>rows.push([o.p.text,o.p.intent,o.p.vol,(o.cover*100).toFixed(0)+'%',o.srcCount,o.fit,o.act,o.opp]));
+  const rows=[['Sorgu','Niyet','Aylık hacim','Görünürlük','İçerik uyumu','Önerilen aksiyon','Fırsat']];
+  S.data.opps.forEach(o=>rows.push([o.p.text,o.p.intent,o.p.vol,(o.cover*100).toFixed(0)+'%',o.fit,o.act,o.opp]));
   dl('yanki-opportunities.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
@@ -3953,7 +4111,7 @@ async function regen(){
 }
 function newPromptModal(){
   openModal(T('New prompt'),`<div class="fld"><label>${T("Prompt text")}</label>
-    <input class="in" id="np" placeholder="e.g. which are the best ... companies"></div>
+    <input class="in" id="np" placeholder="${esc(T('örn. en iyi ... firmaları hangileri'))}"></div>
    <div class="fld"><label>${T(`Intent`)}</label><select class="in" id="ni">
      ${Object.entries(INTENTS).map(([k,v])=>`<option value="${k}">${v.label} · ×${v.mult.toFixed(2)}</option>`).join('')}</select>
      <div class="hint">${T(`The intent multiplier sets the weight in the score: transactional 1.50 … informational 0.80`)}</div></div>
@@ -4153,44 +4311,77 @@ function exportPlan(){
 /* ---------- AUDIT ---------- */
 VIEWS.audit=()=>{
   const d=S.data;
-  const pass=d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='pass').length,0);
-  const part=d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='partial').length,0);
-  const fail=d.audit.reduce((a,c)=>a+c.facs.filter(f=>f.st==='fail').length,0);
-  return head(T('GEO Site Audit'),T('58 factors scored across 6 categories. Every failing factor comes with a copy-ready fix.'),
-    `<input class="in" id="auditUrl" aria-label="URL to audit" style="width:260px" value="${esc(S.brand.site)}">
-     <button class="btn b-pri b-sm" id="auditBtn" onclick="runAudit()">${T('Run Audit')}</button>`)+
-  `<div class="g2" style="grid-template-columns:1.5fr 1fr">
-    <div class="card"><div class="ch"><div><h3>${T('Category scores')}</h3><div class="sub">${T('Click a category to expand its factors')}</div></div></div>
-      <div class="cb">${d.audit.map((c,i)=>{
-        const col=c.score>=60?'#22C55E':c.score>=40?'#F59E0B':'#EF4444';
-        const tcol=c.score>=60?'#86EFAC':c.score>=40?'#FCD34D':'#FCA5A5';
-        return `<div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">
-          <div class="i" style="background:${col}26;color:${tcol};border:1px solid ${col}55;font-weight:700">${c.score.toFixed(0)}</div>
-          <div><h5>${c.n}</h5><div class="sb2">${c.facs.length} factors ·
-            ${c.facs.filter(f=>f.st==='pass').length} passed, ${c.facs.filter(f=>f.st==='partial').length} partial,
-            ${c.facs.filter(f=>f.st==='fail').length} failed</div></div>
-          <div class="m"><span class="bar" style="width:90px"><i style="width:${c.score}%;background:${col}"></i></span></div></div>
-          <div class="acc-b">${c.facs.map((f,j)=>`
-            <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)">
-              <span class="chip ${f.st==='pass'?'ok':f.st==='partial'?'warn':'bad'}" style="flex:none">
-                ${f.st==='pass'?T('Pass'):f.st==='partial'?T('Partial'):T('Fail')}</span>
-              <span style="font-size:13px;flex:1">${f.n}</span>
-              ${f.fix?`<button class="btn b-gh b-sm" onclick="fixModal('${encodeURIComponent(f.n)}')">${T('Fix')}</button>`:''}
-            </div>`).join('')}</div></div>`}).join('')}</div></div>
+  const facs=d.audit.flatMap(c=>c.facs);
+  const pass=facs.filter(f=>f.st==='pass').length;
+  const part=facs.filter(f=>f.st==='partial').length;
+  const fail=facs.filter(f=>f.st==='fail').length;
+  const col=v=>v>=80?'#4ADE80':v>=60?'#FBBF24':'#F87171';
+  const cat=d.audit.slice().sort((a,b)=>a.score-b.score);
+  const worst=cat[0];
 
-    <div class="card"><div class="ch"><div><h3>${T('Total score')}</h3></div></div>
-      <div class="cb" style="text-align:center">
-        ${gauge(d.auditScore,d.auditScore>=60?'#22C55E':d.auditScore>=40?'#F59E0B':'#EF4444')}
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
-          <span class="chip ok">${pass} passed</span><span class="chip warn">${part} partial</span><span class="chip bad">${fail} failed</span></div>
-        <p style="font-size:12.5px;color:var(--mute);margin-top:14px">${T('Failing factors automatically become tasks in the')}
-          <a href="#" onclick="go('plan');return false" style="color:var(--pri)">${T('action plan')}</a>.</p>
-        <div style="display:grid;gap:8px;margin-top:16px">
-          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('llms'),40)">${T('Generate llms.txt')}</button>
-          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('schema'),40)">${T('Generate schema')}</button>
-          <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('robots'),40)">${T('Generate robots.txt')}</button>
-          <button class="btn b-gh b-sm" onclick="exportAudit()">${T('⭳ Download audit report')}</button></div></div></div>
-  </div>`;
+  return head(T('GEO Site Audit'),
+    T('Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlığı. 58 kriter, 6 başlıkta.'),
+    `<input class="in" id="auditUrl" aria-label="${T('Denetlenecek adres')}" style="width:260px" value="${esc(S.brand.site)}">
+     <button class="btn b-pri b-sm" id="auditBtn" onclick="runAudit()">${T('Run Audit')}</button>`)+
+  `${!d.auditRanAt?`<div class="card"><div class="empty" style="padding:40px 16px">
+      <div class="ic">◳</div>
+      <b style="color:var(--fg);font-size:15px">${T('Bu site henüz denetlenmedi')}</b>
+      <p style="margin-top:8px;max-width:52ch;margin-inline:auto">${T('Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve kaynak gösterilmenizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.')}</p>
+      <button class="btn b-pri b-sm" style="margin-top:16px" onclick="runAudit()">${T('Run Audit')}</button></div></div>`
+  :`
+  <div class="g4">
+    <div class="kpi"><div class="t">${T('Site hazırlık skoru')} ${kpiHelp('audit')}</div>
+      <div class="v" style="color:${col(d.auditScore)}">${d.auditScore.toFixed(0)}<span style="font-size:15px;color:var(--mute2)">/100</span></div>
+      <div class="d">${d.auditScore>=80?T('sağlıklı'):d.auditScore>=60?T('iyileştirilebilir'):T('ciddi teknik eksik')}</div></div>
+    <div class="kpi"><div class="t">${T('Karşılanan kriter')}</div>
+      <div class="v">${pass}<span style="font-size:15px;color:var(--mute2)">/${facs.length}</span></div>
+      <div class="d">${part} ${T('kısmi')} · ${fail} ${T('başarısız')}</div></div>
+    <div class="kpi"><div class="t">${T('En zayıf başlık')}</div>
+      <div class="v" style="font-size:20px">${worst?esc(T(worst.n)):'—'}</div>
+      <div class="d">${worst?`${worst.score.toFixed(0)}/100`:'—'}</div></div>
+    <div class="kpi"><div class="t">${T('Son denetim')}</div>
+      <div class="v" style="font-size:20px">${new Date(d.auditRanAt).toLocaleDateString('tr-TR')}</div>
+      <div class="d">${relTime(d.auditRanAt)}</div></div>
+  </div>
+
+  ${fail?`<div class="srcwarn">
+    <b>${fail} ${T('kriter karşılanmıyor')}</b>
+    <span>${T('Bu eksikler yapay zekanın sitenizi okumasını ve kaynak göstermesini doğrudan engelliyor. Her biri Aksiyon Planı’nda etkiye göre sıralanmış bir iş kalemi olarak duruyor.')}</span>
+    <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`:''}
+
+  <div class="card">
+    <div class="ch"><div><h3>${T('Category scores')}</h3>
+      <div class="sub">${T('En zayıf başlık üstte. Başlığa tıklayın, hangi kriterin kaldığını görün.')}</div></div>
+      <span class="rt">${esc(d.auditUrl||S.brand.site)}</span></div>
+    <div class="cb">${cat.map((c,i)=>{
+      const cf=c.facs.filter(f=>f.st==='fail').length;
+      const cp=c.facs.filter(f=>f.st==='partial').length;
+      const ck=c.facs.filter(f=>f.st==='pass').length;
+      return `<div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">
+        <div class="i" style="background:${col(c.score)}22;color:${col(c.score)};border:1px solid ${col(c.score)}55;font-weight:700">${c.score.toFixed(0)}</div>
+        <div style="min-width:0;flex:1">
+          <h5>${esc(T(c.n))}</h5>
+          <div class="sb2">${ck} ${T('karşılandı')} · ${cp} ${T('kısmi')} · ${cf} ${T('başarısız')}</div></div>
+        <div class="m"><span class="bar" style="width:110px"><i style="width:${Math.max(1.5,c.score)}%;background:${col(c.score)}"></i></span></div></div>
+        <div class="acc-b">${c.facs.slice().sort((a,b)=>
+            ({fail:0,partial:1,pass:2}[a.st]) - ({fail:0,partial:1,pass:2}[b.st]))
+          .map(f=>`
+          <div class="frow">
+            <span class="fst ${f.st}">${f.st==='pass'?'✓':f.st==='partial'?'~':'✕'}</span>
+            <span class="fn">${esc(T(f.n))}${f.detail?`<i>${esc(f.detail)}</i>`:''}</span>
+            ${f.fix?`<button class="btn b-gh b-sm" onclick="event.stopPropagation();fixModal('${encodeURIComponent(f.n)}')">${T('Nasıl düzeltilir')}</button>`:''}
+          </div>`).join('')}</div></div>`}).join('')}</div>
+    <p class="mnote">${T('Görünürlük skoru sonucu ölçer — yapay zekanın ne söylediğini. Bu skor sebebi ölçer — sitenizin okunabilirliğini. Sebebi düzeltmek sonucu zamanla yukarı çeker; tersi işlemez.')}</p>
+  </div>
+
+  <div class="card"><div class="ch"><div><h3>${T('Hızlı düzeltmeler')}</h3>
+    <div class="sub">${T('Denetimde en sık başarısız olan üç kriter için hazır dosya üretin')}</div></div></div>
+    <div class="cb" style="display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('llms'),40)">${T('Generate llms.txt')}</button>
+      <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('schema'),40)">${T('Generate schema')}</button>
+      <button class="btn b-gh b-sm" onclick="go('tools');setTimeout(()=>toolOpen('robots'),40)">${T('Generate robots.txt')}</button>
+      <button class="btn b-gh b-sm" onclick="exportAudit()">${T('⭳ Download audit report')}</button></div></div>
+  `}`;
 };
 async function runAudit(){
   const btn=$('#auditBtn'); const url=$('#auditUrl')?$('#auditUrl').value.trim():'';
@@ -4198,7 +4389,7 @@ async function runAudit(){
   try{
     const r=await api.post('/api/audit',{workspaceId:S.workspaceId,url:url||undefined});
     await loadResults();
-    toast(`Audit complete — ${r.score.toFixed(0)}/100 · ${r.remaining} left this month`);
+    toast(`${T('Denetim tamamlandı')} — ${r.score.toFixed(0)}/100 · ${T('bu ay kalan hak')}: ${r.remaining}`);
   }catch(e){
     toast(e.message);
     if(btn){btn.disabled=false;btn.textContent=T('Run Audit');}
@@ -4396,8 +4587,8 @@ VIEWS.settings=()=>{
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
       <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">${T('Change Password')}</h4>
         <p style="font-size:12.5px;color:var(--mute)">${T('Keep your account secure with a strong password.')}</p></div>
-        <div><div class="fld"><label>Current password</label><input class="in" id="pwCur" type="password" placeholder="Enter your current password"></div>
-        <div class="fld"><label>New password</label><input class="in" id="pwNew" type="password" placeholder="At least 10 characters"></div>
+        <div><div class="fld"><label>${T('Current password')}</label><input class="in" id="pwCur" type="password" placeholder="${esc(T('Enter your current password'))}"></div>
+        <div class="fld"><label>${T('New password')}</label><input class="in" id="pwNew" type="password" placeholder="${esc(T('At least 10 characters'))}"></div>
         <button class="btn b-gh" onclick="changePassword()">${T('Update Password')}</button></div></div>
       <div class="card" style="margin-top:26px;border-color:rgba(239,68,68,.3)"><div class="cb">
         <b class="bad" style="font-size:14px">${T('Danger Zone')}</b>
@@ -4412,7 +4603,7 @@ VIEWS.settings=()=>{
       <div class="fld"><label>Website</label><input class="in" aria-label="Website" value="${esc(b.site)}" onchange="S.brand.site=this.value"></div>
       <div class="fld"><label>Industry *</label><select class="in" aria-label="Industry" onchange="S.brand.sector=this.value">
         ${sectorOptions(b.sector)}</select></div>
-      <button class="btn b-pri" onclick="saveBrand()">✓ Save Brand Settings</button></div></div>
+      <button class="btn b-pri" onclick="saveBrand()">${T('✓ Save Brand Settings')}</button></div></div>
       <hr style="border:0;border-top:1px solid var(--border);margin:26px 0">
       <div class="g2"><div><h4 style="font-size:15px;margin-bottom:6px">Location</h4>
         <p style="font-size:12.5px;color:var(--mute)">${T(`Set the primary country and city for localised AI monitoring results.`)}</p></div>
@@ -4496,7 +4687,7 @@ VIEWS.settings=()=>{
       <div class="card" style="margin-top:16px"><div class="cb" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div><b style="font-size:14px">Payment Method</b>
           <p style="font-size:12.5px;color:var(--mute)">${T(`No payment method on file. Add one to keep your subscription active.`)}</p></div>
-        <button class="btn b-gh b-sm" style="margin-left:auto" onclick="toast(T('Redirects to the payment provider'))">Add Payment Method</button></div></div>`;
+        <button class="btn b-gh b-sm" style="margin-left:auto" onclick="toast(T('Redirects to the payment provider'))">${T('Add Payment Method')}</button></div></div>`;
   }
   return head(T('Settings'),T('Configure core tracking preferences such as brand name, domain, industry and location.'))+
   `<div class="tabs">${tabs.map(t=>`<button class="${setTabV===t[0]?'on':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
