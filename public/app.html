@@ -417,6 +417,19 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   border-radius:8px;padding:9px 15px;font-size:12.5px;font-weight:500}
 .srcwarn button:hover{border-color:var(--pri);color:#93B4FF}
 
+/* İşaretleme kısayolu: unknown satırının tek eylemi. */
+.marklink{background:none;border:0;padding:0;font-size:12px;color:#C4B5FD;text-align:left}
+.marklink:hover{color:#DDD3FF;text-decoration:underline}
+
+/* Türü seçtiren modal. Seçenekler taksonominin iç adlarıyla değil,
+   kullanıcının siteye bakınca kendine soracağı soruyla yazıldı. */
+.markopts{display:grid;gap:7px}
+.markopts button{display:grid;gap:2px;text-align:left;padding:11px 13px;border-radius:9px;
+  border:1px solid var(--border);background:var(--card2);color:var(--fg);width:100%}
+.markopts button:hover{border-color:var(--pri);background:rgba(59,130,246,.07)}
+.markopts b{font-size:13px;font-weight:500}
+.markopts i{font-style:normal;font-size:11.5px;color:var(--mute2)}
+
 /* Kaynak türü rozeti. Renk tek bir şeyi kodlar: girilebilir mi. */
 .kchip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;
   border:1px solid var(--border);background:var(--card2);color:var(--mute)}
@@ -1208,6 +1221,33 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'kaynağın türü belirlenemedi':'kaynağın türü belirlenemedi',
+  'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.':'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.',
+  'Otomatik çöz':'Otomatik çöz',
+  'Çözülüyor…':'Çözülüyor…',
+  'kaynağın türü belirlendi':'kaynağın türü belirlendi',
+  'hâlâ bilinmiyor':'hâlâ bilinmiyor',
+  'Yeni bir kaynak türü belirlenemedi — elle işaretleyebilirsiniz':'Yeni bir kaynak türü belirlenemedi — elle işaretleyebilirsiniz',
+  'Bu ne tür bir kaynak?':'Bu ne tür bir kaynak?',
+  'Kaynağı açıp bakın: markanız oraya nasıl girer? İşaretiniz bu kaynağı gören diğer markalara da yardımcı olur.':'Kaynağı açıp bakın: markanız oraya nasıl girer? İşaretiniz bu kaynağı gören diğer markalara da yardımcı olur.',
+  'Kaynağı aç':'Kaynağı aç',
+  'olarak işaretlendi':'olarak işaretlendi',
+  'Firmalar profil açabiliyor':'Firmalar profil açabiliyor',
+  'dizin, listeleme, partner ağı':'dizin, listeleme, partner ağı',
+  'Ürün veya hizmet satılıyor':'Ürün veya hizmet satılıyor',
+  'pazar yeri, ilan sitesi':'pazar yeri, ilan sitesi',
+  'Puan ve yorum merkezde':'Puan ve yorum merkezde',
+  'yorum platformu, şikâyet sitesi':'yorum platformu, şikâyet sitesi',
+  'Editöryel yayın, yazarlı içerik':'Editöryel yayın, yazarlı içerik',
+  'haber, dergi, sektör yayını':'haber, dergi, sektör yayını',
+  'Kullanıcılar tartışıyor':'Kullanıcılar tartışıyor',
+  'forum, sözlük, soru-cevap':'forum, sözlük, soru-cevap',
+  'Herkes izinsiz yayınlayabiliyor':'Herkes izinsiz yayınlayabiliyor',
+  'Medium, LinkedIn, YouTube gibi':'Medium, LinkedIn, YouTube gibi',
+  'Resmî kayıt veya ansiklopedi':'Resmî kayıt veya ansiklopedi',
+  'Wikipedia, oda, sicil':'Wikipedia, oda, sicil',
+  'Tek bir şirketin kendi sitesi':'Tek bir şirketin kendi sitesi',
+  'rakip, satıcı, danışman — girilemez':'rakip, satıcı, danışman — girilemez',
   'Tür':'Tür',
   'Yapılacak':'Yapılacak',
   'Dizin':'Dizin',
@@ -2051,7 +2091,7 @@ const S = {
   workspaceId: null, plan: 'trial', planLimits: null, org: null, role: 'owner',
   user: { name: '', mail: '' },
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
-  workspaces: [], wsMenu: false, scanBusy: false, quality: null, isAdmin: false, usage: null,
+  workspaces: [], wsMenu: false, scanBusy: false, quality: null, isAdmin: false, usage: null, srcBusy: false,
   mFilter: 'all', mPlat: '',
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
@@ -3924,6 +3964,14 @@ VIEWS.sources=()=>{
       <span>${T('Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.')}</span>
       <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`:''}
 
+  ${(()=>{const unk=d.sources.filter(x=>!x.mine&&x.kind==='unknown');
+     if(!unk.length) return '';
+     return `<div class="srcwarn ok" style="border-left-color:#8B5CF6">
+       <b>${unk.length} ${T('kaynağın türü belirlenemedi')}</b>
+       <span>${T('Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.')}</span>
+       <button onclick="resolveSources()" ${S.srcBusy?'disabled':''}>${S.srcBusy?T('Çözülüyor…'):T('Otomatik çöz')}</button></div>`;
+   })()}
+
   <div class="card">
     <div class="ch"><div><h3>${T('Kaynak sıralaması')}</h3>
       <div class="sub">${T('Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim')}</div></div>
@@ -3945,6 +3993,8 @@ VIEWS.sources=()=>{
       <td class="n cnt">${x.v}</td>
       <td class="n">${dl(x)}</td>
       <td>${x.mine?`<span class="mut">—</span>`
+        : x.kind==='unknown'
+          ? `<button class="marklink" onclick="markSource('${esc(x.d)}')">${T('türünü işaretleyin')} →</button>`
         : k.reachable?`<span class="todo">${T(k.short)}</span><i class="eta">${T(k.eta)}</i>`
         : `<span class="noent">⛔ ${T(k.short)}</span>`}</td>
       <td class="n mut">${x.first?new Date(x.first).toLocaleDateString('tr-TR'):'—'}</td></tr>`}).join('')}
@@ -3952,6 +4002,66 @@ VIEWS.sources=()=>{
     <p class="mnote">${T('Modeller sizi çoğunlukla kendi sitenizden değil, üçüncü taraf kaynaklardan öğrenir. Bu yüzden listenin üstündeki alan adlarında bulunmamak, kendi sitenizdeki bir eksikten daha pahalıdır.')}</p>
   </div>`;
 };
+/**
+ * Bilinmeyen kaynakları arka planda çözer.
+ *
+ * Panel isteği hiçbir zaman model beklemez (/api/results allowLlm:false ile
+ * çağırır), bu yüzden çözüm ayrı ve isteğe bağlı bir adım. Kullanıcı isterse
+ * bekler, istemezse elle işaretler.
+ */
+let srcResolveBusy = false;
+async function resolveSources(){
+  if(srcResolveBusy) return;
+  srcResolveBusy = true; S.srcBusy = true; render();
+  try{
+    const r = await api.post('/api/sources/classify',{workspaceId:S.workspaceId});
+    await loadResults({silent:true});
+    toast(r.classified
+      ? `${r.classified} ${T('kaynağın türü belirlendi')}${r.stillUnknown?` · ${r.stillUnknown} ${T('hâlâ bilinmiyor')}`:''}`
+      : T('Yeni bir kaynak türü belirlenemedi — elle işaretleyebilirsiniz'));
+  }catch(e){ toast(e.message,'error'); }
+  finally{ srcResolveBusy = false; S.srcBusy = false; render(); }
+}
+
+/**
+ * Elle işaretleme.
+ *
+ * Seçenekler, kullanıcının "oraya nasıl girilir" sorusuna verebileceği
+ * cevaplar olarak yazıldı — taksonominin iç adlarıyla değil. Kimse bir siteye
+ * bakıp "bu bir self_publish mi" diye düşünmez; "buraya izinsiz yazabilir
+ * miyim" diye düşünür.
+ */
+function markSource(domain){
+  const secenekler = [
+    ['directory',   T('Firmalar profil açabiliyor'),        T('dizin, listeleme, partner ağı')],
+    ['marketplace', T('Ürün veya hizmet satılıyor'),         T('pazar yeri, ilan sitesi')],
+    ['review',      T('Puan ve yorum merkezde'),             T('yorum platformu, şikâyet sitesi')],
+    ['publication', T('Editöryel yayın, yazarlı içerik'),    T('haber, dergi, sektör yayını')],
+    ['community',   T('Kullanıcılar tartışıyor'),            T('forum, sözlük, soru-cevap')],
+    ['self_publish',T('Herkes izinsiz yayınlayabiliyor'),    T('Medium, LinkedIn, YouTube gibi')],
+    ['authority',   T('Resmî kayıt veya ansiklopedi'),       T('Wikipedia, oda, sicil')],
+    ['vendor',      T('Tek bir şirketin kendi sitesi'),      T('rakip, satıcı, danışman — girilemez')],
+  ];
+  openModal(`${T('Bu ne tür bir kaynak?')} — ${domain}`,
+    `<p style="font-size:12.5px;color:var(--mute);margin-bottom:14px">
+       ${T('Kaynağı açıp bakın: markanız oraya nasıl girer? İşaretiniz bu kaynağı gören diğer markalara da yardımcı olur.')}
+       <a href="https://${esc(domain)}" target="_blank" rel="noopener noreferrer"
+          style="color:#93B4FF;margin-left:6px">${T('Kaynağı aç')} ↗</a></p>
+     <div class="markopts">${secenekler.map(([k,baslik,alt])=>
+       `<button onclick="saveSourceKind('${esc(domain)}','${k}')">
+          <b>${baslik}</b><i>${alt}</i></button>`).join('')}</div>`);
+}
+
+async function saveSourceKind(domain, kind){
+  try{
+    await api.patch('/api/sources/classify',{domain,kind});
+    closeModal();
+    await loadResults({silent:true});
+    render();
+    toast(`${domain} — ${T(srcKind(kind).label)} ${T('olarak işaretlendi')}`);
+  }catch(e){ toast(e.message,'error'); }
+}
+
 function exportSources(){
   const rows=[['Alan adı','Atıf','Sizin siteniz']];
   S.data.sources.forEach(s=>rows.push([s.d,s.v,s.mine?'yes':'no']));
