@@ -26,6 +26,17 @@ export interface Factor {
   fix?: string;
 }
 
+/**
+ * How many criteria a full audit scores.
+ *
+ * The number is quoted to customers on the marketing page and in the product
+ * ("58 kriter, 6 başlıkta"), so it is a promise, not a detail. It is declared
+ * here beside the checks themselves and asserted against the real output in
+ * test/audit-count.test.ts — add or remove an `add()` call without updating
+ * this constant and the suite fails.
+ */
+export const AUDIT_CRITERIA = 58;
+
 export interface AuditResult {
   url: string;
   score: number;
