@@ -26,6 +26,18 @@ export const LIMITS = {
   register: { max: 5,  window: 60 * 60 },   // 5 accounts per IP per hour
   audit:    { max: 20, window: 60 * 60 },   // 20 crawls per org per hour
   scan:     { max: 6,  window: 60 * 60 },
+
+  /**
+   * The two endpoints that call a model directly on a button press.
+   *
+   * Both were unmetered. "AI ile Yeniden Üret" is one click and one completion,
+   * so a user holding the button — or a stuck retry loop — spends real money at
+   * whatever rate the browser can issue requests. The audit crawl was already
+   * capped at 20/hour for exactly this reason; these are cheaper per call but
+   * far easier to trigger repeatedly, which is why the ceiling is not higher.
+   */
+  promptGen:  { max: 15, window: 60 * 60 },  // 15 generations per org per hour
+  attributes: { max: 30, window: 60 * 60 },  // 30 extraction batches per org per hour
 } satisfies Record<string, Limit>;
 
 /** Client IP, trusting the proxy header Vercel sets. */
