@@ -417,6 +417,19 @@ pre{background:#08090D;border:1px solid var(--border);color:#CFD6E6;padding:14px
   border-radius:8px;padding:9px 15px;font-size:12.5px;font-weight:500}
 .srcwarn button:hover{border-color:var(--pri);color:#93B4FF}
 
+/* Kaynak türü rozeti. Renk tek bir şeyi kodlar: girilebilir mi. */
+.kchip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;
+  border:1px solid var(--border);background:var(--card2);color:var(--mute)}
+.kchip.directory,.kchip.self_publish{background:rgba(74,222,128,.12);border-color:transparent;color:#7EE2A8}
+.kchip.review,.kchip.marketplace{background:rgba(59,130,246,.12);border-color:transparent;color:#93B4FF}
+.kchip.publication,.kchip.authority{background:rgba(139,92,246,.13);border-color:transparent;color:#C4B5FD}
+.kchip.community{background:rgba(245,158,11,.12);border-color:transparent;color:#FCD34D}
+.kchip.vendor{background:rgba(248,113,113,.12);border-color:transparent;color:#FCA5A5}
+.stbl tr.blocked td{opacity:.62}
+.stbl .todo{font-size:12px;color:var(--fg2)}
+.stbl .eta{display:block;font-style:normal;font-size:10.5px;color:var(--mute2);margin-top:2px}
+.stbl .noent{font-size:12px;color:var(--mute2);white-space:nowrap}
+
 /* --- Platform page --- */
 /* Loss bars. The length is what the gap costs the total score, so a heavy
    platform at 25 outranks a light one at 0 — which is the ordering an agency
@@ -1195,6 +1208,51 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Tür':'Tür',
+  'Yapılacak':'Yapılacak',
+  'Dizin':'Dizin',
+  'Kendi kanalınız':'Kendi kanalınız',
+  'Yorum platformu':'Yorum platformu',
+  'Pazar yeri':'Pazar yeri',
+  'Sektörel yayın':'Sektörel yayın',
+  'Kayıt / otorite':'Kayıt / otorite',
+  'Topluluk':'Topluluk',
+  'Satıcı içeriği':'Satıcı içeriği',
+  'Belirlenemedi':'Belirlenemedi',
+  'profil açın':'profil açın',
+  'bugün yayınlayın':'bugün yayınlayın',
+  'profili sahiplenin':'profili sahiplenin',
+  'satıcı kaydı açın':'satıcı kaydı açın',
+  'konu önerin':'konu önerin',
+  'kaydınızı düzeltin':'kaydınızı düzeltin',
+  'katılın, tanıtım yapmayın':'katılın, tanıtım yapmayın',
+  'girilemez':'girilemez',
+  'türünü işaretleyin':'türünü işaretleyin',
+  'bugün başlanabilir':'bugün başlanabilir',
+  'aynı gün':'aynı gün',
+  'bu hafta':'bu hafta',
+  '1–3 hafta':'1–3 hafta',
+  '3–8 hafta':'3–8 hafta',
+  '1–2 hafta':'1–2 hafta',
+  '2–6 ay':'2–6 ay',
+  'dolaylı yol · 2–4 ay':'dolaylı yol · 2–4 ay',
+  'üzerinde yer alın':'üzerinde yer alın',
+  'Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir.':'Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir.',
+  'Bu kaynak kayda açık — girmek için beklemeniz gereken bir onay zinciri yok.':'Bu kaynak kayda açık — girmek için beklemeniz gereken bir onay zinciri yok.',
+  'Rakip ve satıcı içerikleri sizden çok alıntılanıyor':'Rakip ve satıcı içerikleri sizden çok alıntılanıyor',
+  'kaynak':'kaynak',
+  'bu kaynaklara girilemez':'bu kaynaklara girilemez',
+  'ay':'ay',
+  've':'ve',
+  'kaynak daha':'kaynak daha',
+  'toplam':'toplam',
+  'atıf alıyor.':'atıf alıyor.',
+  'tanesi doğrudan rakibinizin sitesi.':'tanesi doğrudan rakibinizin sitesi.',
+  'Bu kaynaklara profil açamaz, editörüne yazamazsınız — içerik onların kendi pazarlaması. Ama aynı yarışa girebilirsiniz.':'Bu kaynaklara profil açamaz, editörüne yazamazsınız — içerik onların kendi pazarlaması. Ama aynı yarışa girebilirsiniz.',
+  'En çok atıf alan üç sayfayı inceleyin: hangi soruya, hangi yapıda cevap veriyorlar':'En çok atıf alan üç sayfayı inceleyin: hangi soruya, hangi yapıda cevap veriyorlar',
+  'Aynı sorulara kendi sitenizde daha iyi cevap veren kaynaklar yayınlayın':'Aynı sorulara kendi sitenizde daha iyi cevap veren kaynaklar yayınlayın',
+  'Site denetimindeki başarısız kriterleri kapatın — rakip siteler taranıyor, sizinki taranamıyor olabilir':'Site denetimindeki başarısız kriterleri kapatın — rakip siteler taranıyor, sizinki taranamıyor olabilir',
+  'Ürettiğiniz içeriğin girilebilir dizin ve yayınlarda alıntılanmasını sağlayın':'Ürettiğiniz içeriğin girilebilir dizin ve yayınlarda alıntılanmasını sağlayın',
   'Üretiliyor…':'Üretiliyor…',
   'yeni sorgu eklendi':'yeni sorgu eklendi',
   'şablonlardan':'şablonlardan',
@@ -2485,6 +2543,8 @@ function adopt(r) {
     sov,
     sources: (r.sources || []).map(s => ({
       d: s.domain, v: s.citations, mine: s.mine,
+      // Kaynağa nasıl girildiği — tavsiyeyi bu belirler. Sunucu sınıflandırır.
+      kind: s.kind || 'unknown', kindNote: s.kindNote || null,
       first: s.first_seen, last: s.last_seen,
       delta: s.delta === undefined ? 0 : s.delta,
       // Engine keys resolved to the platform objects the UI already styles.
@@ -2516,6 +2576,70 @@ const ENGINE_GLYPH = { chatgpt:'◉', gemini:'✦', perplexity:'✳', claude:'�
   ai_overviews:'◎', grok:'◌', deepseek:'◈' };
 const ENGINE_COLOR = { chatgpt:'#10A37F', gemini:'#8B5CF6', perplexity:'#20B8A6', claude:'#F59E0B',
   ai_overviews:'#4285F4', grok:'#EF4444', deepseek:'#3B82F6' };
+/**
+ * Kaynak sınıfları ve oyun kitapları.
+ *
+ * Sunucudaki lib/source-kind.ts ile aynı taksonomi. Buradaki kopya yalnızca
+ * sunumdur — sınıf kararını hep sunucu verir, arayüz onu yorumlar.
+ *
+ * `reachable:false` olan bir kaynak listeden gizlenmez. Gizlemek, en çok atıf
+ * alan kaynağın neden planda olmadığı sorusunu doğurur; onun yerine neden
+ * girilemediğini ve bunun yerine ne yapılacağını yazıyoruz.
+ */
+const SRC_KINDS = {
+  directory: { label:'Dizin', short:'profil açın', reachable:true, rank:0,
+    eta:'bugün başlanabilir',
+    steps:['Profili oluşturun; hizmet, sektör, konum ve fiyat aralığı alanlarını boş bırakmayın',
+           'Tamamlanmış 3–5 işi örnek olay olarak ekleyin, sonuçları sayıyla verin',
+           'Müşterilerinizden platform üzerinden değerlendirme isteyin',
+           'Kategori seçimini dar tutun — genel değil, spesifik'] },
+  self_publish: { label:'Kendi kanalınız', short:'bugün yayınlayın', reachable:true, rank:1,
+    eta:'aynı gün',
+    steps:['Görünmediğiniz sorguların tam metnini başlık yapın',
+           'İlk paragrafta 40–60 kelimelik doğrudan cevap verin',
+           'Kendi sitenizdeki asıl kaynağa bağlantı verin'] },
+  review: { label:'Yorum platformu', short:'profili sahiplenin', reachable:true, rank:2,
+    eta:'bu hafta',
+    steps:['Var olan profili sahiplenin — açılmasını beklemeyin, muhtemelen zaten var',
+           'Olumsuz yorumlara kurumsal ve çözüm odaklı yanıt verin',
+           'Memnun müşterilerden düzenli yorum akışı kurun',
+           'Yanıt oranınızı %90 üzerinde tutun'] },
+  marketplace: { label:'Pazar yeri', short:'satıcı kaydı açın', reachable:true, rank:3,
+    eta:'1–3 hafta',
+    steps:['Satıcı kaydını tamamlayın; başlıkları müşterinin aradığı biçimde yazın',
+           'Açıklamaya özellik tablosu ve sayısal veri koyun',
+           'Görsel, varyant ve stok bilgisini eksiksiz doldurun'] },
+  publication: { label:'Sektörel yayın', short:'konu önerin', reachable:true, rank:4,
+    eta:'3–8 hafta',
+    steps:['Yayının konuk yazı politikasını ve editöryel takvimini inceleyin',
+           'Ürün tanıtımı değil, sektör verisi öneren bir konu gönderin',
+           'Basın bültenlerinizi editör listesine ekleyin'] },
+  authority: { label:'Kayıt / otorite', short:'kaydınızı düzeltin', reachable:true, rank:5,
+    eta:'1–2 hafta',
+    steps:['Mevcut kaydınızı bulun ve doğruluğunu kontrol edin',
+           'Wikidata için marka adı, alan adı, kuruluş yılı ve sektörü tamamlayın',
+           'Oda ve sicil kayıtlarındaki unvanı web sitenizle eşitleyin'],
+    warn:'Wikipedia’ya kendi maddenizi yazmak kural ihlalidir ve geri alınır.' },
+  community: { label:'Topluluk', short:'katılın, tanıtım yapmayın', reachable:true, rank:6,
+    eta:'2–6 ay',
+    steps:['Marka hesabıyla değil, kimliğini belirten bir çalışan hesabıyla katılın',
+           'Önce yalnızca soru cevaplayın — markanızı anmadan, en az birkaç hafta',
+           'Marka ancak doğrudan sorulduğunda ve bağlantı vermeden geçsin'],
+    warn:'Acele etmek geri teper: tanıtım kokan katkı silinir, olay olumsuz içeriğe dönüşür.' },
+  unknown: { label:'Belirlenemedi', short:'türünü işaretleyin', reachable:false, rank:7,
+    eta:'—',
+    steps:['Kaynağı açın: firma ekleme veya başvuru yolu var mı?',
+           'Yoksa bu bir şirketin kendi içeriği olabilir — o durumda giremezsiniz',
+           'Türünü işaretleyin; işaretiniz diğer müşterilere de yardımcı olur'] },
+  vendor: { label:'Satıcı içeriği', short:'girilemez', reachable:false, rank:8,
+    eta:'dolaylı yol · 2–4 ay',
+    steps:['O sayfanın neden alıntılandığını inceleyin: hangi soruya, hangi yapıda cevap veriyor',
+           'Aynı soruya kendi sitenizde daha iyi cevap veren bir kaynak yayınlayın',
+           'Bu içeriğin girebileceğiniz dizin ve yayınlarda alıntılanmasını sağlayın'],
+    warn:'Bu kaynağa doğrudan giremezsiniz — editörüne yazmak veya hesap açmak diye bir yol yoktur.' },
+};
+const srcKind = k => SRC_KINDS[k] || SRC_KINDS.unknown;
+
 const ACTION_BY_INTENT = {
   informational:'Explainer guide', comparison:'Comparison table',
   brand_defence:'Trust page + FAQ', transactional:'Product/service page',
@@ -2618,17 +2742,54 @@ function buildActions() {
      T('Mark it up with FAQPage schema')],
     null));
 
-  const topSource = (d.sources || []).find(s => !s.mine);
-  if (topSource) push(
-    `${T('Close the citation gap on')} ${topSource.d}`,
-    `${topSource.v} ${T('citations in your category, none of them yours')}`,
-    '4.4', `6–10 ${T('weeks')}`, `+3 ${T('prompts')}`,
-    T('Models learn about you mostly from third-party sources. Being absent from the most-cited domain in your category is a structural gap that content on your own site cannot close.'),
-    [T('Build an organic presence plan for that source'),
-     T('Reach out to editors of industry listicles'),
-     T('Publish explainer videos where the category is discussed'),
-     T('Raise your review response rate above 90%')],
-    null);
+  /* Kaynak açığı.
+   *
+   * Eskiden burada tek bir görev vardı ve en çok atıf alan kaynağı seçip her
+   * kaynağa aynı dört adımı veriyordu: "editörlerine ulaşın", "kurumsal hesap
+   * açın". Gerçek veride ölçüldü: kaynakların %40'ı girilemez sınıfta — rakip
+   * ajans siteleri ve satıcı blogları. O kaynaklar için bu adımların hiçbiri
+   * yapılabilir değil.
+   *
+   * Şimdi kaynak türüne göre ayrılıyor: girilebilir olanlar tek tek iş kalemi
+   * oluyor, girilemez olanlar tek bir bulguda toplanıp dolaylı yola
+   * yönlendiriliyor. */
+  const outside = (d.sources || []).filter(s => !s.mine);
+  const reachable = outside
+    .filter(s => srcKind(s.kind).reachable)
+    .sort((a, b) => (srcKind(a.kind).rank - srcKind(b.kind).rank) || (b.v - a.v));
+  const blocked = outside.filter(s => !srcKind(s.kind).reachable && s.kind !== 'unknown');
+
+  // En hızlı kazanılabilir üç kaynak, her biri ayrı iş kalemi.
+  reachable.slice(0, 3).forEach((src, i) => {
+    const k = srcKind(src.kind);
+    push(
+      `${esc(src.d)} ${T('üzerinde yer alın')} — ${k.short}`,
+      `${src.v} ${T('atıf')} · ${k.label} · ${k.eta}`,
+      (4.4 - i * 0.3).toFixed(1), k.eta, `+${3 - i} ${T('sorgu')}`,
+      `${T('Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir.')} ${
+        src.kindNote ? esc(src.kindNote) + '. ' : ''}${
+        T('Bu kaynak kayda açık — girmek için beklemeniz gereken bir onay zinciri yok.')}`,
+      k.steps, null);
+  });
+
+  // Girilemeyenler tek bulguda. Dokuz rakip için dokuz satır anlamsız olurdu.
+  if (blocked.length) {
+    const toplam = blocked.reduce((a, s) => a + s.v, 0);
+    const rakip = blocked.filter(s => s.kindNote && /rakip/i.test(s.kindNote));
+    push(
+      T('Rakip ve satıcı içerikleri sizden çok alıntılanıyor'),
+      `${blocked.length} ${T('kaynak')} · ${toplam} ${T('atıf')} · ${T('bu kaynaklara girilemez')}`,
+      '4.2', `2–4 ${T('ay')}`, `+2 ${T('sorgu')}`,
+      `${blocked.slice(0, 3).map(s => s.d).join(', ')}${blocked.length > 3 ? ` ${T('ve')} ${blocked.length - 3} ${T('kaynak daha')}` : ''} ` +
+      `${T('toplam')} ${toplam} ${T('atıf alıyor.')} ${
+        rakip.length ? `${rakip.length} ${T('tanesi doğrudan rakibinizin sitesi.')} ` : ''}` +
+      T('Bu kaynaklara profil açamaz, editörüne yazamazsınız — içerik onların kendi pazarlaması. Ama aynı yarışa girebilirsiniz.'),
+      [T('En çok atıf alan üç sayfayı inceleyin: hangi soruya, hangi yapıda cevap veriyorlar'),
+       T('Aynı sorulara kendi sitenizde daha iyi cevap veren kaynaklar yayınlayın'),
+       T('Site denetimindeki başarısız kriterleri kapatın — rakip siteler taranıyor, sizinki taranamıyor olabilir'),
+       T('Ürettiğiniz içeriğin girilebilir dizin ve yayınlarda alıntılanmasını sağlayın')],
+      null);
+  }
 
   if (!A.length) push(
     T('Run a site audit to generate your plan'),
@@ -3768,21 +3929,25 @@ VIEWS.sources=()=>{
       <div class="sub">${T('Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim')}</div></div>
       <span class="rt">${T('Son')} ${S.range} ${T('gün')}</span></div>
     <div class="tw"><table class="stbl"><thead><tr>
-      <th class="n">#</th><th>${T('Alan adı')}</th><th style="width:28%">${T('Atıf')}</th>
+      <th class="n">#</th><th>${T('Alan adı')}</th><th>${T('Tür')}</th>
+      <th style="width:22%">${T('Atıf')}</th>
       <th class="n">${T('Sayı')}</th><th class="n">${T('Değişim')}</th>
-      <th>${T('Kullanan platformlar')}</th><th class="n">${T('İlk görülme')}</th></tr></thead>
-    <tbody>${d.sources.map((x,i)=>`<tr class="${x.mine?'me':''}">
+      <th>${T('Yapılacak')}</th><th class="n">${T('İlk görülme')}</th></tr></thead>
+    <tbody>${d.sources.slice().sort((a,b)=>
+        (a.mine?-1:0)-(b.mine?-1:0) ||
+        (srcKind(a.kind).rank - srcKind(b.kind).rank) || (b.v - a.v))
+      .map((x,i)=>{const k=srcKind(x.kind);return `<tr class="${x.mine?'me':''} ${k.reachable?'':'blocked'}">
       <td class="n rk">${i+1}</td>
       <td><span class="dn"><span class="fav ${x.mine?'me':''}">${ini(x.d)}</span>
         <b>${esc(x.d)}</b>${x.mine?`<span class="tagme">${T('siteniz')}</span>`:''}</span></td>
+      <td><span class="kchip ${x.kind}" title="${esc(x.kindNote||'')}">${T(k.label)}</span></td>
       <td><span class="sbar"><i style="width:${x.v/mx*100}%"></i></span></td>
       <td class="n cnt">${x.v}</td>
       <td class="n">${dl(x)}</td>
-      <td>${x.plats.length
-        ? x.plats.slice(0,3).map(p=>`<span class="chip" style="border-color:${p.c}44">${p.ab} ${esc(p.n)}</span>`).join(' ')
-          +(x.plats.length>3?`<span class="more">+${x.plats.length-3}</span>`:'')
-        : '<span class="mut">—</span>'}</td>
-      <td class="n mut">${x.first?new Date(x.first).toLocaleDateString('tr-TR'):'—'}</td></tr>`).join('')}
+      <td>${x.mine?`<span class="mut">—</span>`
+        : k.reachable?`<span class="todo">${T(k.short)}</span><i class="eta">${T(k.eta)}</i>`
+        : `<span class="noent">⛔ ${T(k.short)}</span>`}</td>
+      <td class="n mut">${x.first?new Date(x.first).toLocaleDateString('tr-TR'):'—'}</td></tr>`}).join('')}
     </tbody></table></div>
     <p class="mnote">${T('Modeller sizi çoğunlukla kendi sitenizden değil, üçüncü taraf kaynaklardan öğrenir. Bu yüzden listenin üstündeki alan adlarında bulunmamak, kendi sitenizdeki bir eksikten daha pahalıdır.')}</p>
   </div>`;
