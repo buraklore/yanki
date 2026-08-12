@@ -1,6 +1,7 @@
 import { sql } from '@/lib/db';
 import { requireSession, requireWorkspace, handler } from '@/lib/auth';
 import { PLAN_RANK, limits, type PlanKey } from '@/lib/plans';
+import { classifyDomains } from '@/lib/source-kind';
 import { opportunityScore, type Intent } from '@/lib/prompts';
 import { engineByKey } from '@/lib/engines';
 
@@ -258,6 +259,26 @@ export const GET = handler(async (req) => {
 
   const ownHost = ws.domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
 
+  /**
+   * Kaynakları türüne göre sınıflandır.
+   *
+   * Aksiyon planı "bu kaynakta görünmüyorsunuz" derken ne yapılacağını da
+   * söylemek zorunda, ve o cevap kaynağın türüne göre kökten değişir: bir
+   * dizine profil açılır, bir rakibin sitesine hiç girilemez. Sınıflandırma
+   * müşteriler arası ortak tabloda önbelleklenir, bu yüzden çoğu istek tek
+   * SELECT ile döner.
+   *
+   * allowLlm: false — panel isteği hiçbir zaman model çağrısı beklemez.
+   * Bilinmeyen alan adları 'unknown' döner ve arka planda /api/sources/classify
+   * tarafından çözülür.
+   */
+  const rivalDomains = (competitors as unknown as { domain: string | null }[])
+    .map(c => c.domain).filter((d): d is string => !!d);
+  const kinds = await classifyDomains(
+    (sources as unknown as { domain: string }[]).map(r => r.domain),
+    { rivalDomains, ownDomain: ownHost, allowLlm: false },
+  );
+
   return Response.json({
     cells: cells.map((c: Record<string, unknown>) => ({
       promptId: c.prompt_id, engineKey: c.engine_key, runId: c.run_id,
@@ -281,6 +302,8 @@ export const GET = handler(async (req) => {
       engines: string[]; first_seen: string; last_seen: string;
     }) => ({
       ...r, mine: r.domain === ownHost,
+      kind: kinds.get(r.domain)?.kind ?? 'unknown',
+      kindNote: kinds.get(r.domain)?.note ?? null,
       engines: r.engines ?? [],
       // Second half of the window against the first. Null when there is no
       // earlier half to compare with, so a new domain is not reported as a
