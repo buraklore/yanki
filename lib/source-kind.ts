@@ -422,4 +422,3 @@ export function sortByActionability<T extends { kind: SourceKind; citations: num
   return rows.slice().sort((a, b) =>
     REACH_RANK[a.kind] - REACH_RANK[b.kind] || b.citations - a.citations);
 }
-
