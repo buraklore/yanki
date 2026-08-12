@@ -28,17 +28,37 @@ export const INTENT_MULTIPLIER: Record<string, number> = {
   informational: 0.8,
 };
 
-/** Default engine weights ≈ usage share. Overridable per workspace. */
+/**
+ * Default engine weights ≈ share of usage. Overridable per workspace.
+ *
+ * This object is the single source of truth. `db/schema.sql` seeds
+ * `engines.default_weight` from these numbers and `db/006_engine_weights.sql`
+ * brings existing installations into line; there is a test asserting the two
+ * agree. They used to drift — the table carried 0.34/0.215/0.15 while this
+ * carried 0.32/0.20/0.14, plus a `copilot` entry for an engine that was never
+ * implemented and no entry for `groq`, which was.
+ *
+ * They must sum to exactly 1. The weighted mean in aggregate() normalises by
+ * its own denominator, so the score itself survives any scale — but the
+ * Platforms screen presents each weight as "this platform is %n of your
+ * score", and a set totalling 102% makes that sentence false.
+ */
 export const ENGINE_WEIGHT: Record<string, number> = {
-  chatgpt: 0.32,
-  ai_overviews: 0.20,
-  gemini: 0.14,
-  perplexity: 0.10,
-  claude: 0.09,
-  copilot: 0.07,
+  chatgpt: 0.33,
+  ai_overviews: 0.21,
+  gemini: 0.15,
+  perplexity: 0.11,
+  claude: 0.10,
   grok: 0.04,
   deepseek: 0.04,
+  groq: 0.02,
 };
+
+/** Guards the invariant above at module load; a broken set fails loudly. */
+const WEIGHT_TOTAL = Object.values(ENGINE_WEIGHT).reduce((a, b) => a + b, 0);
+if (Math.abs(WEIGHT_TOTAL - 1) > 1e-9) {
+  throw new Error(`ENGINE_WEIGHT must sum to 1, got ${WEIGHT_TOTAL}`);
+}
 
 export type Recommendation = 'primary' | 'listed' | 'neutral' | 'conditional' | 'negative';
 
