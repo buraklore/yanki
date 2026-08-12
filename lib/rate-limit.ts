@@ -38,6 +38,13 @@ export const LIMITS = {
    */
   promptGen:  { max: 15, window: 60 * 60 },  // 15 generations per org per hour
   attributes: { max: 30, window: 60 * 60 },  // 30 extraction batches per org per hour
+
+  /* Source classification. A batch fetches up to 40 pages and makes two model
+   * calls, but the result is cached across every customer — so the ceiling is
+   * about stopping a retry loop, not about rationing a scarce resource. */
+  sourceClassify: { max: 10, window: 60 * 60 },
+  /* Manual corrections are cheap but this is not a data-entry tool. */
+  sourceCorrect:  { max: 60, window: 60 * 60 },
 } satisfies Record<string, Limit>;
 
 /** Client IP, trusting the proxy header Vercel sets. */
