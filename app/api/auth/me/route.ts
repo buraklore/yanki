@@ -23,11 +23,45 @@ export const GET = handler(async () => {
     mailerConfigured: !!process.env.RESEND_API_KEY,
   };
 
+  /**
+   * Real consumption, for the usage bars on the billing screen.
+   *
+   * Those bars used to be written by hand — "GEO Audits 1", "Content Writer 0"
+   * — so a customer at their monthly audit limit still saw 1/10 and had no
+   * warning before the next run was refused. Counts are org-wide because the
+   * caps are, and audits are counted for the current calendar month because
+   * that is the window /api/audit enforces.
+   */
+  const monthStart = new Date();
+  monthStart.setUTCDate(1);
+  const period = monthStart.toISOString().slice(0, 10);
+
+  const [usageRow] = await sql`
+    select
+      (select count(*)::int from prompts p
+         join workspaces w on w.id = p.workspace_id
+        where w.org_id = ${s.orgId} and p.active)                        as prompts,
+      (select count(*)::int from competitors c
+         join workspaces w on w.id = c.workspace_id
+        where w.org_id = ${s.orgId} and c.active)                        as competitors,
+      (select count(*)::int from workspaces where org_id = ${s.orgId})   as workspaces,
+      (select coalesce(used, 0) from usage_counters
+        where org_id = ${s.orgId} and period = ${period} and metric = 'audits') as audits`;
+
+  const usage = {
+    prompts: usageRow?.prompts ?? 0,
+    competitors: usageRow?.competitors ?? 0,
+    workspaces: usageRow?.workspaces ?? 0,
+    audits: usageRow?.audits ?? 0,
+    period,
+  };
+
   return Response.json({
     signedIn: true,
     user: { email: s.email, fullName: s.fullName, locale: s.locale, notify },
     org: { id: s.orgId, name: s.orgName, plan: s.plan, trialEndsAt: s.trialEndsAt },
     limits: limits(s.plan),
+    usage,
     role: s.role,
     /**
      * Platform operator, not organisation owner — every customer owns their own
