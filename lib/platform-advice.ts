@@ -151,21 +151,31 @@ export const generic: Playbook = {
       why: `${c.label} sizi tanımıyor. Kendi sitenizdeki içerik bunu tek başına çözmez; model markayı üçüncü taraf kaynaklardan öğrenir.`,
       actions: acik.length
         ? [{
-            title: `${listOr(acik, 'sektör kaynakları')} üzerinde yer alın`,
-            detail: 'Bu platformun okuduğu kaynaklar arasında kayda açık olanlar bunlar — profil veya başvuru yolu var.',
+            title: `${acik.length} kaynağa girmeniz mümkün — oradan başlayın`,
+            detail: 'Bu platformun okuduğu kaynaklar arasında dışarıya açık olanlar bunlar. Giriş koşulu kaynağa göre değişir: kimi serbest kayıt, kimi başvuru veya iş ortaklığı ister.',
             steps: [
-              'Profil oluşturun; hizmet, sektör ve konum alanlarını eksiksiz doldurun',
-              'Tamamlanmış işleri örnek olay olarak ekleyin, sonucu sayıyla verin',
-              'Kayıt sonrası müşterilerinizden platform üzerinden değerlendirme isteyin',
+              /* Kaynağa özgü ayrıntı uydurulmuyor.
+               *
+               * Önceki sürüm "hizmet, sektör ve konum alanlarını doldurun",
+               * "örnek olay ekleyin", "platform üzerinden değerlendirme
+               * isteyin" diyordu — hiçbirini bilemeyiz. clutch.co'da örnek
+               * olay ve yorum var; bir üreticinin iş ortağı ağında ikisi de
+               * yok, üstelik kayıt değil ticari anlaşma gerekiyor. Bu, ilk
+               * düzelttiğimiz "editörlerine ulaşın" hatasının aynısıydı:
+               * kaynağın ne olduğunu bilmeden nasıl girileceğini söylemek. */
+              'Kaynağı açın ve kendi giriş koşulunu okuyun — bir kısmı serbest kayıt, bir kısmı başvuru veya iş ortaklığı ister',
+              'Kayıt serbestse profili eksiksiz doldurun; boş alan bırakılan kayıt listelerde arkaya düşer',
+              'Başvuru veya iş ortaklığı isteniyorsa şartlarını ve maliyetini değerlendirin — her kaynak her markaya değmez',
+              'Girdikten sonra bilgilerinizi sitenizdekiyle birebir aynı tutun; çelişen bilgi modelin markayı tanımasını zorlaştırır',
               ...(kapali.length
-                ? [`${listOr(kapali, 'diğer kaynaklar')} bir şirketin kendi içeriğidir — oraya profil açılamaz, uğraşmayın`]
+                ? [`Kalan ${kapali.length} kaynak bir şirketin kendi sitesidir — oraya dışarıdan girilmez, listede altta işaretli`]
                 : []),
             ],
           }]
         : [{
             title: 'Girilebilir kaynak listesi oluşturun',
             detail: kapali.length
-              ? `Bu platformun en çok okuduğu kaynaklar (${listOr(kapali, 'rakip siteleri')}) şirketlerin kendi siteleri — oraya dışarıdan girilemez.`
+              ? `Bu platformun en çok okuduğu ${kapali.length} kaynak şirketlerin kendi siteleri — oraya dışarıdan girilemez.`
               : 'Bu platformun bu sorgularda hangi kaynakları okuduğu henüz yeterince ölçülmedi.',
             steps: [
               'Sektörünüzün dizinlerine kaydolun — kayıt açık olan her listeye girin',
@@ -178,7 +188,7 @@ export const generic: Playbook = {
   },
   mentioned_uncited: c => ({
     headline: 'Anılıyorsunuz ama kaynak gösterilmiyorsunuz',
-    why: `${c.label} markanızı biliyor, ancak cevabı ${listOr(anySrc(c), 'başka sitelerden')} besliyor. Trafiğin gittiği yer orası.`,
+    why: `${c.label} markanızı biliyor, ancak cevabı üçüncü taraf sitelerden besliyor. Trafiğin gittiği yer orası.`,
     actions: [{
       title: 'Sayfalarınızı alıntılanabilir hale getirin',
       detail: 'Model, doğrudan cevap veren ve atıfı kolay olan sayfaları kaynak seçer.',
@@ -238,7 +248,7 @@ const PLAYBOOKS: Record<string, Partial<Playbook>> = {
     }),
     mentioned_uncited: c => ({
       headline: 'Perplexity sizi anıyor ama başka siteyi kaynak gösteriyor',
-      why: `Perplexity her iddiayı bir bağlantıya dayandırır. Şu an o bağlantılar ${listOr(anySrc(c), 'üçüncü taraflar')}.`,
+      why: `Perplexity her iddiayı bir bağlantıya dayandırır. Şu an o bağlantıların hiçbiri sizin siteniz değil.`,
       actions: [{
         title: 'Alıntılanabilir sayfa yapısı kurun',
         detail: 'Perplexity, tek bir paragrafta net cevap veren sayfaları tercih eder.',
@@ -278,7 +288,7 @@ const PLAYBOOKS: Record<string, Partial<Playbook>> = {
         steps: [
           // Yalnızca kayda açık kaynak varsa adıyla önerilir.
           ...(reachableSrc(c, 2).length
-            ? [`${listOr(reachableSrc(c, 2), 'sektör yayınları')} üzerinde yer alın — kayıt veya başvuru yolu açık`]
+            ? [`Kaynaklar ekranında girilebilir işaretli kaynaklara kaydolun — hangisinin ne istediği orada yazıyor`]
             : ['Sektörünüzün dizin ve yayınlarına kaydolun; kayda açık her listeye girin']),
           'Wikipedia veya Wikidata varlığı oluşturun — kimlik netliğini belirgin şekilde artırır',
           'LinkedIn şirket sayfası, Crunchbase ve sektör dizinlerinde tutarlı isim kullanın',
