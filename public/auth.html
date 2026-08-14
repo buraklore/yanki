@@ -15,7 +15,6 @@
   --fg:#1A1713;--fg2:#4A423A;--mute:#6E6659;--mute2:#70695C;
   --pri:#B04628;--pri-btn:#B04628;--vio:#8A6A3E;--ok:#15803D;--bad:#B91C1C;
 }
-*{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);
   font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.6;
   display:grid;place-items:center;padding:24px;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
@@ -62,10 +61,6 @@ button.go:disabled{opacity:.55;cursor:not-allowed}
 .foot a:hover{text-decoration:underline}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* --- Tipografi düzeni (tüm sayfalarda ortak) ---
-   Başlıklarda negatif harf aralığı, gövdede geniş satır yüksekliği: uzun
-   Türkçe kelimeler (görünürlüğünüzü, sınıflandırma) sıkışık satırda okunmuyor.
-   Sayılar tabular: bir sütunda alt alta gelen rakamlar kaymasın. */
 h1,h2,h3,h4,h5{letter-spacing:-.028em;text-wrap:balance}
 h1{letter-spacing:-.038em}
 p,li{text-wrap:pretty}
@@ -75,29 +70,13 @@ p,li{text-wrap:pretty}
 img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* =====================================================================
-   TİPOGRAFİ VE YOĞUNLUK — tasarım kararları
-   =====================================================================
-   1. Inter'ın arayüz varyantları açıldı:
-        cv05  düz 'l' — 1/I/l karışıklığını önler, alan adı listesinde kritik
-        ss03  daha dar '@' ve tırnak
-        tnum  tabular rakam: sütunda alt alta sayılar kaymaz
-        zero  çizgili sıfar — 0/O ayrımı
-   2. Başlıklarda negatif izleme; Inter büyük puntoda varsayılan olarak seyrek.
-   3. Köşe yarıçapı 20px → 10px. 20px yumuşak/tüketici okunuyor; bir ölçüm
-      aracının hassas görünmesi gerekiyor. Rankzup'ın yuvarlaklığını
-      koruyorum ama bir ölçü küçülterek.
-   ===================================================================== */
 body{font-feature-settings:"cv05" 1,"ss03" 1,"tnum" 1,"zero" 1;
   font-variant-numeric:tabular-nums;letter-spacing:-.006em}
 h1,h2,h3,h4,h5,.ptitle h1{letter-spacing:-.032em}
 h1,.ptitle h1{letter-spacing:-.04em}
-/* Sayı gösteren her yer sekmeli hizada. */
 .kpi .v,.mono,code,kbd,td.n,.cnt,.vv,.sv,.pv{font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum" 1,"zero" 1}
 
-/* Yüzey disiplini — panelle aynı karar: kenarlıklar geri çekiliyor,
-   gruplamayı boşluk ve tipografi taşıyor. */
 .card,.pnl,.plan,.faq details,.tile{
   border-color:color-mix(in srgb, var(--border) 62%, transparent)}
 </style>
@@ -216,7 +195,6 @@ async function startForgot(){
   }catch{ show('Sunucuya ulaşılamadı.','err'); }
 }
 
-// Arriving from a reset email: swap the form for a new-password field.
 if(resetToken){
   document.querySelector('.tabs').style.display='none';
   $('#forgotRow').style.display='none';
@@ -243,7 +221,6 @@ if(resetToken){
   }, true);
 }
 
-// Already signed in? Skip the form entirely.
 if(!resetToken){
   fetch('/api/auth/me').then(r => r.json()).then(d => {
     if (d.signedIn) location.replace('/app');
