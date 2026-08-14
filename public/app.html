@@ -795,6 +795,47 @@ svg{display:block;max-width:100%}
   .ptitle h1{font-size:20px}
   .acc-h{grid-template-columns:26px minmax(0,1fr)}
 }
+
+.pltabs{display:inline-flex;gap:2px;padding:3px;border-radius:12px;
+  background:var(--card2);border:1px solid var(--border)}
+.pltabs button{padding:8px 16px;border-radius:10px;border:0;background:none;
+  color:var(--mute);font-size:13px;font-weight:500;white-space:nowrap}
+.pltabs button:hover{color:var(--fg)}
+.pltabs button.on{background:var(--card);color:var(--fg);
+  box-shadow:0 1px 2px color-mix(in srgb, var(--fg) 8%, transparent)}
+@media(max-width:620px){.pltabs{display:flex;width:100%;overflow-x:auto}
+  .pltabs button{flex:1 0 auto}}
+
+.tasklist{display:grid;gap:6px}
+.tsep{display:flex;align-items:center;gap:12px;margin:20px 0 8px;font-size:11px;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--mute2)}
+.tsep:first-child{margin-top:0}
+.tsep::after{content:"";flex:1;height:1px;background:var(--border)}
+.tkr{display:grid!important;grid-template-columns:34px minmax(0,1fr) auto 16px;
+  align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;
+  border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--fg)}
+.tkr:hover{border-color:var(--border2);background:var(--card2)}
+.tkr:hover .tka{color:var(--pri)}
+.tkn{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  background:var(--card3);color:var(--mute)}
+.tkr:hover .tkn{background:var(--pri-btn);color:#fff}
+.tkb{display:grid;gap:4px;min-width:0}
+.tkb b{font-size:14px;font-weight:600;letter-spacing:-.015em}
+.tkb i{font-style:normal;font-size:12px;color:var(--mute);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.tkm{display:grid;gap:4px;justify-items:end;text-align:right}
+.tkm .imp{font-size:11px;color:var(--mute);white-space:nowrap}
+.tkm .imp b{font-family:var(--mono);font-size:13px;color:var(--ok);font-weight:600}
+.tkm .eff{font-size:11px;color:var(--mute2);white-space:nowrap}
+.tka{color:var(--border2);font-size:14px}
+@media(max-width:700px){
+  .tkr{grid-template-columns:30px minmax(0,1fr);row-gap:10px}
+  .tkm{grid-column:1/-1;justify-items:start;text-align:left;
+    display:flex;gap:12px;align-items:baseline}
+  .tka{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -1264,6 +1305,28 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Etki':'Etki',
+  '60–90 gün · Otoriteyi büyütün':'60–90 gün · Otoriteyi büyütün',
+  '30–60 gün · Açıkları kapatın':'30–60 gün · Açıkları kapatın',
+  '0–30 gün · Kapıyı açın':'0–30 gün · Kapıyı açın',
+  'Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir. Bu kaynaklar dışarıya açık — hangisinin ne istediğini Kaynaklar ekranında görürsünüz.':'Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir. Bu kaynaklar dışarıya açık — hangisinin ne istediğini Kaynaklar ekranında görürsünüz.',
+  'kaynağa girin':'kaynağa girin',
+  'Kayda açık':'Kayda açık',
+  'atıf alan ve dışarıya açık bir kaynak listeleniyor. Hangi kaynak olduğunu ve giriş koşulunu orada görürsünüz.':'atıf alan ve dışarıya açık bir kaynak listeleniyor. Hangi kaynak olduğunu ve giriş koşulunu orada görürsünüz.',
+  'Kaynaklar ekranında':'Kaynaklar ekranında',
+  'Bu kaynaklar toplam':'Bu kaynaklar toplam',
+  'Kayda açık bir kaynak var':'Kayda açık bir kaynak var',
+  'Kayda açık kaynaklara girin':'Kayda açık kaynaklara girin',
+  'İletişim bilgisi yoksa künye veya iletişim sayfasından editöre ulaşın':'İletişim bilgisi yoksa künye veya iletişim sayfasından editöre ulaşın',
+  'Almıyorsa haber değeri taşıyan bir gelişmeyle iletişime geçin':'Almıyorsa haber değeri taşıyan bir gelişmeyle iletişime geçin',
+  'Alıyorsa ürün tanıtımı değil, kendi verinizi içeren bir konu önerin':'Alıyorsa ürün tanıtımı değil, kendi verinizi içeren bir konu önerin',
+  'Yayının dışarıdan içerik alıp almadığını kontrol edin — her yayın almaz':'Yayının dışarıdan içerik alıp almadığını kontrol edin — her yayın almaz',
+  'Girdikten sonra bilgilerinizi sitenizdekiyle birebir aynı tutun':'Girdikten sonra bilgilerinizi sitenizdekiyle birebir aynı tutun',
+  'Başvuru veya ortaklık isteniyorsa şartını ve maliyetini değerlendirin — her kaynak her markaya değmez':'Başvuru veya ortaklık isteniyorsa şartını ve maliyetini değerlendirin — her kaynak her markaya değmez',
+  'Kayıt serbestse profili eksiksiz doldurun; boş alan bırakılan kayıt listelerde arkaya düşer':'Kayıt serbestse profili eksiksiz doldurun; boş alan bırakılan kayıt listelerde arkaya düşer',
+  'Kaynağı açın ve giriş koşulunu okuyun — bir kısmı serbest kayıt, bir kısmı başvuru ya da iş ortaklığı ister':'Kaynağı açın ve giriş koşulunu okuyun — bir kısmı serbest kayıt, bir kısmı başvuru ya da iş ortaklığı ister',
+  'koşula göre değişir':'koşula göre değişir',
+  'kayda girin':'kayda girin',
   'Son görünmeler':'Son görünmeler',
   'Görünürlük trendi':'Görünürlük trendi',
   'Kapsam':'Kapsam',
@@ -2772,12 +2835,12 @@ const ENGINE_GLYPH = { chatgpt:'◉', gemini:'✦', perplexity:'✳', claude:'�
 const ENGINE_COLOR = { chatgpt:'#10A37F', gemini:'#8F3720', perplexity:'#20B8A6', claude:'#F59E0B',
   ai_overviews:'#4285F4', grok:'#EF4444', deepseek:'#B04628' };
 const SRC_KINDS = {
-  directory: { label:'Dizin', short:'profil açın', reachable:true, rank:0,
-    eta:'bugün başlanabilir',
-    steps:['Profili oluşturun; hizmet, sektör, konum ve fiyat aralığı alanlarını boş bırakmayın',
-           'Tamamlanmış 3–5 işi örnek olay olarak ekleyin, sonuçları sayıyla verin',
-           'Müşterilerinizden platform üzerinden değerlendirme isteyin',
-           'Kategori seçimini dar tutun — genel değil, spesifik'] },
+  directory: { label:'Dizin', short:'kayda girin', reachable:true, rank:0,
+    eta:'koşula göre değişir',
+    steps:['Kaynağı açın ve giriş koşulunu okuyun — bir kısmı serbest kayıt, bir kısmı başvuru ya da iş ortaklığı ister',
+           'Kayıt serbestse profili eksiksiz doldurun; boş alan bırakılan kayıt listelerde arkaya düşer',
+           'Başvuru veya ortaklık isteniyorsa şartını ve maliyetini değerlendirin — her kaynak her markaya değmez',
+           'Girdikten sonra bilgilerinizi sitenizdekiyle birebir aynı tutun'] },
   self_publish: { label:'Kendi kanalınız', short:'bugün yayınlayın', reachable:true, rank:1,
     eta:'aynı gün',
     steps:['Görünmediğiniz sorguların tam metnini başlık yapın',
@@ -2796,9 +2859,10 @@ const SRC_KINDS = {
            'Görsel, varyant ve stok bilgisini eksiksiz doldurun'] },
   publication: { label:'Sektörel yayın', short:'konu önerin', reachable:true, rank:4,
     eta:'3–8 hafta',
-    steps:['Yayının konuk yazı politikasını ve editöryel takvimini inceleyin',
-           'Ürün tanıtımı değil, sektör verisi öneren bir konu gönderin',
-           'Basın bültenlerinizi editör listesine ekleyin'] },
+    steps:['Yayının dışarıdan içerik alıp almadığını kontrol edin — her yayın almaz',
+           'Alıyorsa ürün tanıtımı değil, kendi verinizi içeren bir konu önerin',
+           'Almıyorsa haber değeri taşıyan bir gelişmeyle iletişime geçin',
+           'İletişim bilgisi yoksa künye veya iletişim sayfasından editöre ulaşın'] },
   authority: { label:'Kayıt / otorite', short:'kaydınızı düzeltin', reachable:true, rank:5,
     eta:'1–2 hafta',
     steps:['Mevcut kaydınızı bulun ve doğruluğunu kontrol edin',
@@ -2912,17 +2976,17 @@ function buildActions() {
     .sort((a, b) => (srcKind(a.kind).rank - srcKind(b.kind).rank) || (b.v - a.v));
   const blocked = outside.filter(s => !srcKind(s.kind).reachable && s.kind !== 'unknown');
 
-  reachable.slice(0, 3).forEach((src, i) => {
-    const k = srcKind(src.kind);
+  if (reachable.length) {
+    const toplamAtif = reachable.reduce((a, s) => a + s.v, 0);
+    const turler = [...new Set(reachable.map(s => T(srcKind(s.kind).label)))];
     push(
-      `${esc(src.d)} ${T('üzerinde yer alın')} — ${k.short}`,
-      `${src.v} ${T('atıf')} · ${k.label} · ${k.eta}`,
-      (4.4 - i * 0.3).toFixed(1), k.eta, `+${3 - i} ${T('sorgu')}`,
-      `${T('Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir.')} ${
-        src.kindNote ? esc(src.kindNote) + '. ' : ''}${
-        T('Bu kaynak kayda açık — girmek için beklemeniz gereken bir onay zinciri yok.')}`,
-      k.steps, null);
-  });
+      `${T('Kayda açık')} ${reachable.length} ${T('kaynağa girin')}`,
+      `${toplamAtif} ${T('atıf')} · ${turler.slice(0, 3).join(' · ')}`,
+      '4.4', T('koşula göre değişir'), `+3 ${T('sorgu')}`,
+      `${T('Modeller sizi çoğunlukla üçüncü taraf kaynaklardan öğrenir. Bu kaynaklar dışarıya açık — hangisinin ne istediğini Kaynaklar ekranında görürsünüz.')}`,
+      srcKind(reachable[0].kind).steps,
+      null);
+  }
 
   if (blocked.length) {
     const toplam = blocked.reduce((a, s) => a + s.v, 0);
@@ -2931,8 +2995,7 @@ function buildActions() {
       T('Rakip ve satıcı içerikleri sizden çok alıntılanıyor'),
       `${blocked.length} ${T('kaynak')} · ${toplam} ${T('atıf')} · ${T('bu kaynaklara girilemez')}`,
       '4.2', `2–4 ${T('ay')}`, `+2 ${T('sorgu')}`,
-      `${blocked.slice(0, 3).map(s => s.d).join(', ')}${blocked.length > 3 ? ` ${T('ve')} ${blocked.length - 3} ${T('kaynak daha')}` : ''} ` +
-      `${T('toplam')} ${toplam} ${T('atıf alıyor.')} ${
+      `${T('Bu kaynaklar toplam')} ${toplam} ${T('atıf alıyor.')} ${
         rakip.length ? `${rakip.length} ${T('tanesi doğrudan rakibinizin sitesi.')} ` : ''}` +
       T('Bu kaynaklara profil açamaz, editörüne yazamazsınız — içerik onların kendi pazarlaması. Ama aynı yarışa girebilirsiniz.'),
       [T('En çok atıf alan üç sayfayı inceleyin: hangi soruya, hangi yapıda cevap veriyorlar'),
@@ -4069,8 +4132,8 @@ function buildCenter(d){
     const k=srcKind(s.kind);
     out.push({
       sev:'high', icon:'⚭', kind:T('Kaynak'),
-      title:`${esc(s.d)} ${T('üzerinde yer alın')} — ${T(k.short)}`,
-      body:`${s.v} ${T('atıf alıyor ve kayda açık')} (${T(k.label)}). ${T('Beklenecek onay zinciri yok')} — ${T(k.eta)}.`,
+      title:`${T('Kayda açık bir kaynak var')} — ${T(k.label)}`,
+      body:`${T('Kaynaklar ekranında')} ${s.v} ${T('atıf alan ve dışarıya açık bir kaynak listeleniyor. Hangi kaynak olduğunu ve giriş koşulunu orada görürsünüz.')}`,
       actions:[{label:`${T('Kaynakları gör')} →`,pri:1,go:"go('sources')"},
                {label:`${T('Aksiyon planı')} →`,go:"go('plan')"}],
     });
@@ -4763,7 +4826,7 @@ VIEWS.plan=()=>{
       <div class="d">${T('first wins in 1–2 weeks')}</div></div>
   </div>
 
-  <div class="pills" style="margin:18px 0 14px">
+  <div class="pltabs" style="margin:20px 0 16px">
     <button class="${tab==='platform'?'on':''}" onclick="S.planTab='platform';render()">${T('By platform')}</button>
     <button class="${tab==='tasks'?'on':''}" onclick="S.planTab='tasks';render()">${T('Task list')}</button>
     <button class="${tab==='road'?'on':''}" onclick="S.planTab='road';render()">${T('90-day roadmap')}</button>
@@ -4873,17 +4936,28 @@ function taskModal(i){
 }
 
 function planTasks(A){
-  return `<div class="card"><div class="cb">
-    ${A.map((a,i)=>`
-      <div class="task" onclick="taskModal(${i})">
-        <div class="tn">${i+1}</div>
-        <div style="flex:1;min-width:0"><b style="font-size:14px">${esc(a.t)}</b>
-          <p style="font-size:12px;color:var(--mute);margin-top:3px">${esc(a.sub)}</p></div>
-        <div style="text-align:right;flex:none">
-          <span class="chip ok">${T('Impact')} ${a.im}</span>
-          <div style="font-size:11px;color:var(--mute2);margin-top:5px">${esc(a.ef)} · ${esc(a.q)}</div>
-        </div></div>`).join('')}
-  </div></div>`;
+  const faz = i => i<2 ? 1 : i<5 ? 2 : 3;
+  const fazAd = {1:'0–30 gün · Kapıyı açın', 2:'30–60 gün · Açıkları kapatın', 3:'60–90 gün · Otoriteyi büyütün'};
+  let oncekiFaz = 0;
+  return `<div class="tasklist">
+    ${A.map((a,i)=>{
+      const f = faz(i);
+      const bas = f!==oncekiFaz ? (oncekiFaz=f, `<div class="tsep"><span>${T(fazAd[f])}</span></div>`) : '';
+      return bas + `
+      <button class="tkr" onclick="taskModal(${i})">
+        <span class="tkn">${i+1}</span>
+        <span class="tkb">
+          <b>${esc(a.t)}</b>
+          <i>${esc(a.sub)}</i>
+        </span>
+        <span class="tkm">
+          <span class="imp">${T('Etki')} <b>${a.im}</b></span>
+          <span class="eff">${esc(a.ef)} · ${esc(a.q)}</span>
+        </span>
+        <span class="tka">→</span>
+      </button>`;
+    }).join('')}
+  </div>`;
 }
 
 function planRoad(A,gain){
