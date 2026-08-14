@@ -24,7 +24,6 @@
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --gut:clamp(16px,3.6vw,40px);--maxw:1280px;
 }
-*{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);
   font-family:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.62;
@@ -57,7 +56,6 @@ p{margin:0;text-wrap:pretty}
 .chip.pri{background:rgba(176,70,40,.11);color:#B04628;border-color:rgba(176,70,40,.26)}
 .up{color:#15803D}.down{color:#B91C1C}
 
-/* ---- nav ---- */
 nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdrop-filter:blur(18px);
   border-bottom:1px solid var(--border)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);height:64px;display:flex;align-items:center;gap:32px}
@@ -69,7 +67,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .nav-cta{display:flex;gap:10px;align-items:center}
 @media(max-width:980px){.nav-links{display:none}}
 
-/* ---- hero ---- */
 .hero{position:relative;padding:clamp(42px,5.6vw,74px) 0 0;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;z-index:0;
   background:radial-gradient(62% 54% at 50% 4%,rgba(176,70,40,.26) 0,rgba(138,106,62,.09) 45%,transparent 78%)}
@@ -87,7 +84,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
 .hero-note{margin-top:14px;font-size:13px;color:var(--mute)}
 
-/* ---- ticker ---- */
 .strip{position:relative;z-index:1;margin-top:clamp(30px,4vw,48px);
   border-block:1px solid var(--border);background:rgba(255,255,255,.015);overflow:hidden;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
@@ -99,7 +95,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 @keyframes scroll-left{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}
 .strip:hover .marquee{animation-play-state:paused}
 
-/* ---- sections ---- */
 .sec{padding:clamp(50px,6.4vw,96px) 0}
 .sec-head{text-align:center;max-width:80ch;margin:0 auto clamp(26px,3.4vw,44px)}
 .sec-head h2{font-size:clamp(24px,3.3vw,40px);margin:16px 0 14px}
@@ -124,7 +119,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .feat .badge{position:absolute;top:22px;right:24px;font-size:10px;font-weight:600;letter-spacing:.03em;
   color:#B04628;background:rgba(176,70,40,.1);border:1px solid rgba(176,70,40,.24);padding:2px 8px;border-radius:999px}
 
-/* ---- app screenshot ---- */
 .shot-wrap{position:relative}
 .shot{background:#F2EEE4;border:1px solid var(--border2);border-radius:var(--r2);
   box-shadow:var(--shl);overflow:hidden;pointer-events:none;user-select:none}
@@ -223,7 +217,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .dtab tr:last-child td{border-bottom:0}
 .dtab .n{text-align:right;font-family:var(--mono);font-size:11px}
 
-/* ---- stats ---- */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);
   border:1px solid var(--border);border-radius:var(--rx);overflow:hidden}
 @media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -232,7 +225,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
   background:linear-gradient(160deg,#1A1713 25%,#B04628);-webkit-background-clip:text;background-clip:text;color:transparent}
 .stat-c .l{font-size:13px;color:var(--mute);margin-top:12px}
 
-/* ---- setup ---- */
 .setup-list{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:clamp(22px,2.8vw,36px)}
 @media(max-width:1000px){.setup-list{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:580px){.setup-list{grid-template-columns:1fr}}
@@ -241,7 +233,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .setup-c h4{font-size:16px;margin:10px 0 8px}
 .setup-c p{font-size:13px;color:var(--mute)}
 
-/* ---- faq / cta / footer ---- */
 .faq details{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:8px}
 .faq details[open]{border-color:var(--border2)}
 .faq summary{list-style:none;cursor:pointer;padding:16px 48px 16px 20px;position:relative;font-size:14px;font-weight:500}
@@ -276,7 +267,6 @@ footer{border-top:1px solid var(--border);padding:48px 0 32px;margin-top:clamp(4
 .foot-b{margin-top:32px;padding-top:20px;border-top:1px solid var(--border);display:flex;
   justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mute2)}
 
-/* ---- QA düzeltmeleri ---- */
 svg{display:block;max-width:100%}
 .foot-g .brand{display:inline-flex!important;padding:0}
 .mnt{overflow:hidden}
@@ -288,10 +278,6 @@ svg{display:block;max-width:100%}
   .dtop{font-size:11px}
 }
 
-/* --- Tipografi düzeni (tüm sayfalarda ortak) ---
-   Başlıklarda negatif harf aralığı, gövdede geniş satır yüksekliği: uzun
-   Türkçe kelimeler (görünürlüğünüzü, sınıflandırma) sıkışık satırda okunmuyor.
-   Sayılar tabular: bir sütunda alt alta gelen rakamlar kaymasın. */
 h1,h2,h3,h4,h5{letter-spacing:-.028em;text-wrap:balance}
 h1{letter-spacing:-.038em}
 p,li{text-wrap:pretty}
@@ -301,29 +287,13 @@ p,li{text-wrap:pretty}
 img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* =====================================================================
-   TİPOGRAFİ VE YOĞUNLUK — tasarım kararları
-   =====================================================================
-   1. Inter'ın arayüz varyantları açıldı:
-        cv05  düz 'l' — 1/I/l karışıklığını önler, alan adı listesinde kritik
-        ss03  daha dar '@' ve tırnak
-        tnum  tabular rakam: sütunda alt alta sayılar kaymaz
-        zero  çizgili sıfar — 0/O ayrımı
-   2. Başlıklarda negatif izleme; Inter büyük puntoda varsayılan olarak seyrek.
-   3. Köşe yarıçapı 20px → 10px. 20px yumuşak/tüketici okunuyor; bir ölçüm
-      aracının hassas görünmesi gerekiyor. Rankzup'ın yuvarlaklığını
-      koruyorum ama bir ölçü küçülterek.
-   ===================================================================== */
 body{font-feature-settings:"cv05" 1,"ss03" 1,"tnum" 1,"zero" 1;
   font-variant-numeric:tabular-nums;letter-spacing:-.006em}
 h1,h2,h3,h4,h5,.ptitle h1{letter-spacing:-.032em}
 h1,.ptitle h1{letter-spacing:-.04em}
-/* Sayı gösteren her yer sekmeli hizada. */
 .kpi .v,.mono,code,kbd,td.n,.cnt,.vv,.sv,.pv{font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum" 1,"zero" 1}
 
-/* Yüzey disiplini — panelle aynı karar: kenarlıklar geri çekiliyor,
-   gruplamayı boşluk ve tipografi taşıyor. */
 .card,.pnl,.plan,.faq details,.tile{
   border-color:color-mix(in srgb, var(--border) 62%, transparent)}
 </style>
@@ -669,13 +639,11 @@ const PLAT=[
 const CITE=[['reddit.com',53],['facebook.com',41],['youtube.com',32],
  ['eksisozluk.com',25],['sikayetvar.com',22],['donanimhaber.com',18]];
 
-/* ---------- şerit: sadece AI isimleri, sola kayar ---------- */
 (function(){
   const one=PLAT.map(p=>`<span class="it"><i style="background:${p.c}"></i>${p.n}</span>`).join('');
   $('#marquee').innerHTML=`<div class="grp">${one}</div><div class="grp" aria-hidden="true">${one}</div>`;
 })();
 
-/* ---------- grafikler ---------- */
 function sd(i){return (Math.sin(i*12.9898)*43758.5453)%1}
 function area(sel,vals,o={}){
   const W=o.w||420,H=o.h||o.height||150,P={l:26,r:6,t:8,b:18},N=vals.length;
@@ -714,7 +682,6 @@ $('#sCite').innerHTML=CITE.map((c,i)=>`
     <span class="n">${c[0]}<span class="bar" style="margin-top:5px"><i style="width:${c[1]/53*100}%"></i></span></span>
     <span class="v">${c[1]}</span></div>`).join('');
 
-/* analitik ekranı — donut + tablo */
 (function(){
   const tot=PLAT.reduce((a,p)=>a+p.hit,0);
   const R=54,SW=20,cx=68,cy=68;let a=-Math.PI/2,arcs='';
@@ -743,7 +710,6 @@ $('#sCite').innerHTML=CITE.map((c,i)=>`
      <td class="n ${i%3?'up':'down'}">${i%3?'▲':'▼'}${(1+i*0.7).toFixed(1)}</td></tr>`).join('')}</tbody>`;
 })();
 
-/* sayaç */
 (function(){
   const io=new IntersectionObserver(es=>es.forEach(e=>{
     if(!e.isIntersecting||e.target.dataset.done)return;e.target.dataset.done=1;
