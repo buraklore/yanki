@@ -19,7 +19,6 @@
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --gut:clamp(18px,4vw,44px);--maxw:1240px;
 }
-*{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);
   font-family:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.62;
@@ -45,7 +44,6 @@ p{margin:0}
 .btn-lg{padding:14px 24px;font-size:16px}
 .btn-sm{padding:8px 14px;font-size:13px}
 
-/* nav */
 nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdrop-filter:blur(18px);
   border-bottom:1px solid var(--border)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);height:64px;display:flex;align-items:center;gap:32px}
@@ -57,7 +55,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .nav-cta{display:flex;gap:10px;align-items:center}
 @media(max-width:960px){.nav-links{display:none}}
 
-/* hero */
 .hh{position:relative;overflow:hidden;padding:clamp(46px,6vw,84px) 0 clamp(30px,4vw,44px);text-align:center}
 .hh::before{content:"";position:absolute;inset:0;
   background:radial-gradient(60% 60% at 50% 0%,rgba(176,70,40,.24) 0,rgba(143,55,32,.08) 46%,transparent 78%)}
@@ -78,7 +75,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .search .ic{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--mute-2);font-size:14px}
 .search .cnt{margin-top:10px;font-size:12px;color:var(--mute-2)}
 
-/* kategoriler */
 .sec{padding:clamp(40px,5vw,72px) 0}
 .sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;flex-wrap:wrap}
 .sec-h h2{font-size:clamp(20px,2.4vw,28px)}
@@ -99,7 +95,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .cat p{font-size:13px;color:var(--mute)}
 .cat .n{position:absolute;top:20px;right:20px;font-size:11px;color:var(--mute-2);font-family:var(--mono)}
 
-/* makaleler */
 .arts{margin-top:24px}
 .art{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px}
 .art[open]{border-color:var(--border-2)}
@@ -113,7 +108,6 @@ nav.top{position:sticky;top:0;z-index:80;background:rgba(247,244,237,.78);backdr
 .art .tag{font-size:10px;color:var(--mute-2);font-family:var(--mono);margin-left:8px}
 .noresult{padding:32px;text-align:center;color:var(--mute);border:1px dashed var(--border-2);border-radius:var(--r-lg)}
 
-/* iletişim */
 .more{text-align:center;padding:clamp(30px,4vw,50px) 24px;border:1px solid var(--border);border-radius:var(--r-xl);
   background:var(--card);background-image:radial-gradient(70% 100% at 50% 0%,rgba(176,70,40,.1),transparent 70%)}
 .more h3{font-size:clamp(20px,2.4vw,28px);margin-bottom:10px}
@@ -129,7 +123,6 @@ footer{border-top:1px solid var(--border);padding:48px 0 32px;margin-top:clamp(5
 .foot-b{margin-top:32px;padding-top:20px;border-top:1px solid var(--border);display:flex;
   justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mute-2)}
 
-/* ---- QA düzeltmeleri ---- */
 svg{display:block;max-width:100%}
 .foot-g .brand{display:inline-flex!important;padding:0}
 .cat h3,.cat p{color:inherit}
@@ -137,10 +130,6 @@ svg{display:block;max-width:100%}
 .art .tag{white-space:nowrap}
 @media(max-width:600px){.nav-cta .btn-ghost{display:none}}
 
-/* --- Tipografi düzeni (tüm sayfalarda ortak) ---
-   Başlıklarda negatif harf aralığı, gövdede geniş satır yüksekliği: uzun
-   Türkçe kelimeler (görünürlüğünüzü, sınıflandırma) sıkışık satırda okunmuyor.
-   Sayılar tabular: bir sütunda alt alta gelen rakamlar kaymasın. */
 h1,h2,h3,h4,h5{letter-spacing:-.028em;text-wrap:balance}
 h1{letter-spacing:-.038em}
 p,li{text-wrap:pretty}
@@ -150,29 +139,13 @@ p,li{text-wrap:pretty}
 img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* =====================================================================
-   TİPOGRAFİ VE YOĞUNLUK — tasarım kararları
-   =====================================================================
-   1. Inter'ın arayüz varyantları açıldı:
-        cv05  düz 'l' — 1/I/l karışıklığını önler, alan adı listesinde kritik
-        ss03  daha dar '@' ve tırnak
-        tnum  tabular rakam: sütunda alt alta sayılar kaymaz
-        zero  çizgili sıfar — 0/O ayrımı
-   2. Başlıklarda negatif izleme; Inter büyük puntoda varsayılan olarak seyrek.
-   3. Köşe yarıçapı 20px → 10px. 20px yumuşak/tüketici okunuyor; bir ölçüm
-      aracının hassas görünmesi gerekiyor. Rankzup'ın yuvarlaklığını
-      koruyorum ama bir ölçü küçülterek.
-   ===================================================================== */
 body{font-feature-settings:"cv05" 1,"ss03" 1,"tnum" 1,"zero" 1;
   font-variant-numeric:tabular-nums;letter-spacing:-.006em}
 h1,h2,h3,h4,h5,.ptitle h1{letter-spacing:-.032em}
 h1,.ptitle h1{letter-spacing:-.04em}
-/* Sayı gösteren her yer sekmeli hizada. */
 .kpi .v,.mono,code,kbd,td.n,.cnt,.vv,.sv,.pv{font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum" 1,"zero" 1}
 
-/* Yüzey disiplini — panelle aynı karar: kenarlıklar geri çekiliyor,
-   gruplamayı boşluk ve tipografi taşıyor. */
 .card,.pnl,.plan,.faq details,.tile{
   border-color:color-mix(in srgb, var(--border) 62%, transparent)}
 </style>
