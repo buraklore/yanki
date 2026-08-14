@@ -10,43 +10,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* =====================================================================
-   PALET
-   =====================================================================
-   İki referans üründen piksel örneklemesiyle çıkarıldı, tahminle değil.
-
-     Pleqo    zemin #0E0D12 · vurgu #4A317A mor / #10B982 yesil (ölçülen)
-              soğuk, yüksek kontrast, bilgi yoğun — yapı doğru
-     Rankzup  zemin #F5F1E8 · vurgu #B04628 pas
-              sıcak, düşük kontrast, editöryel — karakter doğru
-
-   Alınan karar: Pleqo'nun yoğunluğu, Rankzup'ın sıcaklığı.
-
-   Zemin kasten nötr siyah DEĞİL. var(--bg) maviye kaçıyordu; #12100E kırmızıya
-   kaçıyor. Yan yana konmadan fark edilmiyor ama pas rengi vurgu sıcak zeminde
-   oturuyor, soğuk zeminde çakışıyor.
-
-   --pri-btn ayrı bir değişken çünkü #C25A32 üzerine beyaz metin 4.37:1 veriyor
-   ve eşik 4.5. Düğmelerde #B04628 kullanılıyor: beyazla 5.60:1.
-   ===================================================================== */
+*,*::before,*::after{box-sizing:border-box}
 :root{
   --bg:#12100E;--bg2:#171410;--card:#1B1815;--card2:#221E1A;--card3:#2A251F;
   --border:#2A251F;--border2:#3A342C;--fg:#EDE8E0;--fg2:#BDB4A8;--mute:#A69C8F;--mute2:#948B7E;
   --pri:var(--pri);--pri-btn:#B04628;--pri2:var(--pri2);--pri-ink:#8F3720;--vio:#B08A5A;
   --ok:var(--ok);--warn:var(--warn);--bad:var(--bad);
-  /* Rankzup'ın tasarım dili: belirgin yuvarlak köşe, neredeyse görünmez gölge,
-     çok soluk kenar çizgisi. Pleqo keskin köşe + belirgin gölge kullanıyor;
-     bu tarafı Rankzup'tan alıyoruz çünkü uzun oturumda daha az yoruyor. */
   --r:8px;--rl:10px;--rx:12px;--r2:16px;
   --sh:0 1px 2px rgba(0,0,0,.06);
   --shm:0 2px 10px -4px rgba(0,0,0,.10);
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
-/* Açık tema. Rankzup'ın zemini neredeyse birebir; metin kontrastı 4.5:1
-   üzerine çekildi — orijinali göz yormuyor ama soluk metinde eşiğin altında
-   kalıyor. */
-/* Aşağıdaki koyu rozet tonları YALNIZCA açık temada geçerli; koyu temada
-   ışıklı tonlara geri dönüyorlar. */
 body:not(.lt) .kchip.directory,body:not(.lt) .kchip.self_publish{color:#7EE2A8}
 body:not(.lt) .kchip.publication,body:not(.lt) .kchip.authority{color:#C4B5FD}
 body:not(.lt) .stbl .tagme{background:rgba(176,70,40,.24);color:#EDA47A}
@@ -66,7 +40,6 @@ body.lt{
   --pri:#9C3D22;--pri-btn:#B04628;--pri2:#8F3720;--pri-ink:#7A2E19;--vio:#8A6A3E;
   --ok:#15803D;--warn:#B45309;--bad:#B91C1C;
 }
-*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;
   font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -79,7 +52,6 @@ input,select,textarea{font:inherit}
 .mono{font-family:var(--mono)}
 .mut{color:var(--mute)}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
 
-/* ---------- primitives ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:var(--r);
   font-size:14px;font-weight:500;border:1px solid transparent;transition:.16s;white-space:nowrap}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -121,18 +93,12 @@ tbody tr:last-child td{border-bottom:0}
 tbody tr:hover{background:rgba(255,255,255,.018)}
 td.n,th.n{text-align:right;font-family:var(--mono);font-size:12px}
 .tw{overflow-x:auto}
-/* Cards size to their own content. Stretching them to a common height leaves
-   the shorter one with a block of dead space under its last row, which reads
-   as missing data rather than as a shorter list. */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 @media(max-width:1180px){.g4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:1000px){.g2,.g3{grid-template-columns:1fr}}
 @media(max-width:640px){.g4{grid-template-columns:1fr}}
-/* Sayılar Rankzup'ta BÜYÜK ve İNCE; etiket küçük, harf aralığı geniş.
-   Pleqo tersini yapıyor: küçük ve kalın sayı, sıkışık etiket. Rankzup'ın
-   oranı sayıyı ekranın odağı yapıyor — bu bir ölçüm aracı, sayı öne çıkmalı. */
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--rx);padding:20px 20px}
 .kpi .t{font-size:10px;color:var(--mute);font-weight:500;display:flex;align-items:center;gap:6px;
   text-transform:uppercase;letter-spacing:.09em}
@@ -147,7 +113,6 @@ code{font-family:var(--mono);font-size:11px;background:var(--muted);border:1px s
 pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding:14px 16px;border-radius:var(--r);
   font-family:var(--mono);font-size:12px;overflow-x:auto;margin:0;line-height:1.75;white-space:pre-wrap;word-break:break-word}
 
-/* ---------- onboarding ---------- */
 #ob{min-height:100vh;display:none;flex-direction:column}
 #ob.on{display:flex}
 .ob-top{height:64px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px;
@@ -210,7 +175,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .ob-nav{display:flex;gap:12px;margin-top:24px}
 .ob-nav .btn{flex:1}
 
-/* ---------- app shell ---------- */
 #app{display:none;min-height:100vh}
 #app.on{display:grid;grid-template-columns:300px minmax(0,1fr)}
 #sb{border-right:1px solid var(--border);background:var(--bg);padding:14px 12px;display:flex;flex-direction:column;gap:12px;
@@ -218,29 +182,14 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .sb-logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;padding:4px 8px 12px;border-bottom:1px solid var(--border)}
 .mk{width:27px;height:27px;border-radius:8px;flex:none;background:var(--pri-btn);
   display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
-/* =====================================================================
-   SIDEBAR
-   =====================================================================
-   Written against one question: does this look like it belongs to a company
-   that has been doing this for a decade, or to a side project.
-   The answer is mostly restraint. Enterprise tools earn their weight with
-   structure and discipline — a spine the eye can follow, hairlines instead
-   of cards, tabular figures, tight uppercase eyebrows — not with rounded
-   gradient tiles, which are the single clearest tell of a young product.
-   So: no gradients, radii down from 12px to 5px, one accent, and a rule
-   running the height of the navigation that every item hangs off.
-   ===================================================================== */
 #sb{padding:0;gap:0;background:var(--bg2);border-right:1px solid var(--card3)}
 
-/* --- Zone 1: identity ------------------------------------------------- */
 .sb-id{padding:16px 16px 16px;border-bottom:1px solid var(--card3);background:var(--bg2)}
 .sb-logo{display:flex;align-items:center;gap:8px;padding:0 2px 14px;border:0}
 .mk{width:30px;height:30px;border-radius:6px;flex:none;background:var(--pri-btn);
   display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700;letter-spacing:-.02em}
 .sb-logo .wm{font-size:16px;font-weight:700;letter-spacing:.08em;color:var(--fg)}
 
-/* Client selector. Square corners and a monogram plate rather than a rounded
-   avatar: this is a record being selected, not a person being greeted. */
 .sb-ws{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;
   background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 10px;color:var(--fg)}
 .sb-ws:hover{border-color:var(--border2);background:var(--card2)}
@@ -254,8 +203,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .sb-ws .cv{flex:none;width:14px;height:14px;color:var(--mute2)}
 .sb-ws .cv svg{width:100%;height:100%;display:block}
 
-/* The reading, as a meter. A number with a track behind it states a position
-   on a scale; the same number in a sentence states nothing. */
 .sb-meter{margin-top:12px}
 .sb-meter .mrow{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
 .sb-meter .ml{font-size:11px;font-weight:700;letter-spacing:.13em;color:var(--mute2)}
@@ -274,14 +221,9 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .sb-meter .dot.run{background:var(--pri-btn);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* --- Workspace menu --------------------------------------------------- */
 .sb-wswrap{position:relative}
 .wsmenu{display:none}
 
-/* --- Zone 2: navigation ----------------------------------------------
-   Every item hangs off a single rule running the height of the column. The
-   active marker sits on that rule rather than floating beside it, which is
-   what turns a list of links into a structure. */
 .nav{display:grid;gap:1px;padding:14px 16px 10px;position:relative}
 .nav::before{content:"";position:absolute;left:9px;top:18px;bottom:14px;width:1px;background:var(--border)}
 .nav .sec{font-size:11px;font-weight:700;letter-spacing:.13em;color:var(--mute2);
@@ -291,22 +233,16 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
   border-radius:6px;font-size:14px;color:var(--mute);width:100%;line-height:1.35;letter-spacing:-.005em}
 .nav a:hover{color:var(--fg);background:var(--card)}
 .nav a.on{background:var(--card3);color:var(--fg);font-weight:500}
-/* The marker sits on the spine, covering it — the rule and the active
-   state are the same line, which is what makes the column read as one
-   structure instead of two decorations. */
 .nav a.on::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;
   border-radius:4px;background:var(--pri-btn)}
 .nav .g{width:20px;height:20px;flex:none;opacity:.62;stroke-width:1.7}
 .nav a:hover .g{opacity:.85}
 .nav a.on .g{opacity:1;color:var(--pri)}
 .nav a span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Volume, in tabular figures. A tool that shows how much is inside each
-   section looks like a tool with something inside it. */
 .nav .ct{flex:none;font-family:var(--mono);font-variant-numeric:tabular-nums;
   font-size:12px;color:var(--mute2)}
 .nav a.on .ct,.nav a:hover .ct{color:var(--mute)}
 
-/* --- Foot: status bar -------------------------------------------------- */
 .sb-foot{margin-top:auto;display:grid;gap:0;border-top:1px solid var(--card3);background:var(--bg2)}
 .plan-row{display:flex;align-items:center;gap:8px;padding:12px 16px;font-size:13px;background:var(--bg2);
   color:var(--fg);border-bottom:1px solid var(--card3)}
@@ -330,16 +266,11 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .sb-acct .who i{font-style:normal;font-size:10px;color:var(--mute2);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-acct .ics{display:flex;gap:2px;flex:none}
-/* The two controls at the foot are the ones a user reaches for least often
-   and needs most reliably. At 26px with a 14px glyph they were a smaller tap
-   target than anything else in the column. */
 .sb-acct .ics button{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;
   background:none;border:0;color:var(--mute);padding:0}
 .sb-acct .ics button:hover{color:var(--fg);background:var(--card3)}
 .sb-acct .ics svg{width:18px;height:18px;display:block}
 .sb-fb{display:none}
-/* Workspace switcher — anchored to the button so it reads as belonging to it
-   rather than floating over the nav. */
 .apphead{display:flex;align-items:center;gap:14px;padding:14px 24px 0;justify-content:flex-end}
 .apphead .hs{font-size:12px;color:var(--mute)}
 .apphead .hs b{color:var(--fg);font-weight:600}
@@ -355,7 +286,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .wsmenu.open{display:block;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;
   background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:4px;
   box-shadow:0 16px 40px rgba(0,0,0,.5)}
-/* Only the list scrolls; the add row stays pinned under it. */
 .wsmenu .list{max-height:264px;overflow-y:auto}
 .wsmenu .add{display:flex;align-items:center;gap:8px;color:var(--pri);font-weight:500}
 .wsmenu .add .pl{width:22px;height:22px;border-radius:6px;border:1px dashed var(--border2);
@@ -376,8 +306,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .wsmenu .add{color:var(--mute)}
 .wsmenu .cnt{margin-left:auto;font-size:10px;color:var(--mute2)}
 
-/* Scan strip. Freshness is the first question a returning user has, so it sits
-   above the nav rather than buried on the dashboard. */
 .sb-scan{display:flex;align-items:center;gap:8px;margin:10px 0 4px}
 .sb-scan .pill{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mute);
   min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
@@ -390,18 +318,11 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .sb-scan button{flex:none;font-size:11px;padding:4px 8px}
 .sb-scan button:disabled{opacity:.5}
 .sb-foot{margin-top:auto;display:grid;gap:10px;padding-top:10px}
-/* Provenance line: what was measured and when. */
-/* The queue is drained by this page. Saying otherwise was not a phrasing
-   choice, it was wrong: /api/cron/drain exists but is not scheduled, so
-   nothing else picks the work up while the tab is closed. */
 .keepopen{display:inline-flex;align-items:center;gap:6px;margin-top:16px;
   font-size:12px;color:var(--warn);background:rgba(245,158,11,.1);
   border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 14px}
 .keepopen b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--warn)}
 
-/* --- Aksiyon Merkezi --- */
-/* Ölç → Düzelt → Uygula şeridi. Kullanıcıya hangi aşamada olduğunu söyler:
-   ölçüm bitti, sıra düzeltmede. */
 .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;
   background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px}
 .flow .fs{font-size:12px;padding:4px 12px;border-radius:16px;
@@ -418,8 +339,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .actfil button b{font-family:var(--mono);font-size:11px;color:var(--mute2)}
 .actfil button.on b{color:var(--pri)}
 
-/* Kartlar. Sol kenar rengi önceliği taşır — otuz kartı okumadan taramanın
-   tek yolu. Rozet de var ama renk daha hızlı okunuyor. */
 .acts{display:grid;gap:10px}
 .act{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border2);
   border-radius:0 12px 12px 0;padding:14px 16px}
@@ -443,13 +362,8 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .act .lnk{background:none;border:0;padding:0;font-size:12px;color:var(--pri)}
 .act .lnk:hover{text-decoration:underline}
 
-/* Platform kırılımında ton ve oran ayrı okunmalı; bitişikken
-   "Google Gemini Olumlu· %88 olumlu" gibi tek kelime hâline geliyordu. */
 .prow .pd{margin-left:auto;font-size:11px;color:var(--mute2);white-space:nowrap}
 
-/* --- Algı ekranı --- */
-/* Sıfat bulutu. Boyut değil renk kodluyor: sıklık zaten sayı olarak yazılı,
-   ve büyüyen yazı tipi okumayı zorlaştırıp sıralamayı belirsizleştiriyor. */
 .adjs{display:flex;flex-wrap:wrap;gap:6px;padding:2px}
 .adj{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;
   border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--fg2)}
@@ -459,7 +373,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .adj.bad{background:rgba(248,113,113,.11);border-color:transparent;color:var(--bad)}
 .adj.bad i{color:var(--bad)}
 
-/* Rakip algı kıyası */
 .prcv{display:grid;gap:2px}
 .prc{display:grid;grid-template-columns:minmax(0,1fr) 1.3fr 46px 82px;align-items:center;gap:10px;
   padding:8px 8px;border-radius:8px}
@@ -476,13 +389,10 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .prc .vv{text-align:right;font-family:var(--mono);font-size:12px;color:var(--fg)}
 .prc .mn{text-align:right;font-size:10px;color:var(--mute2);white-space:nowrap}
 
-/* Ton grafiği açıklaması */
 .tlegend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:11px;color:var(--mute)}
 .tlegend span{display:inline-flex;align-items:center;gap:6px}
 .tlegend i{width:9px;height:9px;border-radius:4px;display:inline-block}
 
-/* Örnek geçişler. Sol kenar rengi tonu taşır — on iki kartı okumadan
-   taramanın tek yolu bu. */
 .psamp{display:grid;gap:8px}
 .ps{border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:0 9px 9px 0;
   padding:12px 14px;cursor:pointer;background:var(--card2)}
@@ -497,14 +407,10 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .kpi .v.ok{color:var(--ok)}
 .kpi .v.bad{color:var(--bad)}
 
-/* --- Opportunities --- */
-/* Absent is a different kind of row from "covered a bit", so it gets a word
-   rather than a 0% the eye slides past. */
 .ocov{font-family:var(--mono);font-size:12px}
 .ocov.none{color:var(--bad)}
 .ocov.part{color:var(--warn)}
 .ocov.good{color:var(--ok)}
-/* The opportunity number carries its own bar, so the column ranks itself. */
 .oscore{position:relative;display:inline-block;min-width:34px;text-align:right;
   font-family:var(--mono);font-weight:600;color:var(--fg);padding-bottom:4px}
 .oscore::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:4px;
@@ -512,9 +418,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .otbl td b{font-weight:500;color:var(--fg)}
 .otbl tbody tr:hover td{background:rgba(255,255,255,.025)}
 
-/* --- Audit page --- */
-/* Status as a glyph in a fixed slot: forty-eight rows scan faster by shape
-   than by reading "Pass / Partial / Fail" on each one. */
 .frow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
 .frow:last-child{border-bottom:0}
 .fst{width:20px;height:20px;border-radius:6px;flex:none;display:grid;place-items:center;
@@ -527,9 +430,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .acc-h h5{font-size:13px;font-weight:600;margin:0;color:var(--fg)}
 .acc-h .sb2{font-size:11px;color:var(--mute2);margin-top:2px}
 
-/* --- Sources page --- */
-/* Your own row is the one the reader came to find, so it is marked on the
-   frame rather than tinted like every other highlight in the app. */
 .stbl tr.me td{background:rgba(176,70,40,.08)}
 .stbl tr.me td:first-child{box-shadow:inset 3px 0 0 var(--pri)}
 .stbl tbody tr:hover td{background:rgba(255,255,255,.03)}
@@ -550,8 +450,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .stbl .cnt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--fg)}
 .stbl .more{font-size:10px;color:var(--mute2);margin-left:4px}
 .stbl .mut{color:var(--mute2)}
-/* Direction of travel, from the second half of the window against the first.
-   The old arrow was hardcoded to point up on every row. */
 .sdelta{font-family:var(--mono);font-size:11px;white-space:nowrap}
 .sdelta.up{color:var(--ok)}
 .sdelta.dn{color:var(--bad)}
@@ -567,12 +465,9 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
   border-radius:8px;padding:8px 14px;font-size:12px;font-weight:500}
 .srcwarn button:hover{border-color:var(--pri);color:var(--pri)}
 
-/* İşaretleme kısayolu: unknown satırının tek eylemi. */
 .marklink{background:none;border:0;padding:0;font-size:12px;color:var(--vio);text-align:left}
 .marklink:hover{color:var(--pri);text-decoration:underline}
 
-/* Türü seçtiren modal. Seçenekler taksonominin iç adlarıyla değil,
-   kullanıcının siteye bakınca kendine soracağı soruyla yazıldı. */
 .markopts{display:grid;gap:6px}
 .markopts button{display:grid;gap:2px;text-align:left;padding:10px 12px;border-radius:8px;
   border:1px solid var(--border);background:var(--card2);color:var(--fg);width:100%}
@@ -580,12 +475,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .markopts b{font-size:13px;font-weight:500}
 .markopts i{font-style:normal;font-size:11px;color:var(--mute2)}
 
-/* Ölçüm uyarısı. Rankzup bunu panelin en üstünde tutuyor ve haklı: müşteri
-   skoru bir garanti sanıp ona göre bütçe ayırırsa, sonuçtan ürünü sorumlu
-   tutar. Uyarı sayfa dibinde değil, sayının yanında olmalı. */
-/* Dönem seçici — bağlı pill grubu.
-   Açılır liste üç seçenek için bir tıklama fazla ve seçili olanı gizliyor;
-   Rankzup pill kullanıyor ve doğru olan bu. */
 .segp{display:inline-flex;background:var(--card2);border:1px solid var(--border);
   border-radius:99px;padding:2px;gap:2px}
 .segp button{border:0;background:none;color:var(--mute);font-size:12px;
@@ -594,9 +483,6 @@ pre{background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding
 .segp button.on{background:var(--pri-btn);color:#fff;font-weight:500}
 body.lt .segp button.on{color:#fff}
 
-/* Kırıntı yolu + sayfa başlığı. Rankzup her sayfanın üstünde "Projeler /
-   Marka" gösteriyor; çok markalı bir hesapta hangi markaya baktığını
-   kaybetmemek için bu gerçekten gerekli. */
 .crumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mute2);margin-bottom:6px}
 .crumb a{color:var(--mute)}
 .crumb a:hover{color:var(--pri)}
@@ -616,9 +502,6 @@ body.lt .segp button.on{color:#fff}
 .appfoot nav a:hover{color:var(--pri);text-decoration:underline}
 .appfoot nav i{color:var(--border2);font-style:normal}
 
-/* Kurulum analizi — adımlar tek tek görünür.
-   Boş bir yükleniyor çemberi otuz saniyeyi bir dakika gibi hissettirir; ne
-   yapıldığını göstermek beklemeyi kısaltmaz ama katlanılır kılar. */
 .anabox{display:grid;gap:10px;padding:20px 4px 8px}
 .anastep{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute2)}
 .anastep .d{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;
@@ -630,12 +513,10 @@ body.lt .segp button.on{color:#fff}
   animation:anaspin .8s linear infinite}
 @keyframes anaspin{to{transform:rotate(360deg)}}
 
-/* Rakip kaynağı: ölçümle mi bulundu, model mi tahmin etti. */
 .rvsrc{font-size:10px;padding:2px 6px;border-radius:4px;margin-left:8px;white-space:nowrap}
 .rvsrc.ai_answer{background:rgba(74,222,128,.13);color:var(--ok)}
 .rvsrc.model{background:rgba(245,158,11,.13);color:var(--warn)}
 
-/* Kaynak türü rozeti. Renk tek bir şeyi kodlar: girilebilir mi. */
 .kchip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;white-space:nowrap;
   border:1px solid var(--border);background:var(--card2);color:var(--mute)}
 .kchip.directory,.kchip.self_publish{background:rgba(21,128,61,.13);border-color:transparent;color:#116B33}
@@ -648,10 +529,6 @@ body.lt .segp button.on{color:#fff}
 .stbl .eta{display:block;font-style:normal;font-size:10px;color:var(--mute2);margin-top:2px}
 .stbl .noent{font-size:12px;color:var(--mute2);white-space:nowrap}
 
-/* --- Platform page --- */
-/* Loss bars. The length is what the gap costs the total score, so a heavy
-   platform at 25 outranks a light one at 0 — which is the ordering an agency
-   needs and the opposite of what a plain score list suggests. */
 .plos{display:grid;gap:2px}
 .pl-row{display:grid;grid-template-columns:170px 1fr 62px;grid-template-areas:"nm lb lv" "dt dt dt";
   align-items:center;gap:4px 12px;padding:10px 10px;border-radius:8px}
@@ -687,17 +564,12 @@ body.lt .segp button.on{color:#fff}
 .ptbl .psc .bar{flex:1;display:block;height:7px;border-radius:4px;background:var(--card2);
   border:1px solid var(--border);overflow:hidden}
 .ptbl .psc .bar i{display:block;height:100%;border-radius:4px}
-/* Weight as a percentage. "0.34" is a coefficient; "%34" is a share, and a
-   share is the thing the reader is actually being told. */
 .ptbl .wcell{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--fg2)}
 .ptbl .mut{color:var(--mute2)}
 .ptbl .upl{color:var(--pri);font-size:12px;font-weight:500}
 .ptbl .ok{color:var(--ok)}
 .ptbl .bad{color:var(--bad)}
 
-/* Filters as chips, not a dropdown: the two questions asked on this page are
-   "where are we missing" and "how did platform X do", and a menu adds a click
-   to both every single visit. */
 .mfil{display:flex;flex-direction:column;gap:8px;padding:14px 16px 4px}
 .mfil .grp{display:flex;gap:6px;flex-wrap:wrap}
 .mfil button{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);
@@ -713,8 +585,6 @@ body.lt .segp button.on{color:#fff}
 .mtbl tr.ghost td{opacity:.62}
 .mtbl tr.ghost .q b{font-weight:400}
 .mtbl tbody tr:hover td{background:rgba(255,255,255,.025)}
-/* Present vs absent has to survive a squint down forty rows, so it gets a dot
-   and a colour rather than a percentage the eye has to parse. */
 .mst{display:inline-flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap}
 .mst i{width:7px;height:7px;border-radius:50%;flex:none}
 .mst.in{color:#0E5828}
@@ -732,8 +602,6 @@ body.lt .segp button.on{color:#fff}
 .sent.ok{background:rgba(21,128,61,.12);border-color:transparent;color:#0E5828}
 .sent.mid{background:rgba(110,102,89,.12);border-color:transparent;color:#544C41}
 .sent.bad{background:rgba(185,28,28,.11);border-color:transparent;color:#9B1414}
-/* Score and its margin of error in one cell. Two columns made the reader
-   compare a number with an unlabelled statistic sitting beside it. */
 .mtbl .sc{white-space:nowrap}
 .mtbl .sc b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;
   font-weight:600;color:var(--fg)}
@@ -762,13 +630,8 @@ body.lt .segp button.on{color:#fff}
 .mobbar{display:none;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);
   position:sticky;top:0;background:rgba(247,244,237,.9);backdrop-filter:blur(12px);z-index:50}
 .page{padding:clamp(18px,2.6vw,34px);display:grid;gap:20px;align-content:start}
-/* Sağdaki eylem alanı, başlık uzun olduğunda alt satıra düşüp sayfanın
-   ortasında havada kalıyordu. Başlık bloğu artık esniyor ve eylemler
-   sarıldığında da sağ kenara yaslanıyor. */
 .ptitle{display:flex;align-items:flex-end;gap:16px 20px;flex-wrap:wrap;margin-bottom:4px}
 .ptitle > div:first-child{flex:1 1 340px;min-width:0}
-/* Başlık Rankzup'ta büyük ve normal ağırlıkta; Pleqo küçük ve kalın kullanıyor.
-   Rankzup'ın oranı daha rahat okunuyor ve alt açıklamayı boğmuyor. */
 .ptitle h1{font-size:30px;font-weight:600;letter-spacing:-.035em;line-height:1.15}
 .ptitle .s{font-size:13px;color:var(--mute);margin-top:8px;max-width:78ch;line-height:1.65}
 .ptitle .r{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
@@ -783,10 +646,6 @@ body.lt .segp button.on{color:#fff}
 .pills button{padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--card);
   font-size:11px;color:var(--mute)}
 .pills button.on{background:rgba(176,70,40,.16);color:var(--pri);border-color:rgba(176,70,40,.32)}
-/* The insight card is the one place on the dashboard that argues rather than
-   reports, so it is allowed to look different from every other card. Severity
-   drives the colour: a critical finding in the same calm blue as an
-   opportunity teaches the reader that colour means nothing here. */
 .ins{border-radius:var(--rl);padding:20px;position:relative;overflow:hidden;min-height:250px;
   display:flex;flex-direction:column;
   background:linear-gradient(155deg,#5A2E1C,#8F3720 48%,#C25A32)}
@@ -802,15 +661,10 @@ body.lt .segp button.on{color:#fff}
 .ins-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ins .tg{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);border-radius:6px;
   padding:4px 10px;font-size:10px;font-weight:700;letter-spacing:.11em}
-/* The number the sentence is about, pulled out so it registers before the
-   prose does — a reader who only glances still leaves with the figure. */
 .ins-m{margin-left:auto;display:flex;align-items:baseline;gap:6px;
   font-size:11px;color:rgba(255,255,255,.75)}
 .ins-m b{font-size:30px;font-weight:700;letter-spacing:-.04em;color:#fff;line-height:1}
 
-/* Kart zemini her iki temada da koyu bir gradyan; metin bu yüzden temadan
-   bağımsız olarak beyaz. Renk belirtilmediğinde var(--fg) miras alınıyordu ve
-   açık temada koyu metin koyu gradyanın üstüne düşüp okunmuyordu. */
 .ins .hl{font-size:24px;font-weight:600;letter-spacing:-.035em;margin-top:16px;line-height:1.16;
   text-wrap:balance;color:#FFFFFF}
 .ins,.ins .tg,.ins .ins-m{color:#FFFFFF}
@@ -844,9 +698,6 @@ body.lt .segp button.on{color:#fff}
 .cdr .n{font-size:13px}
 .cdr .v{font-size:12px;font-weight:600}
 .acc{border:1px solid var(--border);border-radius:var(--rl);margin-bottom:8px;background:var(--card);overflow:hidden}
-/* Kategori satırı. Eskiden skor rozeti 26px'ti ve çubuk en sağa yaslanıyordu;
-   arada okunacak hiçbir şey olmayan geniş bir boşluk kalıyordu. Skor asıl
-   bilgi olduğu için büyütüldü, çubuk metnin hemen yanına çekildi. */
 .acc-h{display:grid;grid-template-columns:46px minmax(0,1fr) 150px;gap:16px;align-items:center;
   padding:14px 16px;cursor:pointer;border-radius:12px}
 .acc-h:hover{background:var(--card2)}
@@ -913,7 +764,6 @@ body.lt .segp button.on{color:#fff}
 mark{background:rgba(176,70,40,.22);color:var(--pri);padding:0 2px;border-radius:4px}
 mark.riv{background:rgba(143,55,32,.14);color:#6F5430}
 
-/* ================= responsive + a11y düzeltmeleri ================= */
 svg{display:block;max-width:100%}
 .page{grid-template-columns:minmax(0,1fr)}
 .card,.pnl,.kpi,.acc,.tool-c,.g2>*,.g3>*,.g4>*,.road>*{min-width:0}
@@ -949,7 +799,6 @@ svg{display:block;max-width:100%}
 </head>
 <body>
 
-
 <div id="ob" class="on">
   <div class="ob-top">
     <span class="sb-logo" style="border:0;padding:0;font-size:18px"><span class="mk">Y</span>YANKI</span>
@@ -959,7 +808,6 @@ svg{display:block;max-width:100%}
   <div class="stepper" id="stepper"></div>
   <div class="ob-body"><div class="ob-card" id="obCard"></div></div>
 </div>
-
 
 <div id="app">
   <aside id="sb">
@@ -1047,19 +895,12 @@ svg{display:block;max-width:100%}
 <div class="toast" id="toasts"></div>
 
 <script>
-/* =====================================================================
-   YANKI · application prototype — all state is held in memory
-   ===================================================================== */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ini=t=>String(t||'?').trim().charAt(0).toLocaleUpperCase('en')||'?';
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const trLower=t=>t.toLocaleLowerCase('tr');
 const nf=n=>Number(n).toLocaleString('tr-TR');
-
-/* ---------- sabitler ---------- */
-// Platform metadata (label, colour, weight, lock state) now arrives with every
-// results payload, so there is no client-side engine list to drift out of sync.
 
 const SECTORS={
  'Yazılım & SaaS':{k:'yazılım ve SaaS',g:'Teknoloji'},
@@ -1123,12 +964,6 @@ const SECTORS={
  'Diğer':{k:'hizmet',g:'Hizmet'}
 };
 const sectorTerm=k=>(SECTORS[k]||SECTORS['Diğer']).k;
-/**
- * 59 sector in a flat <select> is a scroll-and-hope control. Grouping them
- * turns picking into scanning: the operator finds the family first, then the
- * row. The groups come from the same table the server uses, so the two lists
- * cannot drift.
- */
 function sectorOptions(selected){
   const groups={};
   for(const [label,v] of Object.entries(SECTORS)){ (groups[v.g]??=[]).push(label); }
@@ -1137,8 +972,6 @@ function sectorOptions(selected){
       `<option ${selected===l?'selected':''}>${esc(l)}</option>`).join('')}</optgroup>`).join('');
 }
 
-// Intent keys match the database enum exactly. The multiplier is shown in the
-// UI so nobody has to guess why a prompt moves the score more than another.
 const INTENTS={
   transactional:{label:'Transactional', mult:1.5},
   brand_defence:{label:'Brand defence', mult:1.4},
@@ -1148,38 +981,13 @@ const INTENTS={
 };
 const intentLabel=k=>(INTENTS[k]||{label:k}).label;
 
-// Audit factors and their fixes now come from the server with each audit run,
-// so the catalogue lives in one place instead of two.
-
-
-/* =====================================================================
-   i18n — Turkish is the default because the customers are.
-
-   These are not literal translations. Turkish digital-marketing practice
-   has settled on specific words and using anything else makes the product
-   read as machine-translated to the people who would buy it:
-
-     citation      → atıf        (not "alıntı", which reads as a book quote)
-     share of voice→ ses payı    (established, used by agencies and Semrush TR)
-     impression    → gösterim    (Google's own Turkish Search Console wording)
-     entity        → varlık
-     crawler       → tarayıcı / bot
-     audit         → denetim
-     dashboard     → kontrol paneli
-     insight       → içgörü
-     prompt        → sorgu       ("komut" exists but users search with sorgu)
-
-   Product names stay in English on purpose: ChatGPT, Google AI Overviews,
-   llms.txt, schema, Search Console. Translating a proper noun helps nobody.
-   ===================================================================== */
-
 const I18N = {
   'By platform':'Platforma göre',
   'Task list':'İş listesi',
   'now':'şu an',
-  'unclaimed':'kazanılmamış',
+  'unclaimed':'kazgörünmemış',
   'split into 3 phases':'3 aşamaya bölünmüş',
-  'Each platform picks its sources differently, so the same score can need different work. Ordered by how much score is unclaimed.':'Her platform kaynağını farklı seçer; aynı skor farklı iş gerektirebilir. Kazanılmamış puana göre sıralı.',
+  'Each platform picks its sources differently, so the same score can need different work. Ordered by how much score is unclaimed.':'Her platform kaynağını farklı seçer; aynı skor farklı iş gerektirebilir. Kazgörünmemış puana göre sıralı.',
   'Sources this platform cited most':'Bu platformun en çok atıf verdiği kaynaklar',
   'platforms are not being measured, so no advice can be given for them':'platform ölçülmüyor, bu yüzden onlar için tavsiye verilemez',
   'Reading your platform data…':'Platform verileriniz okunuyor…',
@@ -1205,7 +1013,7 @@ const I18N = {
   'improvements':'iyileşme',
   'Inspect':'İncele',
   'Where to spend this month':'Bu ay nereye yatırım yapmalısınız',
-  'Highest volume, lowest coverage — content here moves the score most.':'En yüksek hacim, en düşük kapsama — buraya yazılan içerik skoru en çok hareket ettirir.',
+  'Highest volume, lowest coverage — content here moves the score most.':'En yüksek hacim, en düşük kapsam — buraya yazılan içerik skoru en çok hareket ettirir.',
   'Write content':'İçerik yaz',
   'A weekly summary of this goes to your inbox. Turn it off in Settings → Profile.':'Bunun haftalık özeti e-postanıza gelir. Ayarlar → Profil bölümünden kapatabilirsiniz.',
   'Notifications':'Bildirimler',
@@ -1349,7 +1157,7 @@ const I18N = {
   'Audit':'Denetim',
   'Tools':'Araçlar',
   'Settings':'Ayarlar',
-  'Mentions':'Anılmalar',
+  'Mentions':'Görünürlük',
   'Platforms':'Platformlar',
   'Sources':'Kaynaklar',
   'Opportunities':'Fırsatlar',
@@ -1358,8 +1166,8 @@ const I18N = {
   'Search Performance':'Arama performansı',
   'Feedback':'Geri bildirim',
   'Visibility score':'Görünürlük skoru',
-  'Mention rate':'Anılma oranı',
-  'Share of voice':'Ses payı',
+  'Mention rate':'Görünme oranı',
+  'Share of voice':'Görünürlük payı',
   'Audit score':'Denetim skoru',
   'confidence':'güven aralığı',
   'still counting':'sayım sürüyor',
@@ -1376,14 +1184,14 @@ const I18N = {
   'Partial':'Kısmi',
   'AI INSIGHTS':'ÖNE çIKAN bULGU',
   'Go to action plan':'Aksiyon planını aç',
-  'Visibility Trend':'Görünürlük seyri',
+  'Visibility Trend':'Görünürlük trendi',
   'Platform Visibility Score':'Platform kırılımı',
   'How prominently your brand appears in AI responses (0–100)':'Her motorun markanıza verdiği yer (0–100)',
-  'Recent Mentions':'Son anılmalar',
+  'Recent Mentions':'Son görünmeler',
   'Prompts where your brand was mentioned — click a row to open the raw answer':'Markanızın geçtiği sorgular — ham cevabı açmak için satıra tıklayın',
   'Top Citing Domains':'Kaynak rekabeti',
   'Websites most cited by AI platforms in your industry':'Yapay zekanın bu kategoride dayandığı siteler',
-  'No brand mentions found':'Henüz anılma yok',
+  'No brand mentions found':'Henüz görünme yok',
   'See the Opportunities tab for where to start':'Nereden başlayacağınızı Fırsatlar sekmesinde görün',
   'No history yet — the first scan writes today\'s point.':'Henüz geçmiş yok — ilk tarama bugünün noktasını yazar.',
   'Visibility scores may fluctuate slightly between daily updates. For the most accurate results, track trends over 4+ weeks.':'Skorlar günlük güncellemeler arasında hafif dalgalanabilir. En doğru sonuç için trendi 4+ hafta takip edin.',
@@ -1400,7 +1208,6 @@ const I18N = {
   'No key':'Anahtar yok',
   'Failing':'Hata veriyor',
   'No data yet':'Veri yok',
-  // ---- GEO site denetimi: kategoriler ----
   'Accessibility and rendering':'Erişilebilirlik ve sayfa çizimi',
   'Entity and identity clarity':'Marka kimliği netliği',
   'Structured data':'Yapılandırılmış veri',
@@ -1408,7 +1215,6 @@ const I18N = {
   'Citability':'Kaynak gösterilebilirlik',
   'Freshness and maintenance':'Güncellik ve bakım',
 
-  // ---- GEO site denetimi: kriterler ----
   'Content visible without JavaScript (SSR)':'İçerik JavaScript olmadan görünüyor',
   'robots.txt open to AI bots':'robots.txt yapay zeka botlarına açık',
   'llms.txt published':'llms.txt yayında',
@@ -1458,9 +1264,24 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Son görünmeler':'Son görünmeler',
+  'Görünürlük trendi':'Görünürlük trendi',
+  'Kapsam':'Kapsam',
+  'Görünme oranı':'Görünme oranı',
+  'görünürlük payı':'görünürlük payı',
+  'Görünürlük payı':'Görünürlük payı',
+  'ölçümde':'ölçümde',
+  'görünmüyor':'görünmüyor',
+  'görünüyor':'görünüyor',
+  'Görünüyor':'Görünüyor',
+  'Görünmüyor':'Görünmüyor',
+  'Toplam ölçüm':'Toplam ölçüm',
+  'ölçümün':'ölçümün',
+  'görünme':'görünme',
+  'Görünme':'Görünme',
   '’i ölçülüyor':'’i ölçülüyor',
-  'tanesinde anılıyor':'tanesinde anılıyor',
-  'kontrolün':'kontrolün',
+  'tanesinde anılıyor':'tanesinde görünüyor',
+  'kontrolün':'ölçümün',
   'tekrar':'tekrar',
   'gün önce':'gün önce',
   'Türü belirlenemeyen kaynakları arka planda çöz':'Türü belirlenemeyen kaynakları arka planda çöz',
@@ -1495,7 +1316,7 @@ const I18N = {
   'sıradasınız':'sıradasınız',
   'İçerik üret':'İçerik üret',
   'Fırsatları gör':'Fırsatları gör',
-  'anılmada olumsuz ton ölçüldü. Hangi ifadelerin kullanıldığını örnek geçişlerde görün.':'anılmada olumsuz ton ölçüldü. Hangi ifadelerin kullanıldığını örnek geçişlerde görün.',
+  'anılmada olumsuz ton ölçüldü. Hangi ifadelerin kullanıldığını örnek geçişlerde görün.':'görünmeda olumsuz ton ölçüldü. Hangi ifadelerin kullanıldığını örnek geçişlerde görün.',
   'Algıyı incele':'Algıyı incele',
   'Olumsuz sıfatlar':'Olumsuz sıfatlar',
   'Yapay zeka markanızı bu ifadelerle tanımlıyor. Bunlar cevaptan cevaba taşınır; kaynaklarda düzeltilmedikçe kendiliğinden değişmez.':'Yapay zeka markanızı bu ifadelerle tanımlıyor. Bunlar cevaptan cevaba taşınır; kaynaklarda düzeltilmedikçe kendiliğinden değişmez.',
@@ -1519,29 +1340,29 @@ const I18N = {
   'siz':'siz',
   'Algı':'Algı',
   'Markanız hakkında ne söyleniyor, hangi tonla?':'Markanız hakkında ne söyleniyor, hangi tonla?',
-  'Markanız hakkında ne söyleniyor, hangi tonla? Ton yalnızca anıldığınız cevaplarda ölçülür.':'Markanız hakkında ne söyleniyor, hangi tonla? Ton yalnızca anıldığınız cevaplarda ölçülür.',
+  'Markanız hakkında ne söyleniyor, hangi tonla? Ton yalnızca anıldığınız cevaplarda ölçülür.':'Markanız hakkında ne söyleniyor, hangi tonla? Ton yalnızca göründüğünüz cevaplarda ölçülür.',
   'Cevaplar okunuyor…':'Cevaplar okunuyor…',
-  'Henüz tonu ölçülebilen bir anılma yok':'Henüz tonu ölçülebilen bir anılma yok',
-  'Ton yalnızca markanızın adının geçtiği cevaplarda ölçülür. Anılmadığınız bir cevabın tonu yoktur — o yüzden bu ekran, görünürlük skorunuz yükseldikçe dolar.':'Ton yalnızca markanızın adının geçtiği cevaplarda ölçülür. Anılmadığınız bir cevabın tonu yoktur — o yüzden bu ekran, görünürlük skorunuz yükseldikçe dolar.',
+  'Henüz tonu ölçülebilen bir anılma yok':'Henüz tonu ölçülebilen bir görünme yok',
+  'Ton yalnızca markanızın adının geçtiği cevaplarda ölçülür. Anılmadığınız bir cevabın tonu yoktur — o yüzden bu ekran, görünürlük skorunuz yükseldikçe dolar.':'Ton yalnızca markanızın adının geçtiği cevaplarda ölçülür. Görünmedığınız bir cevabın tonu yoktur — o yüzden bu ekran, görünürlük skorunuz yükseldikçe dolar.',
   'Az ölçüm — oranlar birkaç tarama daha biriktikçe netleşir. Şu an':'Az ölçüm — oranlar birkaç tarama daha biriktikçe netleşir. Şu an',
-  'anılma üzerinden hesaplandı.':'anılma üzerinden hesaplandı.',
+  'anılma üzerinden hesaplandı.':'görünme üzerinden hesaplandı.',
   'Genel ton':'Genel ton',
-  'anılma':'anılma',
+  'anılma':'görünme',
   'cevapta':'cevapta',
   'Cevapların':'Cevapların',
-  'inde olumsuz anılıyorsunuz':'inde olumsuz anılıyorsunuz',
+  'inde olumsuz anılıyorsunuz':'inde olumsuz görünüyorsunuz',
   'Olumsuz ton, görünürlükten daha pahalıdır: cevapta geçmek ama olumsuz geçmek, hiç geçmemekten kötü sonuç verir. Aşağıdaki örnek geçişlerde hangi ifadelerin kullanıldığını görün.':'Olumsuz ton, görünürlükten daha pahalıdır: cevapta geçmek ama olumsuz geçmek, hiç geçmemekten kötü sonuç verir. Aşağıdaki örnek geçişlerde hangi ifadelerin kullanıldığını görün.',
   'Örnekleri gör':'Örnekleri gör',
   'Ton dağılımı':'Ton dağılımı',
   'Günlük olumlu / nötr / olumsuz oranı — %100’e yığılmış':'Günlük olumlu / nötr / olumsuz oranı — %100’e yığılmış',
-  'Kullanılan sıfatlar':'Kullanılan sıfatlar',
+  'Kullanılan sıfatlar':'Kullgörünen sıfatlar',
   'Yapay zekanın markanızı tanımlarken kullandığı ifadeler — renk, geçtiği bağlamın tonunu gösterir':'Yapay zekanın markanızı tanımlarken kullandığı ifadeler — renk, geçtiği bağlamın tonunu gösterir',
   'kez':'kez',
   'Sıfat çıkarımı henüz tamamlanmadı — Rakipler ekranını açtığınızda arka planda işlenir':'Sıfat çıkarımı henüz tamamlanmadı — Rakipler ekranını açtığınızda arka planda işlenir',
   'Rakip algı kıyası':'Rakip algı kıyası',
-  'Aynı sorgularda, aynı dönemde: kim hangi tonla anılıyor':'Aynı sorgularda, aynı dönemde: kim hangi tonla anılıyor',
+  'Aynı sorgularda, aynı dönemde: kim hangi tonla anılıyor':'Aynı sorgularda, aynı dönemde: kim hangi tonla görünüyor',
   'Siz':'Siz',
-  'Yüzde, o markanın anıldığı cevaplarda olumlu tonun payıdır. Az anılan bir markanın yüksek yüzdesi güvenilir değildir — anılma sayısına da bakın.':'Yüzde, o markanın anıldığı cevaplarda olumlu tonun payıdır. Az anılan bir markanın yüksek yüzdesi güvenilir değildir — anılma sayısına da bakın.',
+  'Yüzde, o markanın anıldığı cevaplarda olumlu tonun payıdır. Az anılan bir markanın yüksek yüzdesi güvenilir değildir — anılma sayısına da bakın.':'Yüzde, o markanın anıldığı cevaplarda olumlu tonun payıdır. Az görünen bir markanın yüksek yüzdesi güvenilir değildir — görünme sayısına da bakın.',
   'Karşılaştırma için rakiplerinizin de cevaplarda geçmesi gerekir':'Karşılaştırma için rakiplerinizin de cevaplarda geçmesi gerekir',
   'Platform kırılımı':'Platform kırılımı',
   'Hangi platform sizi hangi tonla anıyor':'Hangi platform sizi hangi tonla anıyor',
@@ -1707,10 +1528,10 @@ const I18N = {
   'Product/service page':'Ürün/hizmet sayfası',
   'Category landing page':'Kategori sayfası',
   'örn. en iyi ... firmaları hangileri':'örn. en iyi ... firmaları hangileri',
-  'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlığı. 58 kriter, 6 başlıkta.':'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlığı. 58 kriter, 6 başlıkta.',
+  'Sitenizin yapay zeka tarafından okunmaya ve kaynak gösterilmeye teknik hazırlığı. 58 kriter, 6 başlıkta.':'Sitenizin yapay zeka tarafından okunmaya ve atıfye teknik hazırlığı. 58 kriter, 6 başlıkta.',
   'Denetlenecek adres':'Denetlenecek adres',
   'Bu site henüz denetlenmedi':'Bu site henüz denetlenmedi',
-  'Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve kaynak gösterilmenizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.':'Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve kaynak gösterilmenizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.',
+  'Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve kaynak gösterilmenizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.':'Denetim, sitenizi bir yapay zeka botunun gördüğü gibi okur ve atıfnizi engelleyen teknik eksikleri çıkarır. Görünürlük skoru çıktıyı ölçer; bu skor girdiyi.',
   'Site hazırlık skoru':'Site hazırlık skoru',
   'sağlıklı':'sağlıklı',
   'iyileştirilebilir':'iyileştirilebilir',
@@ -1745,7 +1566,7 @@ const I18N = {
   'Takip edilen kaynak':'Takip edilen kaynaklar',
   'son':'son',
   'Siteniz bu listede yok':'Siteniz bu listede yok',
-  'Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak anılmaktan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.':'Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak anılmaktan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.',
+  'Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak anılmaktan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.':'Yapay zeka bu kategoride yukarıdaki sitelere dayanıyor ve sizinkine hiç başvurmuyor. Kaynak olmak görünmektan daha kalıcıdır: bir kez listeye girmek, tek tek sorgularda görünmeye çalışmaktan uzun ömürlüdür.',
   'site sizden önde':'site sizden önde',
   'Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.':'Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.',
   'Kaynak sıralaması':'Kaynak sıralaması',
@@ -1761,7 +1582,7 @@ const I18N = {
   'Ölçüm biriktikçe eğri oluşur':'Ölçüm biriktikçe eğri oluşur',
   'Planınızın üstünde':'Planınızın üstünde',
   'Planı Yükselt':'Planı yükselt',
-  'Anılma':'Anılma',
+  'Anılma':'Görünme',
   'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.':'Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.',
   'Her platform toplam skorunuza farklı ağırlıkta katılır. Bu sayfa hangisinin ne kadar taşıdığını ve nerede kaybettiğinizi gösterir.':'Her platform toplam skorunuza farklı ağırlıkta katılır. Bu sayfa hangisinin ne kadar taşıdığını ve nerede kaybettiğinizi gösterir.',
   'Ölçülen platform':'Ölçülen platform',
@@ -1785,28 +1606,28 @@ const I18N = {
   'Ağırlık':'Ağırlık',
   'Kontrol':'Kontrol',
   'Değişim':'Değişim',
-  'Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullanılmadığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.':'Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullanılmadığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.',
+  'Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullanılmadığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.':'Ölçülmeyen platformlar skorunuzu düşürmez; hesaba hiç katılmazlar. Ama ağırlıkları da kullgörünmedığı için skorunuz mecranın tamamını değil, ölçülen bölümünü temsil eder.',
   'Niyet':'Niyet',
   'Skor':'Skor',
   'Ortalama sıra':'Ortalama sıra',
   'Görünürlük':'Görünürlük',
   'Sıra':'Sıra',
   'Sorgu':'Sorgu',
-  'Anılmalar':'Anılmalar',
+  'Anılmalar':'Görünürlük',
   'Takip edilen her sorgunun her platformdaki sonucu. Satıra tıklayın, cevabın tamamı açılsın.':'Takip edilen her sorgunun her platformdaki sonucu. Satıra tıklayın, cevabın tamamı açılsın.',
-  'kontrolde anılıyor':'kontrolün şu kadarında anılıyor',
-  'Kaynak gösterilme':'Kaynak gösterilme',
-  'anılmaların içinde':'anılmaların içinde',
+  'kontrolde anılıyor':'ölçümün şu kadarında görünüyor',
+  'Kaynak gösterilme':'Atıf',
+  'anılmaların içinde':'görünmelerın içinde',
   'henüz yok':'henüz yok',
-  'anıldığınız cevaplarda':'anıldığınız cevaplarda',
-  'henüz anılmadınız':'henüz anılmadınız',
-  'Toplam kontrol':'Toplam kontrol',
+  'anıldığınız cevaplarda':'göründüğünüz cevaplarda',
+  'henüz anılmadınız':'henüz görünmedınız',
+  'Toplam kontrol':'Toplam ölçüm',
   'koşu':'tekrar',
   'Sorgu × platform kırılımı':'Sorgu × platform kırılımı',
-  'Anılma, sıra, kaynak gösterilme ve ton ayrı ayrı ölçülür — bir cevapta geçmek ile tavsiye edilmek aynı şey değildir.':'Anılma, sıra, kaynak gösterilme ve ton ayrı ayrı ölçülür — bir cevapta geçmek ile tavsiye edilmek aynı şey değildir.',
+  'Anılma, sıra, kaynak gösterilme ve ton ayrı ayrı ölçülür — bir cevapta geçmek ile tavsiye edilmek aynı şey değildir.':'Görünme, sıra, atıf ve ton ayrı ayrı ölçülür — bir cevapta geçmek ile tavsiye edilmek aynı şey değildir.',
   'Tümü':'Tümü',
-  'Anılıyor':'Anılıyor',
-  'Anılmıyor':'Anılmıyor',
+  'Anılıyor':'Görünüyor',
+  'Anılmıyor':'Görünmüyor',
   'Tüm platformlar':'Tüm platformlar',
   'Durum':'Durum',
   'Kaynak':'Kaynak',
@@ -1846,7 +1667,7 @@ const I18N = {
   'Prompt':'Sorgu',
   'Suggested action':'Önerilen aksiyon',
   '(you)':'(siz)',
-  'Adding a competitor changes the share-of-voice denominator and recalculates historical data, so past figures will shift.':'Rakip eklemek ses payı paydasını değiştirir ve geçmiş veriyi yeniden hesaplar; önceki rakamlar kayar.',
+  'Adding a competitor changes the share-of-voice denominator and recalculates historical data, so past figures will shift.':'Rakip eklemek görünürlük payı paydasını değiştirir ve geçmiş veriyi yeniden hesaplar; önceki rakamlar kayar.',
   'Could not reach the server. Refresh to try again.':'Sunucuya ulaşılamadı. Yenileyip tekrar deneyin.',
   'New prompts written for your brand':'Markanız için yazılmış yeni sorgular',
   'Regenerated from templates':'Şablonlardan yeniden üretildi',
@@ -1863,8 +1684,8 @@ const I18N = {
   'Save':'Kaydet',
   'Continue':'Devam',
   'Skip':'Atla',
-  'AI tools sometimes mention your brand in a different form than its official name. Add your abbreviations and spellings so those mentions are counted too.':'Yapay zeka araçları markanızı bazen resmî adından farklı biçimde anar. Kısaltmalarınızı ve yazım varyantlarınızı ekleyin ki bu anılmalar da sayılsın.',
-  'Alternative names AI may use for your brand. This lets us track mentions across every variation.':'Yapay zekanın markanız için kullanabileceği alternatif adlar. Böylece her varyanttaki anılmayı takip edebiliriz.',
+  'AI tools sometimes mention your brand in a different form than its official name. Add your abbreviations and spellings so those mentions are counted too.':'Yapay zeka araçları markanızı bazen resmî adından farklı biçimde anar. Kısaltmalarınızı ve yazım varyantlarınızı ekleyin ki bu görünmeler da sayılsın.',
+  'Alternative names AI may use for your brand. This lets us track mentions across every variation.':'Yapay zekanın markanız için kullanabileceği alternatif adlar. Böylece her varyanttaki görünmeyı takip edebiliriz.',
   'The intent multiplier sets the weight in the score: transactional 1.50 … informational 0.80':'Niyet çarpanı skordaki ağırlığı belirler: satın alma amaçlı 1,50 … bilgi amaçlı 0,80',
   'The trial scans 3 platforms. The remaining 5 unlock on paid plans.':'Deneme planı 3 platformu ölçer. Kalan 5 platform ücretli planlarda açılır.',
   'These are the searches we will run on every platform. Keep the ones your customers would actually type.':'Her platformda çalıştıracağımız sorgular bunlar. Müşterilerinizin gerçekten yazacağı olanları bırakın.',
@@ -1880,7 +1701,7 @@ const I18N = {
   'Loading the answer…':'Cevap yükleniyor…',
   'Query':'Sorgu',
   'sorgu × platform':'sorgu × platform',
-  'kapsama':'kapsama',
+  'kapsama':'kapsam',
   'Agency plan is handled by our sales team':'Ajans planı satış ekibimiz tarafından yönetilir',
   'Brand name is required':'Marka adı zorunlu',
   'Competitor added — it will appear in the next scan':'Rakip eklendi — bir sonraki ölçümde görünecek',
@@ -1901,12 +1722,12 @@ const I18N = {
   'Select at least one prompt':'En az bir sorgu seçin',
   'Write at least one prompt (6 characters or more)':'En az bir sorgu yazın (6 karakter veya daha uzun)',
   'Cited':'Kaynak gösterildi',
-  'Coverage':'Kapsama',
+  'Coverage':'Kapsam',
   'Domain':'Alan adı',
   'Rank':'Sıra',
   'Score':'Skor',
   'Prompt text':'Sorgu metni',
-  'Total checks':'Toplam kontrol',
+  'Total checks':'Toplam ölçüm',
   'Add and recalculate':'Ekle ve yeniden hesapla',
   'Add and scan':'Ekle ve ölç',
   'Go to Dashboard →':'Panele git →',
@@ -1941,10 +1762,6 @@ const I18N = {
 
   'points':'puan',
 
-
-
-
-
   '58 checks on your website':'58 teknik kriter',
   'The last scan collected nothing yet.':'Henüz veri toplanmadı.',
   'Operator':'Yönetici',
@@ -1955,11 +1772,11 @@ const I18N = {
   'Not included in this measurement':'Bu ölçüme dahil edilmedi',
   'No answers collected yet':'Henüz cevap toplanmadı',
   'Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.':'“Ölçülmedi” işaretli platformlar bu ölçümün parçası değildir ve skorunuzu düşürmez. Sıfır sayılmazlar, hesaba hiç katılmazlar.',
-  'Your brand is named':'Markanız anılıyor',
-  'Your brand is not named':'Markanız anılmıyor',
-  'brand named':'anılan marka',
+  'Your brand is named':'Markanız görünüyor',
+  'Your brand is not named':'Markanız görünmüyor',
+  'brand named':'görünen marka',
   'Your site is cited':'Siteniz kaynak gösterilmiş',
-  'Your site is not cited':'Siteniz kaynak gösterilmemiş',
+  'Your site is not cited':'Siteniz atıfmiş',
   'Tone':'Ton',
   'positive':'olumlu',
   'negative':'olumsuz',
@@ -2011,20 +1828,20 @@ const I18N = {
   'Every prompt × platform cell, averaged over 5 runs. Click a row to see the raw answer.':'Her sorgu × platform hücresi, 5 tekrarın ortalaması. Ham cevap için satıra tıklayın.',
   'Detailed performance metrics for each AI platform':'Her AI platformu için ayrıntılı performans metrikleri',
   'Websites most cited by AI platforms in your industry. This list is the map of your GEO strategy.':'Sektörünüzde AI platformlarının en çok atıf verdiği siteler. Bu liste GEO stratejinizin haritasıdır.',
-  'Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.':'Kapsama, tahmini hacim, kaynak sayısı ve ticari niyet birleşerek her sorguya bir fırsat skoru verir. Yüksek skorlu sorgular yüksek hacimli ve az kaynaklıdır — oradan başlayın.',
+  'Coverage, estimated volume, source count and commercial intent combine into an opportunity score for every prompt. High-scoring prompts are high-volume with few competing sources — start there.':'Kapsam, tahmini hacim, kaynak sayısı ve ticari niyet birleşerek her sorguya bir fırsat skoru verir. Yüksek skorlu sorgular yüksek hacimli ve az kaynaklıdır — oradan başlayın.',
   'Citations':'Atıf',
   'Average rank':'Ortalama sıra',
   'cells':'hücre',
   'runs':'tekrar',
-  'coverage':'kapsama',
+  'coverage':'kapsam',
   'volume':'hacim',
   'domain cited as source':'alan adı kaynak gösterildi',
   'when mentioned':'bahsedildiğinde',
-  'Mention matrix':'Anılma matrisi',
-  'Mention rate, prominence, citation, recommendation strength and sentiment are measured separately':'Anılma oranı, cevaptaki konum, kaynak gösterilme, tavsiye gücü ve ton ayrı ayrı ölçülür',
+  'Mention matrix':'Görünme matrisi',
+  'Mention rate, prominence, citation, recommendation strength and sentiment are measured separately':'Görünme oranı, cevaptaki konum, atıf, tavsiye gücü ve ton ayrı ayrı ölçülür',
   'Sentiment':'Duygu',
-  'Mention Distribution':'Anılma dağılımı',
-  'Share of your brand mentions coming from each AI platform':'Marka bahsetmelerinizin her AI platformundan gelen payı',
+  'Mention Distribution':'Görünme dağılımı',
+  'Share of your brand mentions coming from each AI platform':'Marka görünmelerinizin her AI platformundan gelen payı',
   'Daily visibility scores per platform':'Platform bazlı günlük görünürlük skorları',
   'Platform Details':'Platform kırılımı',
   'Score, citation rate and total checks. The weight column defines each platform\'s share of the total score.':'Skor, atıf oranı ve toplam kontrol. Ağırlık sütunu her platformun toplam skordaki payını belirler.',
@@ -2057,17 +1874,17 @@ const I18N = {
   'OAuth connection ships in the next release. Until then this screen stays empty rather than showing numbers we cannot source.':'OAuth bağlantısı bir sonraki sürümde geliyor. O zamana kadar bu ekran, kaynağını gösteremeyeceğimiz sayılar yerine boş kalır.',
   'OAuth connection ships in the next release.':'OAuth bağlantısı bir sonraki sürümde geliyor.',
   'This screen puts SEO and AI performance side by side and surfaces the blind-spot pages that rank on Google but never appear in AI answers. It needs Search Console data, which requires an OAuth connection.':'Bu ekran SEO ve AI performansını yan yana koyar; Google\'da sıralanan ama AI cevaplarında hiç görünmeyen kör nokta sayfaları ortaya çıkarır. Search Console verisi gerektirir.',
-  'Who gets mentioned how often across the prompts you track, and where you stand.':'Takip ettiğiniz sorgularda kim ne sıklıkta anılıyor ve siz neredesiniz.',
+  'Who gets mentioned how often across the prompts you track, and where you stand.':'Takip ettiğiniz sorgularda kim ne sıklıkta görünüyor ve siz neredesiniz.',
   '+ Add Competitor':'+ rakip ekle',
   'Add Competitor':'Rakip ekle',
   'Search competitors...':'Rakip ara...',
   'Name':'Ad',
   'Website':'Web sitesi',
-  'Mention count':'Anılma',
+  'Mention count':'Görünme',
   'Avg. rank':'Ort. sıra',
   'Remove':'Kaldır',
   'you':'siz',
-  'Mentions across the tracked brand set — same prompts, same day':'Takip ettiğiniz markalar arasında anılma dağılımı — aynı sorgular, aynı gün',
+  'Mentions across the tracked brand set — same prompts, same day':'Takip ettiğiniz markalar arasında görünme dağılımı — aynı sorgular, aynı gün',
   'Attribute matching':'Markanıza atfedilen nitelikler',
   'Which qualities models associate with each brand':'Modellerin her markayla ilişkilendirdiği nitelikler',
   'Not enough answers yet':'Henüz yeterli cevap yok',
@@ -2149,7 +1966,7 @@ const I18N = {
   'Raise your review response rate above 90%':'Yorum yanıt oranınızı %90 üzerine çıkarın',
   'Run a site audit to generate your plan':'Planınızı üretmek için site denetimi çalıştırın',
   'No audit has been run for this workspace yet':'Bu çalışma alanı için henüz denetim çalıştırılmadı',
-  'The action plan is built from real audit findings and prompt coverage. Run an audit and the tasks appear here.':'Aksiyon planı gerçek denetim bulgularından ve sorgu kapsamasından üretilir. Bir denetim çalıştırın, iş kalemleri burada belirir.',
+  'The action plan is built from real audit findings and prompt coverage. Run an audit and the tasks appear here.':'Aksiyon planı gerçek denetim bulgularından ve sorgu kapsamsından üretilir. Bir denetim çalıştırın, iş kalemleri burada belirir.',
   'Open the Audit screen':'Denetim ekranını açın',
   'Run the audit against your homepage':'Denetimi ana sayfanızda çalıştırın',
   'Return here':'Buraya dönün',
@@ -2272,8 +2089,8 @@ const I18N = {
   'The trial scans limited platforms. The rest unlock on paid plans.':'Deneme sürümü sınırlı platform tarar. Kalanlar ücretli planlarda açılır.',
   'Pick a plan before your trial ends.':'Deneme süreniz bitmeden bir plan seçin.',
   'All platforms and modules unlocked.':'Tüm platformlar ve modüller açık.',
-  'Brand performance across':'Görünürlüğünüz, ses payınız ve rekabet konumunuz —',
-  'AI platforms — visibility, share of voice and where you stand against competitors.':'yapay zeka platformunda. Görünürlük, ses payı ve rakipler karşısındaki konumunuz.',
+  'Brand performance across':'Görünürlüğünüz, görünürlük payınız ve rekabet konumunuz —',
+  'AI platforms — visibility, share of voice and where you stand against competitors.':'yapay zeka platformunda. Görünürlük, görünürlük payı ve rakipler karşısındaki konumunuz.',
   'AI platforms. Scores, trends and latest scan results at a glance.':
     'AI platformunda. Skorlar, trendler ve son tarama sonuçları tek bakışta.',
   'of':'/','brands':'marka',
@@ -2282,23 +2099,8 @@ const I18N = {
 
 };
 
-
-/**
- * Post-render translation pass.
- *
- * Wrapping several hundred strings in T() by hand is slow and, worse, easy to
- * get subtly wrong — one missed template literal and the raw ${T('…')} ends up
- * on screen. Instead we walk the rendered DOM once and swap any text node or
- * attribute whose exact content is a dictionary key. Adding a translation then
- * means adding a dictionary entry, nothing else.
- *
- * Only exact, whole-string matches are replaced, so brand names, numbers and
- * anything we have not deliberately translated pass through untouched.
- */
-/** Original English text of every node the pass has rewritten. */
 const ORIGINALS = new WeakMap();
 
-/** Puts the English back, so the switch works without reloading the page. */
 function delocalise(root){
   const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT);
   let n; while(n=walker.nextNode()){
@@ -2316,17 +2118,12 @@ function delocalise(root){
 function localise(root){
   if(S.lang!=='tr') return;
 
-  // Text in HTML is wrapped across lines, so an exact match against the
-  // dictionary key almost never fires. Compare on collapsed whitespace and
-  // the key can be written as one readable line.
   if(!localise._index){
     localise._index = new Map();
     for(const k in I18N) localise._index.set(k.replace(/\s+/g,' ').trim(), I18N[k]);
   }
   const idx = localise._index;
 
-  // Strings that carry a number cannot be dictionary keys. A handful of
-  // patterns covers them without turning this into a template engine.
   const patterns = [
     [/^All \((\d+)\)$/,            m=>`Tümü (${m[1]})`],
     [/^Active \((\d+)\)$/,         m=>`Aktif (${m[1]})`],
@@ -2342,8 +2139,6 @@ function localise(root){
     [/^Showing 1–(\d+) of (\d+)$/, m=>`${m[2]} sorgudan ${m[1]} tanesi gösteriliyor`],
   ];
 
-  // A few nodes glue several labels together with separators, so neither an
-  // exact key nor a whole-string pattern can match. Swap the fragments.
   const fragments = [
     [/· weight /g, '· ağırlık '],
     [/· official API/g, '· resmî API'],
@@ -2364,7 +2159,6 @@ function localise(root){
 
   const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,{
     acceptNode(n){
-      // Never rewrite generated files, code samples or anything the user typed.
       const p=n.parentElement;
       if(!p) return NodeFilter.FILTER_REJECT;
       if(p.closest('pre,code,textarea,input,#gc,#wmd,#fixc')) return NodeFilter.FILTER_REJECT;
@@ -2376,8 +2170,6 @@ function localise(root){
   for(const node of jobs){
     const hit = swap(node.textContent);
     if(hit !== null){
-      // Remember the original so switching back to English does not need a
-      // page reload — the pass rewrites in place and cannot otherwise undo it.
       if(!ORIGINALS.has(node)) ORIGINALS.set(node, node.textContent);
       node.textContent = hit;
     }
@@ -2389,7 +2181,6 @@ function localise(root){
       if(!v) continue;
       const hit=swap(v);
       if(hit!==null){
-        // dataset keys cannot contain hyphens, so aria-label needs a safe name.
         const slot='orig'+attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase());
         if(!el.dataset[slot]) el.dataset[slot]=v;
         el.setAttribute(attr,hit);
@@ -2398,25 +2189,12 @@ function localise(root){
   });
 }
 
-/** Translate a UI string. Unknown keys pass through, so nothing ever blanks. */
 function T(s){
-  // `||` treated an intentionally empty translation as "missing" and fell back
-  // to the English key, which is how "named" and "ranked" surfaced inside
-  // Turkish sentences. Some phrases genuinely have no Turkish counterpart —
-  // English needs "ranked 3rd among 4 brands", Turkish just needs "3. / 4
-  // marka içinde" — so an empty string has to mean "render nothing".
   if(S.lang!=='tr') return s;
   const v=I18N[s];
   return v===undefined ? s : v;
 }
 
-/**
- * Açık / koyu tema.
- *
- * `body.lt` kuralları dosyada zaten vardı ama hiçbir şey o sınıfı eklemiyordu —
- * yani açık tema kod olarak mevcut, ürün olarak yoktu. Tercih localStorage'da
- * tutulur; ilk açılışta işletim sistemi tercihi okunur.
- */
 function applyTheme(t){
   document.body.classList.toggle('lt', t==='light');
   try{ localStorage.setItem('yanki-theme', t); }catch(e){}
@@ -2427,10 +2205,7 @@ function toggleTheme(){
 (function initTheme(){
   let t=null;
   try{ t=localStorage.getItem('yanki-theme'); }catch(e){}
-  // Varsayılan açık. Ürün gün içinde, masa başında ve çoğu zaman müşteriye
-  // ekran paylaşarak kullanılıyor; açık tema bu bağlamda daha okunur.
   if(!t) t = 'light';
-  // body henüz hazır olmayabilir.
   if(document.body) applyTheme(t);
   else document.addEventListener('DOMContentLoaded', ()=>applyTheme(t));
 })();
@@ -2463,10 +2238,6 @@ async function setLang(l){
   catch{ /* the UI already switched; persistence can fail quietly */ }
 }
 
-/* ---------- state ----------
-   Session, workspace and results all come from the API. Nothing here is
-   persisted in the browser: a reload re-reads the server, which is why
-   refreshing never sends anyone back through setup. */
 const S = {
   step: 1, onboarded: false, route: 'dashboard', range: 30,
   workspaceId: null, plan: 'trial', planLimits: null, org: null, role: 'owner',
@@ -2484,12 +2255,6 @@ const S = {
   lang: 'tr',
 };
 
-/**
- * Five seconds, a progress bar so the countdown is visible, and a close
- * button. Anything shorter is missed by someone reading the screen rather
- * than watching the corner — and an error the user never saw is an error
- * they will report as "nothing happened".
- */
 function toast(t, kind){
   const err = kind==='error' || /fail|error|could not|cannot|invalid|too many|not correct|required/i.test(t);
   const d=document.createElement('div');
@@ -2500,7 +2265,6 @@ function toast(t, kind){
                     d.style.transition='.2s'; setTimeout(()=>d.remove(),220); };
   d.querySelector('.x').onclick=close;
   const timer=setTimeout(close,5000);
-  // Hovering pauses the countdown, so a long message can actually be read.
   d.onmouseenter=()=>{clearTimeout(timer); const l=d.querySelector('.life');
     if(l) l.style.animationPlayState='paused';};
   d.onmouseleave=()=>{ setTimeout(close,1800); const l=d.querySelector('.life');
@@ -2520,25 +2284,14 @@ function copy(id){const el=document.getElementById(id);navigator.clipboard?.writ
 function csv(rows){return rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n')}
 function reset(){location.reload()}
 function planRank(){return {trial:0,starter:1,pro:2,business:3}[S.plan]}
-// The server decides what is visible; the client only reflects it. Locked
-// engines never carry numbers in the payload, so this is presentation only.
-// "Allowed" means we could and did ask: within the plan AND with a key.
-// Anything else must never contribute a number to a table or an export.
 function platAllowed(p){return p.active!==undefined ? p.active : !p.locked}
 
-/* =====================================================================
-   ONBOARDING
-   ===================================================================== */
-/* Kurulumdaki ülke listesi. Kodlar lib/sectors.ts içindeki COUNTRIES ile aynı;
-   sunucu ISO kodu bekliyor, ekranda ad gösteriliyor. */
 const OB_COUNTRIES = [
   ['TR','Türkiye'],['DE','Almanya'],['GB','Birleşik Krallık'],['US','ABD'],
   ['NL','Hollanda'],['AE','Birleşik Arap Emirlikleri'],['FR','Fransa'],
   ['IT','İtalya'],['ES','İspanya'],['SA','Suudi Arabistan'],['AZ','Azerbaycan'],
 ];
 
-/* Dört adım. Eskiden altıydı ve ilk üçü kullanıcının sitesinde zaten yazan
-   bilgileri elle doldurtuyordu; o adımlar analize devredildi. */
 const STEPS=['Site','Bilgiler','Sorgular','Hazır'];
 
 function renderOb(){
@@ -2550,21 +2303,10 @@ function renderOb(){
     const n=i+1,cls=n<S.step?'dn':n===S.step?'on':'';
     return `<div class="st ${cls}"><div style="position:relative"><div class="n">${n<S.step?'✓':n}</div>
       <div class="lb" style="left:50%">${T(s)}</div></div>${i<STEPS.length-1?'<span class="ln"></span>':''}</div>`}).join('');
-  // 3. ve 4. eski adımlar (varyantlar, rakipler) analize devredildi; rakipler
-  // artık Sorgular adımında onaylanıyor, varyantlar Ayarlar'dan düzenlenebilir.
   ({1:obS1,2:obS2,3:obS5,4:obS6})[S.step]();
   localise(document.body);
 }
 
-/**
- * Adım 1 — tek girdi: alan adı.
- *
- * Önceki kurulum yedi alanı elle doldurtuyordu: marka adı, site, sektör, ülke,
- * şehir, açıklama, rakipler. Kullanıcının zaten bildiği ve sitesinde yazan
- * şeyleri yazdırmak, ilk ölçümü görmeden vazgeçmenin en yaygın sebebidir.
- * Artık site okunuyor ve geri kalan her şey doldurulmuş olarak geliyor —
- * kullanıcı yazmıyor, onaylıyor.
- */
 function obS1(){
   $('#obCard').innerHTML=`<div class="ob-ic">◎</div><h2>${T('Markanızı ekleyelim')}</h2>
   <p class="lead">${T('Sitenizin adresini ve ülkenizi girin — gerisini sizin için otomatik dolduralım.')}</p>
@@ -2582,8 +2324,6 @@ function obS1(){
   </div>`;
 }
 
-/* Analiz adımları — kullanıcı ne beklediğini bilsin diye tek tek gösterilir.
-   Boş bir yükleniyor çemberi, otuz saniyeyi bir dakika gibi hissettirir. */
 const ANA_ADIM = [
   'Site içeriği okunuyor…',
   'Marka ve başlık çıkarılıyor…',
@@ -2608,8 +2348,6 @@ async function obNext1(){
     <p class="lead">${T('Siteniz analiz ediliyor…')}</p>
     <div class="anabox" id="anaBox"></div>`;
   let step=0; anaProgress(0);
-  // Adımlar gerçek işin ilerlemesine değil, beklenen süreye göre ilerler —
-  // sunucu ara durum bildirmiyor. Son adımda durur, cevap gelince tamamlanır.
   const tick=setInterval(()=>{ if(step<ANA_ADIM.length-1) anaProgress(++step); }, 2600);
 
   try{
@@ -2618,9 +2356,6 @@ async function obNext1(){
     S.brand.name=r.brandName; S.brand.site=r.domain; S.brand.sector=r.sector;
     S.brand.sectorTerm=r.sectorTerm; S.brand.desc=r.description;
     S.brand.country=r.country; S.brand.countryCode=r.countryCode; S.brand.title=r.siteTitle;
-    /* Sorgular doğrudan adım 3'ün listesine yazılır: analiz onları zaten
-     * markanın kategorisi, ülkesi ve rakipleriyle üretti — kullanıcı yeniden
-     * üretilmesini beklemesin, hepsi işaretli gelsin. */
     S.prompts=(r.prompts||[]).map(x=>({...x, on:true}));
     S.promptSource='ai';
     S.aiRivals=r.competitors||[];
@@ -2658,9 +2393,6 @@ async function obNext2(){
   const btn=document.querySelector('.ob-nav .b-pri');
   if(btn){btn.disabled=true;btn.textContent='Creating…';}
   try{
-    // The workspace is created here, not at the end: everything after this
-    // point (variants, prompt generation) needs a server-side record to hang
-    // off, and a half-finished onboarding should still be resumable.
     if(S.workspaceId){
       await api.patch(`/api/workspaces/${S.workspaceId}`,{
         brandName:S.brand.name, domain:S.brand.site, sector:S.brand.sector,
@@ -2682,8 +2414,6 @@ async function obNext2(){
   }
 }
 function suggestVariants(){
-  // Variants are derived on the server so the scan worker, exports and the UI
-  // all use the identical alias set. This is just a refresh hook.
   if(!S.workspaceId) return S.variants;
   api.get(`/api/workspaces/${S.workspaceId}`)
     .then(r=>{S.variants=r.workspace.aliases||[];renderOb();})
@@ -2715,12 +2445,6 @@ function obS3(){
 }
 function addVar(){const v=$('#iv').value.trim();if(!v)return;
   if(!S.variants.includes(v))S.variants.push(v);renderOb()}
-/**
- * Variants are what the scan matches a brand against, so they have to reach
- * the database before the first scan runs. Advancing the step without saving
- * used to lose every variant the operator typed — the detection stayed as
- * narrow as it was, and the resulting zero looked like a real absence.
- */
 async function obNext3(){
   try{
     if(S.workspaceId) await api.patch(`/api/workspaces/${S.workspaceId}`,{aliases:S.variants});
@@ -2768,7 +2492,6 @@ async function regenOnboarding(){
   try{
     const r=await api.post('/api/prompts/generate',{workspaceId:S.workspaceId});
     const cap=Math.min(10,(S.planLimits&&S.planLimits.prompts)||10);
-    // Anything the operator typed is theirs; regenerating must not delete it.
     const mine=S.prompts.filter(p=>p.src==='custom');
     S.prompts=r.prompts.map((p,i)=>({id:'g'+i,text:p.text,intent:p.intent,vol:p.volume,
       on:i<cap,src:'ai',active:true,reason:p.reason})).concat(mine);
@@ -2823,7 +2546,6 @@ function obS5(){
   </div>`;
 }
 
-/** Accepts one prompt or a pasted list, one per line. */
 function addPrompt(){
   const raw=$('#iq').value||'';
   const lines=raw.split('\n')
@@ -2845,10 +2567,6 @@ function addPrompt(){
   toast(added?`${added} prompt${added===1?'':'s'} added`:'Those prompts are already in the list');
 }
 
-/**
- * Rough intent guess from the wording. Intent weights the score, so getting it
- * roughly right matters; the operator can correct it from Edit.
- */
 function guessIntent(t){
   const s=t.toLocaleLowerCase('tr');
   const brand=(S.brand.name||'').toLocaleLowerCase('tr');
@@ -2916,8 +2634,6 @@ function obS6(){
 }
 async function enterApp(){
   S.onboarded=true;$('#ob').classList.remove('on');$('#app').classList.add('on');
-  // Paint the shell first. A network call can take seconds; leaving the panel
-  // blank until it returns looks exactly like a broken deploy.
   render();
   try{
     await loadResults();
@@ -2927,14 +2643,6 @@ async function enterApp(){
   }
   if(S.scanState && S.scanState.pending>0) pollScan();
 }
-
-/* =====================================================================
-   DATA GENERATION — deterministic from user input
-   ===================================================================== */
-/* =====================================================================
-   DATA LAYER — everything below reads from the API. Nothing is invented
-   in the browser: if the server has no answers yet, the UI says so.
-   ===================================================================== */
 
 const api = {
   async req(path, opts = {}) {
@@ -2958,11 +2666,6 @@ const api = {
   del:  (p)    => api.req(p, { method: 'DELETE' }),
 };
 
-/**
- * Maps the API payload onto the shape the views already expect. Keeping the
- * adapter in one place means the render code never has to know whether a
- * number came from the scan table or a rollup.
- */
 function adopt(r) {
   S.workspaceId = r.workspace.id;
   S.plan = r.org.plan;
@@ -3009,7 +2712,6 @@ function adopt(r) {
     };
   });
 
-  // Cells drive the mentions table and the answer inspector.
   const cells = (r.cells || []).map(c => ({
     p: { id: c.promptId, text: c.text, intent: c.intent, vol: c.volume },
     pl: plats.find(x => x.id === c.engineKey) || plats[0],
@@ -3038,11 +2740,9 @@ function adopt(r) {
     sov,
     sources: (r.sources || []).map(s => ({
       d: s.domain, v: s.citations, mine: s.mine,
-      // Kaynağa nasıl girildiği — tavsiyeyi bu belirler. Sunucu sınıflandırır.
       kind: s.kind || 'unknown', kindNote: s.kindNote || null,
       first: s.first_seen, last: s.last_seen,
       delta: s.delta === undefined ? 0 : s.delta,
-      // Engine keys resolved to the platform objects the UI already styles.
       plats: (s.engines || []).map(k => plats.find(p => p.id === k)).filter(Boolean),
     })),
     series: (r.series || []).map(x => Number(x.score)),
@@ -3071,16 +2771,6 @@ const ENGINE_GLYPH = { chatgpt:'◉', gemini:'✦', perplexity:'✳', claude:'�
   ai_overviews:'◎', grok:'◌', deepseek:'◈' };
 const ENGINE_COLOR = { chatgpt:'#10A37F', gemini:'#8F3720', perplexity:'#20B8A6', claude:'#F59E0B',
   ai_overviews:'#4285F4', grok:'#EF4444', deepseek:'#B04628' };
-/**
- * Kaynak sınıfları ve oyun kitapları.
- *
- * Sunucudaki lib/source-kind.ts ile aynı taksonomi. Buradaki kopya yalnızca
- * sunumdur — sınıf kararını hep sunucu verir, arayüz onu yorumlar.
- *
- * `reachable:false` olan bir kaynak listeden gizlenmez. Gizlemek, en çok atıf
- * alan kaynağın neden planda olmadığı sorusunu doğurur; onun yerine neden
- * girilemediğini ve bunun yerine ne yapılacağını yazıyoruz.
- */
 const SRC_KINDS = {
   directory: { label:'Dizin', short:'profil açın', reachable:true, rank:0,
     eta:'bugün başlanabilir',
@@ -3153,11 +2843,6 @@ function groupAudit(factors) {
   }));
 }
 
-/** Loads the workspace and repaints. Called on boot and after every mutation. */
-/**
- * Platform-by-platform diagnosis. Kept out of loadResults so the dashboard
- * paints immediately; only the Action Plan screen waits for it.
- */
 async function loadInsights(){
   try{
     const r = await api.get(`/api/insights?workspace=${S.workspaceId}&days=${S.range}`);
@@ -3165,17 +2850,10 @@ async function loadInsights(){
   }catch(e){ S.insights = { error: e.message }; }
 }
 
-/**
- * Attribute matrix. The extraction pass runs a batch at a time, so the screen
- * shows what exists and quietly asks for more while the operator reads.
- */
 async function loadAttributes(pull){
   try{
     const r = await api.get(`/api/attributes?workspace=${S.workspaceId}&days=${S.range}`);
     S.attributes = r;
-    // A missing optional field should not take the page down with it. Without
-    // the fallback, an /api/attributes body without `coverage` throws here and
-    // the whole Competitors screen renders as "could not be drawn".
     const c = r.coverage || {};
     if(pull && c.available && c.done < c.total && !S.attrBusy){
       S.attrBusy = true;
@@ -3199,11 +2877,6 @@ async function loadResults(opts = {}) {
   return r;
 }
 
-/**
- * Action plan, derived from the audit's failing factors and the top
- * opportunities. Everything here traces back to a real finding — no generic
- * advice, because generic advice is what the customer already ignored.
- */
 function buildActions() {
   const d = S.data || {}, b = S.brand;
   const A = [];
@@ -3212,10 +2885,6 @@ function buildActions() {
   const fails = [];
   (d.audit || []).forEach(c => c.facs.forEach(f => { if (f.st === 'fail') fails.push({ ...f, cat: c.n }); }));
 
-  // Failing audit factors that ship a fix are the cheapest wins available.
-  // Factor and category names come from the server in English; the action plan
-  // has to translate them the same way the audit screen does, or a Turkish
-  // panel prints "Accessibility and rendering" in the middle of a task list.
   fails.filter(f => f.fix).slice(0, 4).forEach((f, i) => push(
     T(f.n),
     `${T(f.cat)} · ${f.detail || T('Failing')}`,
@@ -3237,24 +2906,12 @@ function buildActions() {
      T('Mark it up with FAQPage schema')],
     null));
 
-  /* Kaynak açığı.
-   *
-   * Eskiden burada tek bir görev vardı ve en çok atıf alan kaynağı seçip her
-   * kaynağa aynı dört adımı veriyordu: "editörlerine ulaşın", "kurumsal hesap
-   * açın". Gerçek veride ölçüldü: kaynakların %40'ı girilemez sınıfta — rakip
-   * ajans siteleri ve satıcı blogları. O kaynaklar için bu adımların hiçbiri
-   * yapılabilir değil.
-   *
-   * Şimdi kaynak türüne göre ayrılıyor: girilebilir olanlar tek tek iş kalemi
-   * oluyor, girilemez olanlar tek bir bulguda toplanıp dolaylı yola
-   * yönlendiriliyor. */
   const outside = (d.sources || []).filter(s => !s.mine);
   const reachable = outside
     .filter(s => srcKind(s.kind).reachable)
     .sort((a, b) => (srcKind(a.kind).rank - srcKind(b.kind).rank) || (b.v - a.v));
   const blocked = outside.filter(s => !srcKind(s.kind).reachable && s.kind !== 'unknown');
 
-  // En hızlı kazanılabilir üç kaynak, her biri ayrı iş kalemi.
   reachable.slice(0, 3).forEach((src, i) => {
     const k = srcKind(src.kind);
     push(
@@ -3267,7 +2924,6 @@ function buildActions() {
       k.steps, null);
   });
 
-  // Girilemeyenler tek bulguda. Dokuz rakip için dokuz satır anlamsız olurdu.
   if (blocked.length) {
     const toplam = blocked.reduce((a, s) => a + s.v, 0);
     const rakip = blocked.filter(s => s.kindNote && /rakip/i.test(s.kindNote));
@@ -3306,13 +2962,8 @@ function schemaOrg(){
     sameAs:["https://www.linkedin.com/company/…","https://www.youtube.com/@…","https://tr.wikipedia.org/wiki/…"]},null,2);
 }
 
-/* =====================================================================
-   CHARTS
-   ===================================================================== */
 function lineChart(vals,o={}){
   const W=o.w||460,H=o.h||180,P={l:30,r:8,t:10,b:20};
-  // One data point is the normal state on day one. Draw a flat marker rather
-  // than emitting a malformed path.
   if(!vals.length) return `<div class="empty" style="padding:28px">${T("No history yet — the first scan writes today's point.")}</div>`;
   if(vals.length===1) vals=[vals[0],vals[0]];
   const N=vals.length;
@@ -3343,15 +2994,6 @@ function donut(items,center,sub){
     <text x="72" y="70" text-anchor="middle" font-size="21" font-weight="600" fill="var(--fg)">${center}</text>
     <text x="72" y="86" text-anchor="middle" font-size="10" fill="var(--mute2)" font-family="ui-monospace">${sub}</text></svg>`;
 }
-/**
- * Trend chart scaled to its data.
- *
- * The shared lineChart() pins the axis to 0–100, which is right for a gauge and
- * wrong for a trend: a brand moving 6 → 15 draws a flat line along the floor and
- * the reader concludes nothing happened, when the score has more than doubled.
- * This frames the range it was given and labels it, so the shape is readable
- * and the scale is not a lie.
- */
 function trendChart(ser){
   if(!ser || ser.length<2) return `<div class="empty" style="padding:34px 12px">
     <div class="ic">◜</div>${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
@@ -3396,34 +3038,11 @@ function gauge(v,col){
     <text x="84" y="108" text-anchor="middle" font-size="10" fill="var(--mute2)" font-family="ui-monospace">${T("OUT OF 100")}</text></svg>`;
 }
 
-/* =====================================================================
-   NAVIGATION
-   ===================================================================== */
-// Labels go through T() at render time so switching language repaints the
-// nav without a reload.
-/**
- * Grouped rather than flat. Nine equal-weight rows read as a list of features;
- * the same nine under two headings read as a workflow — first you look at what
- * the channel is doing, then you act on it. The headings also give the sidebar
- * something to say in the vertical space a flat list leaves empty.
- */
-/**
- * Icons as inline SVG rather than unicode glyphs.
- *
- * The old set (◱ ◫ ⬡ ◈ ◰ ◐) was drawn by whichever font happened to resolve
- * each codepoint, so the weights never matched, the sizes never matched, and
- * "Tools" rendered as a half-filled dot that reads as a loading state. A
- * single stroked set at one weight is the difference between a product and a
- * prototype, and it costs nothing at this size.
- */
 const ICON={
   dashboard:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
   mentions:'<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.7-.8L3 21l1.9-5.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/>',
   platforms:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
   sources:'<path d="M10 13a5 5 0 0 0 7.5.6l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.6l-3 3a5 5 0 0 0 7 7L12.2 19"/>',
-  // Algı: konuşma balonu içinde nabız çizgisi. Ölçülen şey markanın nasıl
-  // konuşulduğu — bir kalp ikonu "sevilme" çağrıştırır ve yanlış olur.
-  // Aksiyon Merkezi: şimşek — hızla ele alınacak işler kutusu.
   center:'<path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/>',
   perception:'<path d="M20.5 11.5a8 8 0 0 1-8 8 8.4 8.4 0 0 1-3.6-.8L3.5 20.5l1.8-4.9a8 8 0 0 1-.8-3.6 8 8 0 0 1 8-8 8 8 0 0 1 8 7.5z"/><path d="M8.4 12h1.7l1 2 1.4-4 1 2h1.6"/>',
   rivals:'<path d="M3 20h4v-8H3zM10 20h4V4h-4zM17 20h4v-5h-4z"/>',
@@ -3456,13 +3075,6 @@ const NAV=[
  {sec:'HESAP'},
  {r:'settings', g:'settings', n:'Settings'}
 ];
-/**
- * How much sits behind each link. Enterprise tools show volume in the
- * navigation because it tells the reader where the work is before they open
- * anything — and because a column of counts is the difference between a menu
- * and an index. Null when the number would be a guess: an unloaded workspace
- * shows nothing rather than a zero.
- */
 function navCount(route){
   const d=S.data;
   if(!d) return null;
@@ -3481,11 +3093,6 @@ function navCount(route){
 function renderNav(){
   $('#nav').innerHTML=NAV.map(it=>{
     if(it.sec) return `<div class="sec">${T(it.sec)}</div>`;
-    // The collapsible "Analytics" group is gone. It hid four pages behind a
-    // click, and the toggle was broken in Turkish anyway: the handler wrote
-    // S.openNav['Analitik'] while the render read S.openNav['Analytics'], so
-    // the group could never open. Section headings already give the grouping
-    // the collapse was there to provide.
     const n=navCount(it.r);
     return `<a class="${S.route===it.r?'on':''}" href="#" onclick="go('${it.r}');return false">${ic(it.g)}
       <span>${T(it.n)}</span>${n===null?'':`<span class="ct">${n}</span>`}</a>`;
@@ -3506,15 +3113,10 @@ function renderNav(){
     barEl.className = v===null?'':v<35?'bad':v<60?'mid':'';
   }
 
-  // Workspace switcher. The old control was a button that toasted "single
-  // workspace" whatever the plan allowed, so an Agency customer with 25 brands
-  // had no way to move between them.
   const cap=(S.planLimits&&S.planLimits.workspaces)||1;
   const wsBox=$('#wsMenu');
   if(wsBox){
     wsBox.className = S.wsMenu ? 'wsmenu open' : 'wsmenu';
-    // The add row sits outside the scrolling list: with a dozen brands it would
-    // otherwise be the one control you have to scroll to reach.
     wsBox.innerHTML = S.wsMenu ? `
       <div class="list">
         ${S.workspaces.map(w=>`<button class="${w.id===S.workspaceId?'on':''}" onclick="switchWs('${w.id}')">
@@ -3528,14 +3130,9 @@ function renderNav(){
         <span class="cnt">${S.workspaces.length}/${cap}</span></button>` : '';
   }
 
-  // Scan state, visible from every screen rather than only the dashboard.
   const sp=$('#scanPill');
   if(sp){
     const sc=S.scanState, pending=sc?sc.pending:0;
-    // Failures here are provider-side: a spent credit balance, a rejected key.
-    // They belong to accounts the customer does not hold, so for them a scan
-    // that collected what it could is simply a finished scan. The operator
-    // gets the count, because for the operator it is a work item.
     const failing=(sc&&(sc.failures||[]).length)||0;
     sp.innerHTML = S.scanBusy
       ? `<span class="dot run"></span>${T('Starting…')}`
@@ -3547,8 +3144,6 @@ function renderNav(){
             ? `<span class="dot ok"></span>${T('Updated')} ${relTime(sc.finished_at)}`
             : `<span class="dot idle"></span>${T('No scan yet')}`;
   }
-  // Header scan control. The sidebar keeps the freshness indicator; the action
-  // itself belongs where the eye lands, not in a 11px button below the nav.
   const hr=$('#headRescan'), hs=$('#headScan');
   const prog=scanProgress();
   const busy=S.scanBusy||!!prog;
@@ -3563,13 +3158,9 @@ function renderNav(){
         ? `${T('Last updated')} <b>${relTime(S.scanState.finished_at)}</b>`
         : T('No scan yet');
   }
-  // These two sit in the static shell rather than a rendered template, so they
-  // need filling in on every repaint — including after a language switch.
   const fb=$('#fbLabel');   if(fb) fb.textContent=T('Feedback');
   const planName={trial:T('Trial'),starter:T('Starter'),growth:T('Growth'),pro:T('Growth'),business:T('Business'),agency:T('Agency')}[S.plan]||S.plan;
   const dleft=trialDaysLeft();
-  // A countdown is more legible than a sentence about a countdown, and the bar
-  // does the persuading a paragraph was doing badly.
   const pct=dleft===null?100:Math.max(4,Math.min(100,Math.round(dleft/7*100)));
   $('#trialBox').className = S.plan==='trial' ? 'trial' : '';
   $('#trialBox').innerHTML=S.plan==='trial'
@@ -3578,8 +3169,6 @@ function renderNav(){
        <div class="tr-bar"><i style="width:${pct}%"></i></div>
        <button class="btn b-pri b-sm b-full" style="margin-top:11px"
          onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button>`
-    // A paid plan has no countdown to show, so it does not need the card — a
-    // single line that names the plan and links to it is the whole message.
     : `<a class="plan-row" href="#"
          onclick="go('settings');setTimeout(()=>setTab('billing'),30);return false">
          <span class="pd"></span><b>${planName}</b><span class="mn">${T('Manage plan')}</span></a>`;
@@ -3588,13 +3177,7 @@ function toggleSb(v){const sb=$('#sb'),sc=$('#sbScrim');
   const open=v===undefined?!sb.classList.contains('open'):v;
   sb.classList.toggle('open',open);sc.classList.toggle('on',open);}
 function go(r){S.route=r;toggleSb(false);render();scrollTo(0,0)}
-/** Kalıcı unsurlar: ölçüm uyarısı ve yasal footer. Sayfa değişse de kalır. */
 function renderChrome(){
-  /* Ölçüm uyarısı ve API açıklaması kaldırıldı: her ekranın üstünde duran
-     kalıcı bir uyarı, bir süre sonra okunmuyor ve yalnızca dikey alan
-     harcıyor. Aynı bilgi Kullanım Şartları'nda duruyor.
-     Yasal bağlantılar kalıyor — mesafeli satış mevzuatı her sayfadan
-     erişilebilir olmalarını gerektiriyor. */
   const f=$('#appFoot');
   if(f && !f.dataset.on){
     f.dataset.on='1';
@@ -3608,15 +3191,12 @@ function render(){
   renderNav();
   renderChrome();
   const page=$('#page');
-  // Data has not arrived yet, or arriving failed. Either way the user gets a
-  // legible screen instead of a blank one.
   if(!S.data){ page.innerHTML=S.loadError?errorScreen(S.loadError):loadingScreen(); return; }
   try{
     page.innerHTML = VIEWS[S.route] ? VIEWS[S.route]() : `<div class="empty">${T('Page not found')}</div>`;
     localise(document.body);
     (POST[S.route]||function(){})();
   }catch(e){
-    // A view throwing must not take the whole panel down with it.
     console.error('view failed:',S.route,e);
     page.innerHTML=errorScreen(`This screen could not be drawn (${e.message}).`);
   }
@@ -3642,18 +3222,8 @@ const POST={
   rivals(){ if(!S.attributes) loadAttributes(true).then(()=>{ if(S.route==='rivals') render(); }); },
   dashboard(){ if(!S.changes) loadChanges().then(()=>{ if(S.route==='dashboard') render(); }); },};
 
-/* =====================================================================
-   VIEWS
-   ===================================================================== */
 const VIEWS={};
 
-/**
- * Sayfa başlığı + kırıntı yolu.
- *
- * Kırıntı yolu, çok markalı bir hesapta hangi markaya bakıldığını kaybetmemek
- * için var. Marka adı kenar çubuğunda da yazıyor ama orası sabit; sayfa
- * kaydırıldığında başlık bölgesi göz hizasında kalıyor.
- */
 function head(title,sub,right){
   const marka=(S.brand&&S.brand.name)||'';
   return `<div class="ptitle"><div>
@@ -3662,12 +3232,6 @@ function head(title,sub,right){
     <h1>${title}</h1>
     ${sub?`<p class="s">${sub}</p>`:''}</div>${right?`<div class="r">${right}</div>`:''}</div>`;
 }
-/**
- * Dönem seçici — bağlı pill grubu, açılır liste değil.
- *
- * Üç seçenek için açılır liste bir tıklama fazlaya mal oluyor ve seçili olmayan
- * iki seçeneği gizliyor. Aynı işlev, aynı üç değer; sadece hepsi görünür.
- */
 function rangeSel(){
   return `<span class="segp" role="group" aria-label="${esc(T('Dönem'))}">${[7,30,90].map(v=>
     `<button class="${S.range===v?'on':''}" onclick="S.range=${v};render()"
@@ -3676,14 +3240,6 @@ function rangeSel(){
 function upsell(txt){return `<div class="banner"><span>🔒</span><span>${txt}</span>
   <span class="r"><button class="btn b-pri b-sm" onclick="go('settings');setTimeout(()=>setTab('billing'),30)">${T('Upgrade Plan')}</button></span></div>`}
 
-/* =====================================================================
-   KPI EXPLANATIONS
-   =====================================================================
-   Every number on this dashboard is a composite, and a composite without a
-   denominator is not information. "5.1" tells the reader nothing; "5.1 out of
-   100, where 100 means named first with your site cited on every question"
-   tells them where they stand and what moving it would take.
-   =================================================================== */
 const KPI_HELP = {
   visibility: {
     tr: { t: 'Görünürlük skoru', b: [
@@ -3758,10 +3314,6 @@ function kpiHelp(k){
     aria-label="${esc(T('What does this mean?'))}" onclick="showKpiHelp('${k}')">?</button>`;
 }
 function showKpiHelp(k){
-  // These strings sit outside I18N because each one is a paragraph, not a
-  // label, and threading paragraphs through a key-value dictionary makes both
-  // sides unreadable. They still have to switch language — a Turkish
-  // explanation in an English panel is worse than no explanation.
   const entry=KPI_HELP[k]; if(!entry) return;
   const h=entry[S.lang==='tr'?'tr':'en'] || entry.en;
   if(!h) return;
@@ -3771,18 +3323,6 @@ function showKpiHelp(k){
        <div style="font-size:13px;color:var(--mute);line-height:1.7">${esc(a)}</div></div>`).join(''));
 }
 
-/* =====================================================================
-   SCAN PROGRESS
-   ===================================================================== */
-/**
- * A scan is not a background nicety — until it finishes, every number on the
- * dashboard is a partial sum. Showing 5.1 while two thirds of the checks are
- * still queued is not "live data", it is a wrong answer that will be replaced
- * by a different wrong answer a minute later, and the customer has no way to
- * tell which reading to trust.
- *
- * So the dashboard waits, and says what it is waiting for.
- */
 function scanProgress(){
   const sc=S.scanState;
   if(!sc) return null;
@@ -3794,8 +3334,6 @@ function scanProgress(){
 }
 
 function scanningScreen(){
-  // Null until the server has answered with a queue size. Showing "0 / 0" in
-  // that gap would read as a finished scan that found nothing.
   const p=scanProgress()||{pending:null,total:null,done:null,pct:null};
   const pct=p.pct===null?null:Math.min(99,Math.max(2,p.pct));
   return head(T('Collecting answers'))+
@@ -3825,21 +3363,12 @@ function scanningScreen(){
   </div></div>`;
 }
 
-/* ---------- DASHBOARD ---------- */
 VIEWS.dashboard=()=>{
-  // Nothing partial. While checks are outstanding the dashboard is a progress
-  // screen, because a half-summed average is not a smaller truth — it is a
-  // different number that happens to look like the real one.
-  // The progress screen owns the view from the moment the button is pressed,
-  // not from the moment the server confirms. Otherwise the dashboard sits
-  // there showing yesterday's numbers while a scan is being queued.
   const prog=scanProgress();
   if(prog || S.scanBusy) return scanningScreen();
 
   const d=S.data,allowed=d.plats.filter(p=>!p.locked).length;
   const ins=insightText();
-  // One row per prompt+engine. The same prompt is asked several times, and
-  // listing every run makes six repeats look like six separate findings.
   const seenKey=new Set();
   const recent=(d.recent||[]).filter(m=>{
     const k=m.text+'|'+m.engine_key;
@@ -3854,12 +3383,6 @@ VIEWS.dashboard=()=>{
         <span class="r"><button class="btn b-gh b-sm" onclick="rescan()">${T('Run a scan now')}</button></span></div>`
     : '';
 
-  /* ---- Diagnostics: operator only -------------------------------------
-     Provider keys, credit balances and adjudication models are our
-     infrastructure. A customer pays a monthly fee and uses our keys; telling
-     them "ChatGPT — HTTP 429, add credits at platform.openai.com" hands them
-     an invoice for a fault they cannot even see the account for. Shown to the
-     platform operator, hidden from everyone else. -------------------------- */
   const failBanner = S.isAdmin && sc && (sc.failures||[]).length
     ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07)">
         <span>⚠</span><span><b>${T('Operator')}</b> · ${T('platform errors, hidden from customers')}:
@@ -3868,9 +3391,6 @@ VIEWS.dashboard=()=>{
           ).join(' · ')}</span></div>`
     : '';
 
-  // The one quality note a customer should see, because their own action caused
-  // it and it resolves on its own. Everything else about measurement quality is
-  // an operator concern.
   const q=S.quality;
   const rebrandNote = q && q.degraded>0 && q.reason==='rebranded'
     ? `<div class="banner" style="margin-bottom:14px;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07)">
@@ -3970,8 +3490,6 @@ VIEWS.dashboard=()=>{
     <div class="card"><div class="ch"><div><h3>${T('Platform Visibility Score')}</h3>
       <div class="sub">${T('How prominently your brand appears in AI responses (0–100)')}</div></div><span class="rt">${T('Last 7 days')}</span></div>
       <div class="cb">${d.plats.map(p=>{
-        // Three states, never conflated: a platform we could not ask must not
-        // show a number, because a zero reads as "invisible there".
         const state = p.locked ? 'locked'
                     : !p.configured ? 'nokey'
                     : p.failing && !p.measured ? 'failing'
@@ -3985,10 +3503,6 @@ VIEWS.dashboard=()=>{
         <div class="pvr locked-row"><div class="l"><span class="d" style="background:var(--border)">${p.ab}</span>${p.n}
           <span class="v" style="font-size:11px;color:${state==='failing'?'var(--bad)':'var(--mute2)'}">${
               state==='locked' ? '🔒 '+T('Upgrade')
-            // A customer cannot fix a missing key or a spent credit balance —
-            // those are our accounts. They see one honest fact: this platform
-            // was not measured, and it is not counted as a zero. The reason is
-            // an operator concern and stays on the operator's screen.
             : state==='nokey'  ? (S.isAdmin
                 ? `<span title="No API key is configured on the server">🔑 ${T('No key')}</span>`
                 : `<span title="${esc(T('Not included in this measurement'))}">◌ ${T('Not measured')}</span>`)
@@ -4007,10 +3521,6 @@ VIEWS.dashboard=()=>{
         ${T('Platforms marked “not measured” are not part of this measurement and do not lower your score. They are counted out, not counted as zero.')}</p>`):''}</div></div>
   </div>
   <style>@media(max-width:1180px){.dashg{grid-template-columns:1fr!important}}
-/* --- Tipografi düzeni (tüm sayfalarda ortak) ---
-   Başlıklarda negatif harf aralığı, gövdede geniş satır yüksekliği: uzun
-   Türkçe kelimeler (görünürlüğünüzü, sınıflandırma) sıkışık satırda okunmuyor.
-   Sayılar tabular: bir sütunda alt alta gelen rakamlar kaymasın. */
 h1,h2,h3,h4,h5{letter-spacing:-.028em;text-wrap:balance}
 h1{letter-spacing:-.038em}
 p,li{text-wrap:pretty}
@@ -4020,111 +3530,40 @@ p,li{text-wrap:pretty}
 img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* =====================================================================
-   TİPOGRAFİ VE YOĞUNLUK — tasarım kararları
-   =====================================================================
-   1. Inter'ın arayüz varyantları açıldı:
-        cv05  düz 'l' — 1/I/l karışıklığını önler, alan adı listesinde kritik
-        ss03  daha dar '@' ve tırnak
-        tnum  tabular rakam: sütunda alt alta sayılar kaymaz
-        zero  çizgili sıfar — 0/O ayrımı
-   2. Başlıklarda negatif izleme; Inter büyük puntoda varsayılan olarak seyrek.
-   3. Köşe yarıçapı 20px → 10px. 20px yumuşak/tüketici okunuyor; bir ölçüm
-      aracının hassas görünmesi gerekiyor. Rankzup'ın yuvarlaklığını
-      koruyorum ama bir ölçü küçülterek.
-   ===================================================================== */
 body{font-feature-settings:"cv05" 1,"ss03" 1,"tnum" 1,"zero" 1;
   font-variant-numeric:tabular-nums;letter-spacing:-.006em}
 h1,h2,h3,h4,h5,.ptitle h1{letter-spacing:-.032em}
 h1,.ptitle h1{letter-spacing:-.04em}
-/* Sayı gösteren her yer sekmeli hizada. */
 .kpi .v,.mono,code,kbd,td.n,.cnt,.vv,.sv,.pv{font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum" 1,"zero" 1}
 
-/* =====================================================================
-   VURGU DİSİPLİNİ
-   =====================================================================
-   Pas rengi 70 yerde kullanılıyordu: logo, aktif menü, rozetler, sayaçlar,
-   bağlantılar, düğmeler. Her şey vurguluysa hiçbir şey vurgu değildir ve göz
-   nereye bakacağını bilemez.
-
-   Yeni kural — vurgu YALNIZCA iki şey için:
-     · birincil eylem (düğme, bağlantı)
-     · markanın kendi satırı (kendi siteniz, kendi markanız)
-   Yapı, durum ve gezinme nötr tonlarda. Bu, panelin sakinleşmesini sağlıyor
-   ve gerçekten tıklanması gereken şeyin öne çıkmasını.
-   ===================================================================== */
-
-/* Aktif menü satırı: pas rengi değil, nötr vurgu + ince sol çubuk.
-   Gezinme bir eylem değil, konum bildirimidir. */
 .nav a.on{background:var(--card3);color:var(--fg);font-weight:500}
 .nav a.on::before{background:var(--fg2)}
 .nav a.on .g{opacity:.9;color:var(--fg2)}
 
-/* Logo karesi nötr: marka kimliği zaten yazıda, kare bir eylem değil. */
 .mk{background:var(--fg);color:var(--bg)}
 
-/* Görünürlük ölçeri: skor bir eylem değil, ölçüm. Nötr kalıyor;
-   yalnızca kritik seviyede renk alıyor. */
 .sb-meter .fill{background:var(--fg2)}
 .sb-meter.low .fill{background:var(--bad)}
 
-/* Sayaçlar ve yardımcı rozetler nötr. */
 .nav .ct{color:var(--mute2)}
 .chip.pri{background:var(--card3);border-color:var(--border2);color:var(--fg2)}
 
-/* =====================================================================
-   YÜZEY DİSİPLİNİ
-   =====================================================================
-   43 kart, her biri belirgin kenarlıklı. Sonuç bir kutu ızgarası: göz önce
-   çerçeveleri, sonra içeriği görüyor. Profesyonel analiz araçları tersini
-   yapar — gruplamayı boşluk ve tipografi taşır, kenarlık yalnızca gerçekten
-   ayrı olan nesnelerde (tablo, satır) kalır.
-
-   Kenarlıklar silinmiyor, geri çekiliyor: aynı yapı, daha az gürültü.
-   ===================================================================== */
 .card{border-color:color-mix(in srgb, var(--border) 62%, transparent);
   box-shadow:0 1px 2px color-mix(in srgb, var(--fg) 4%, transparent)}
 .kpi{border-color:color-mix(in srgb, var(--border) 62%, transparent);box-shadow:none}
 
-/* Kart başlığı ile gövde arasındaki çizgi: bilgi taşımıyor, sadece bölüyor.
-   Boşluk zaten bölüyor. */
 .card .ch{border-bottom:0;padding-bottom:2px}
 
-/* İçgörü kartı: sayfanın en yüksek sesli öğesiydi ve tek bir bulguyu
-   taşıyor. Gradyan korunuyor ama doygunluğu düşürülüp yüzeye oturuyor. */
 .ins{box-shadow:none}
 .ins .hl{font-size:24px;letter-spacing:-.03em}
 .ins .tx{font-size:13px;line-height:1.72}
 
-/* Anılma satırları: her satırda renkli sol çubuk vardı. Hepsi vurguluysa
-   hiçbiri vurgulu değil — çubuk inceldi, ayrım rozette kaldı. */
 .mnt{border-left-width:2px}
 
-/* Tablo satır ayırıcıları da geri çekiliyor. */
 .dash-t td,.mtbl td,.stbl td,.ptbl td,.otbl td{
   border-bottom-color:color-mix(in srgb, var(--border) 58%, transparent)}
 
-/* =====================================================================
-   SOL PANEL — yoğunluk ve sadelik
-   =====================================================================
-   Ölçüldü: menü 712px kaplıyordu. 12 öğe için fazla — 900px yüksekliğinde bir
-   dizüstü ekranda kaydırma gerektiriyor ve gezinmenin tamamını aynı anda
-   görememek bir gösterge panelinde yön kaybettirir. Linear, Vercel ve Stripe
-   32–34px satır kullanır; bizde 40px'ti.
-
-   Değişenler ve gerekçeleri:
-     · satır 40 → 34px, bölüm başlığı 28 → 24px  → menü ~560px, kaydırma biter
-     · marka kartının çerçevesi kalktı: kutu içinde kutu. Tıklanabilirliği
-       chevron zaten söylüyor, kenarlık yalnızca gürültü ekliyordu.
-     · menünün solundaki dikey çizgi kaldırıldı: hiçbir şey gruplamıyordu,
-       gruplamayı bölüm başlıkları yapıyor.
-     · sayaçlar okunur hale getirildi ve sağda sabit genişlikte hizalandı —
-       3 ile 26 alt alta kayıyordu.
-     · ikonlar 20 → 18px: yazıyla aynı optik ağırlığa geldi.
-   ===================================================================== */
-
-/* Marka satırı: çerçevesiz, panelin kendi zeminine oturuyor. */
 .sb-ws{background:none;border:0;padding:10px 8px;border-radius:8px}
 .sb-ws:hover{background:var(--card2)}
 .sb-ws .sq{width:30px;height:30px;border-radius:8px;font-size:13px}
@@ -4132,27 +3571,20 @@ h1,.ptitle h1{letter-spacing:-.04em}
 .sb-ws .wt i{font-size:11px}
 .sb-wswrap{margin-bottom:2px}
 
-/* Ölçer: menüden ince bir çizgiyle ayrılıyor — farklı bir bilgi türü. */
 .sb-meter{padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:4px}
 
-/* Menü: daha yoğun, dikey çizgi yok. */
 .nav{padding:8px 12px 8px}
 .nav::before{display:none}
 .nav .sec{font-size:10px;letter-spacing:.12em;padding:14px 0 6px 12px;color:var(--mute2)}
 .nav a{padding:8px 10px;font-size:14px;border-radius:8px;gap:10px;min-height:34px}
 .nav .g{width:18px;height:18px;stroke-width:1.75}
 
-/* Sayaçlar: sabit genişlik + tabular → alt alta hizalı. */
 .nav .ct{min-width:22px;text-align:right;font-size:11px;color:var(--mute2);
   font-variant-numeric:tabular-nums}
 .nav a.on .ct{color:var(--fg2)}
 
-/* Aktif satırın sol çubuğu inceldi; kalın çubuk menüyü ağırlaştırıyordu. */
 .nav a.on::before{width:2px;left:0;border-radius:0 2px 2px 0}
 
-/* Üst blok yoğunlaştırma. 900px yüksekliğinde bir dizüstünde menü hâlâ
-   kaydırma gerektiriyordu; kaydırılan gezinme, gezinmenin kendisini
-   gizler. Logo, marka satırı ve ölçer sıkıştırıldı. */
 .sb-logo{padding:2px 8px 10px;font-size:16px}
 .sb-id{padding:12px 12px 10px}
 .mk{width:24px;height:24px;border-radius:6px;font-size:12px}
@@ -4197,8 +3629,6 @@ h1,.ptitle h1{letter-spacing:-.04em}
 };
 function insightText(){
   const d=S.data,b=S.brand;
-  // Only platforms we actually measured can be called the weakest. Naming an
-  // engine that errored would send the operator optimising for a billing problem.
   const measuredPlats=d.plats.filter(p=>p.active&&p.measured!==false);
   const worst=[...measuredPlats].sort((a,x)=>a.score-x.score)[0]||{n:'—',score:0};
   const cited=d.cells.filter(c=>c.c>0).length;
@@ -4239,18 +3669,8 @@ function insightText(){
            : 'Run the site audit to see where to start.')
   };
 
-  /* ------------------------------------------------------------------
-     Severity ladder.
-     The card used to have exactly two states: red below 10, green above.
-     A brand at 75 got the same green "you are not being clicked" verdict as
-     one at 25, whether or not it was actually being cited — so the colour
-     carried no information and the headline was sometimes simply false.
-     The ladder below is driven by the data it describes.
-     ------------------------------------------------------------------ */
   const promptsSeen = new Set(d.cells.map(c => c.p.id)).size;
   const named       = new Set(d.cells.filter(c => c.m > 0).map(c => c.p.id)).size;
-  // Named often but rarely the cited source: the mention is there, the click
-  // is going elsewhere. This is a gap worth naming, not a general weakness.
   const citeGap = named >= Math.max(2, promptsSeen * 0.4) && cited < named * 0.5;
 
   if (d.total < 35) return tr ? {
@@ -4335,8 +3755,6 @@ async function answerModal(runId){
   try{ d = await api.get(`/api/answers?run=${runId}`); }
   catch(e){ $('#mBody').innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
 
-  // Highlights come from the server, computed by the same matcher that scored
-  // the run, so what the reader sees is exactly what was counted.
   let html='', cursor=0;
   for(const sp of d.spans||[]){
     if(sp.start<cursor) continue;
@@ -4377,10 +3795,6 @@ VIEWS.mentions=()=>{
   const d=S.data;
   const all=d.cells.filter(c=>platAllowed(c.pl));
 
-  // Two filters, both in the URL of the page's state rather than a menu: the
-  // question an account manager brings here is almost always "where are we
-  // missing" or "how did we do on <platform>", and burying either behind a
-  // dropdown adds a click to every visit.
   const f=S.mFilter||'all';
   const fp=S.mPlat||'';
   const rows=all.filter(c=>
@@ -4393,8 +3807,6 @@ VIEWS.mentions=()=>{
     ? named.filter(c=>c.rank).reduce((a,c)=>a+c.rank,0)/named.filter(c=>c.rank).length : null;
   const cov=all.length?named.length/all.length*100:0;
 
-  // Sentiment as a word. A marketer reading "+0.20" has to be told what the
-  // scale is before the number means anything; "Olumlu" needs no key.
   const senti=v=>v>=0.25?{l:T('Olumlu'),c:'ok'}:v<=-0.25?{l:T('Olumsuz'),c:'bad'}:{l:T('Nötr'),c:'mid'};
 
   return head(T('Mentions'),
@@ -4403,14 +3815,14 @@ VIEWS.mentions=()=>{
   `<div class="g4">
     <div class="kpi"><div class="t">${T('Görünürlük')}</div>
       <div class="v">${cov.toFixed(1)}<span style="font-size:14px;color:var(--mute2)">%</span></div>
-      <div class="d">${all.length} ${T('kontrolün')} ${named.length} ${T('tanesinde anılıyor')}</div></div>
-    <div class="kpi"><div class="t">${T('Kaynak gösterilme')}</div>
+      <div class="d">${all.length} ${T('ölçümün')} ${named.length} ${T('tanesinde anılıyor')}</div></div>
+    <div class="kpi"><div class="t">${T('Atıf')}</div>
       <div class="v">${cited.length}</div>
       <div class="d">${named.length?`${(cited.length/named.length*100).toFixed(0)}% ${T('anılmaların içinde')}`:T('henüz yok')}</div></div>
     <div class="kpi"><div class="t">${T('Ortalama sıra')}</div>
       <div class="v">${avgRank?avgRank.toFixed(1):'—'}</div>
       <div class="d">${avgRank?T('anıldığınız cevaplarda'):T('henüz anılmadınız')}</div></div>
-    <div class="kpi"><div class="t">${T('Toplam kontrol')}</div>
+    <div class="kpi"><div class="t">${T('Toplam ölçüm')}</div>
       <div class="v">${nf(all.length*5)}</div>
       <div class="d">${all.length} ${T('sorgu × platform')} · 5 ${T('tekrar')}</div></div>
   </div>
@@ -4422,7 +3834,7 @@ VIEWS.mentions=()=>{
 
     <div class="mfil">
       <div class="grp">
-        ${[['all',T('Tümü'),all.length],['in',T('Anılıyor'),named.length],['out',T('Anılmıyor'),all.length-named.length]]
+        ${[['all',T('Tümü'),all.length],['in',T('Görünüyor'),named.length],['out',T('Görünmüyor'),all.length-named.length]]
           .map(([k,l,n])=>`<button class="${f===k?'on':''}" onclick="S.mFilter='${k}';render()">${l}<b>${n}</b></button>`).join('')}
       </div>
       <div class="grp">
@@ -4445,8 +3857,8 @@ VIEWS.mentions=()=>{
         <td><span class="chip" style="border-color:${c.pl.c}44">${c.pl.ab} ${esc(c.pl.n)}</span></td>
         <td><span class="chip">${intentLabel(c.p.intent)}</span></td>
         <td><span class="mst ${c.m>0?'in':'out'}"><i></i>${c.m>0
-              ? `${T('Anılıyor')} <em>${(c.m*100).toFixed(0)}%</em>`
-              : T('Anılmıyor')}</span></td>
+              ? `${T('Görünüyor')} <em>${(c.m*100).toFixed(0)}%</em>`
+              : T('Görünmüyor')}</span></td>
         <td class="n">${c.rank?`<span class="rkb ${c.rank<=3?'top':''}">${c.rank}</span>`:'—'}</td>
         <td class="n">${c.c>0?`<span class="cyes">✓</span>`:'<span class="mut">—</span>'}</td>
         <td>${c.m>0?`<span class="sent ${st.c}">${st.l}</span>`:'<span class="mut">—</span>'}</td>
@@ -4463,14 +3875,10 @@ function exportMentions(){
   dl('yanki-mentions.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
-/* ---------- PLATFORMLAR ---------- */
 VIEWS.platforms=()=>{
   const d=S.data;
   const ser=d.series.slice(-S.range);
 
-  /* Three states, never conflated. A platform that was never asked did not
-     score zero — printing 0.00 next to it is the most misleading number this
-     screen could produce, and it was doing exactly that. */
   const state=p=> p.locked ? 'locked'
                 : !p.configured ? 'nokey'
                 : p.failing && !p.measured ? 'failing'
@@ -4478,10 +3886,6 @@ VIEWS.platforms=()=>{
   const live=d.plats.filter(p=>state(p)==='ok');
   const wLive=live.reduce((a,p)=>a+p.w,0);
 
-  /* What each platform is costing. Weight is the share of the total score a
-     platform carries; multiplied by the points not earned there, it answers
-     the only question this page exists for: which platform to fix first.
-     A weak score on a heavy platform outranks a terrible one on a light one. */
   const loss=p=>p.w*(100-p.score);
   const ranked=live.slice().sort((a,b)=>loss(b)-loss(a));
   const worst=ranked[0]||null;
@@ -4539,7 +3943,7 @@ VIEWS.platforms=()=>{
     <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
   <div class="tw"><table class="ptbl"><thead><tr>
     <th>${T('Platform')}</th><th>${T('Durum')}</th><th>${T('Skor')}</th>
-    <th class="n">${T('Ağırlık')}</th><th class="n">${T('Anılma')}</th><th class="n">${T('Kaynak')}</th>
+    <th class="n">${T('Ağırlık')}</th><th class="n">${T('Görünme')}</th><th class="n">${T('Kaynak')}</th>
     <th class="n">${T('Kontrol')}</th><th class="n">${T('Değişim')}</th></tr></thead>
   <tbody>${d.plats.map(p=>{
     const st=state(p), on=st==='ok';
@@ -4570,36 +3974,6 @@ function exportPlats(){
   dl('yanki-platforms.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
-/* ---------- KAYNAKLAR ---------- */
-/**
- * Algı ekranı.
- *
- * Görünürlük "kaç kez geçtiniz" sorusunu ölçer; bu ekran "geçtiğiniz yerde ne
- * dendi" sorusunu ölçer. İkisi bağımsızdır: her cevapta geçip her cevapta
- * olumsuz anılmak mümkündür ve o durumda yüksek görünürlük zarardır.
- *
- * Veri /api/perception'dan gelir ve yeni ölçüm gerektirmez — ton, sıfatlar ve
- * marka geçişleri her taramada zaten toplanıyordu, eksik olan ekrandı.
- */
-/**
- * Aksiyon Merkezi.
- *
- * Aksiyon Planı bir yol haritasıdır: 90 günü fazlara böler, etki ve efora göre
- * sıralar. Bu ekran farklı bir soruya cevap verir — "bugün ne yapmam gerekiyor".
- *
- * Hiçbiri yeni bir ölçüm değil. Fırsatlar, site denetimi, kaynak sınıflandırması,
- * algı ve rekabet açığı zaten ayrı ekranlarda ölçülüyor; burada tek bir öncelikli
- * listede toplanıyor. Bir sinyalin iki yerde farklı önceliğe sahip olması
- * kullanıcıyı hangisine güveneceği konusunda ikilemde bırakır, o yüzden öncelik
- * hesabı tek yerde: aşağıdaki buildCenter().
- *
- * Ad notu: buildActions() zaten Aksiyon Planı'nın görev üreticisi. Aynı adı
- * kullanmak onu sessizce eziyor ve Plan ekranı çiziliyormuş gibi görünüp boş
- * veriyle patlıyordu — bu yüzden buildCenter().
- */
-/* Rota adı 'center'. 'actions' kullanılamaz: S.data.actions zaten Aksiyon
- * Planı'nın görev listesini taşıyor ve aynı adı iki anlamda kullanmak, hangi
- * ekranın hangi veriyi okuduğunu belirsizleştirir. */
 VIEWS.center=()=>{
   const d=S.data;
   const items=buildCenter(d);
@@ -4649,24 +4023,10 @@ VIEWS.center=()=>{
      <p style="margin-top:8px;max-width:50ch;margin-inline:auto">${T('Ölçüm tamamlandıkça buraya sinyaller düşer: rakibin öne geçtiği bir sorgu, denetimde kalan bir kriter, girilebilir yeni bir kaynak veya algıda bir bozulma.')}</p></div></div>`}`;
 };
 
-/**
- * Sinyalleri tek listeye toplar.
- *
- * Öncelik kuralı, ekranlar arasında tutarlı olsun diye tek yerde: kaybın
- * büyüklüğü × düzeltmenin ulaşılabilirliği. Bugün açılabilecek bir dizin
- * kaydı, altı ay sürecek bir Wikipedia maddesinden önce gelir — ikisi aynı
- * sayıda atıf getirse bile.
- */
 function buildCenter(d){
   const out=[];
   const P=S.perception;
 
-  /* 1 — Görünmediğiniz sorgular. Ürünün ölçtüğü asıl kayıp bu.
-   *
-   * Kaynak d.opps: kapsama oranı ve fırsat skoru zaten Fırsatlar ekranında
-   * hesaplanıyor. Öncelik, hacim değil kayıp: satın alma niyetli ve hiç
-   * görünmediğiniz bir sorgu, yüksek hacimli ama zaten önde olduğunuz bir
-   * sorgudan önce gelir. */
   (d.opps||[])
     .filter(o=>o.cover<0.4)
     .sort((a,b)=>b.opp-a.opp)
@@ -4686,8 +4046,6 @@ function buildCenter(d){
       });
     });
 
-  /* 2 — Algıda bozulma. Görünürlükten bağımsız ve ondan pahalı olabilir:
-   *     cevapta geçmek ama olumsuz geçmek, hiç geçmemekten kötüdür. */
   if(P && P.overall && P.overall.mentions>=8){
     const neg=P.overall.neg/P.overall.mentions*100;
     if(neg>=15) out.push({
@@ -4706,7 +4064,6 @@ function buildCenter(d){
     });
   }
 
-  /* 3 — Girilebilir kaynaklar. En hızlı kazanç: bugün başlanabilir. */
   const acik=(d.sources||[]).filter(s=>!s.mine&&srcKind(s.kind).reachable&&srcKind(s.kind).rank<=2);
   acik.slice(0,3).forEach(s=>{
     const k=srcKind(s.kind);
@@ -4719,8 +4076,6 @@ function buildCenter(d){
     });
   });
 
-  /* 4 — Girilemeyen kaynaklar tek kartta. Dokuz rakip için dokuz kart, listeyi
-   *     yapılabilir işlerden uzaklaştırır. */
   const kapali=(d.sources||[]).filter(s=>!s.mine&&!srcKind(s.kind).reachable&&s.kind!=='unknown');
   if(kapali.length>=3){
     const toplam=kapali.reduce((a,s)=>a+s.v,0);
@@ -4732,7 +4087,6 @@ function buildCenter(d){
     });
   }
 
-  /* 5 — Site denetiminde kalan kriterler. */
   const fails=(d.audit||[]).flatMap(c=>c.facs.filter(f=>f.st==='fail').map(f=>({...f,cat:c.n})));
   if(fails.length) out.push({
     sev: fails.length>=10?'high':'mid', icon:'◳', kind:T('Denetim'),
@@ -4743,7 +4097,6 @@ function buildCenter(d){
              {label:`${T('Araçlar')} →`,go:"go('tools')"}],
   });
 
-  /* 6 — Hiç ölçülmeyen platformlar. */
   const olcusuz=(d.plats||[]).filter(p=>!p.locked&&(p.measured===false||!p.checks));
   if(olcusuz.length>=2) out.push({
     sev:'low', icon:'◔', kind:T('Platform'),
@@ -4784,7 +4137,7 @@ VIEWS.perception=()=>{
   <div class="g4">
     <div class="kpi"><div class="t">${T('Genel ton')}</div>
       <div class="v ${toneCls(o.avg)}" style="font-size:24px">${toneWord(o.avg)}</div>
-      <div class="d">${o.avg===null?'—':`${o.avg>0?'+':''}${o.avg.toFixed(2)} · ${o.mentions} ${T('anılma')}`}</div></div>
+      <div class="d">${o.avg===null?'—':`${o.avg>0?'+':''}${o.avg.toFixed(2)} · ${o.mentions} ${T('görünme')}`}</div></div>
     <div class="kpi"><div class="t">${T('Olumlu')}</div>
       <div class="v ok">${pct('pos')}<span style="font-size:14px;color:var(--mute2)">%</span></div>
       <div class="d">${o.pos} ${T('cevapta')}</div></div>
@@ -4824,7 +4177,7 @@ VIEWS.perception=()=>{
             <span class="nm">${r.isSelf?esc(S.brand.name||T('Siz')):esc(r.name)}${r.isSelf?` <i>${T('siz')}</i>`:''}</span>
             <span class="bar"><i style="width:${Math.max(1.5,r.posPct)}%"></i></span>
             <span class="vv">%${r.posPct.toFixed(0)}</span>
-            <span class="mn">${r.mentions} ${T('anılma')}</span></div>`).join('')}</div>
+            <span class="mn">${r.mentions} ${T('görünme')}</span></div>`).join('')}</div>
         <p class="note">${T('Yüzde, o markanın anıldığı cevaplarda olumlu tonun payıdır. Az anılan bir markanın yüksek yüzdesi güvenilir değildir — anılma sayısına da bakın.')}</p>`
         :`<div class="empty" style="padding:26px"><div class="ic">◈</div>
            ${T('Karşılaştırma için rakiplerinizin de cevaplarda geçmesi gerekir')}</div>`}</div></div>
@@ -4837,7 +4190,7 @@ VIEWS.perception=()=>{
       return `<div class="prow"><div class="pl">
         <span class="pi on" style="background:${pl.c}"></span><b>${esc(pl.n)}</b>
         <span class="pv ${e.avg>=0.25?'ok':e.avg<=-0.25?'bad':''}">${toneWord(e.avg)}</span>
-        <small class="pd">%${e.posPct.toFixed(0)} ${T('olumlu')} · ${e.mentions} ${T('anılma')}</small></div>
+        <small class="pd">%${e.posPct.toFixed(0)} ${T('olumlu')} · ${e.mentions} ${T('görünme')}</small></div>
         <div class="ptrack"><i style="width:${Math.max(1.5,e.posPct)}%;background:${pl.c}"></i></div></div>`;
     }).join('')}
     <p class="note">${T('Sağlayıcılar farklı ayrıntı düzeyinde cevap verir; oranları sağlayıcılar arasında değil, aynı sağlayıcı içinde zamanla karşılaştırın.')}</p></div></div>
@@ -4856,7 +4209,6 @@ VIEWS.perception=()=>{
       :`<div class="empty" style="padding:26px"><div class="ic">◎</div>${T('Örnek geçiş bulunamadı')}</div>`}</div></div>`;
 };
 
-/** Algı verisi ayrı çağrı: panel ilk boyada bunu beklemesin. */
 async function loadPerception(){
   if(S.percBusy) return;
   S.percBusy=true;
@@ -4866,12 +4218,6 @@ async function loadPerception(){
   finally{ S.percBusy=false; if(S.route==='perception') render(); }
 }
 
-/**
- * %100'e yığılmış günlük ton grafiği.
- *
- * Mutlak sayı değil oran gösteriyor: tarama sayısı günden güne değişiyor ve
- * mutlak yükseklik, ton değişimi ile ölçüm hacmi değişimini birbirine karıştırır.
- */
 function stackedTone(days){
   if(!days || !days.length) return `<div class="empty" style="padding:30px 12px">
     <div class="ic">◜</div>${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
@@ -4914,8 +4260,6 @@ VIEWS.sources=()=>{
   const d=S.data;
   const sub=T('Yapay zeka bu kategoride hangi siteleri okuyor — ve siz o listenin neresindesiniz.');
 
-  // Before the first scan produces citations this list is empty, which is a
-  // normal state, not an error.
   if(!d.sources.length){
     return head(T('Sources'),sub)+
       `<div class="card"><div class="empty"><div class="ic">⊕</div>
@@ -4928,8 +4272,6 @@ VIEWS.sources=()=>{
   const mine=d.sources.find(x=>x.mine);
   const myRank=mine?d.sources.indexOf(mine)+1:null;
   const myShare=mine&&total?mine.v/total*100:0;
-  // Domains ahead of you that you are not on. This is the working list: the
-  // shortest route to being cited is to appear where the models already look.
   const ahead=d.sources.filter(x=>!x.mine&&(!mine||x.v>mine.v));
 
   const dl=x=>{
@@ -4965,7 +4307,6 @@ VIEWS.sources=()=>{
       <span>${T('Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.')}</span>
       <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`:''}
 
-
   <div class="card">
     <div class="ch"><div><h3>${T('Kaynak sıralaması')}</h3>
       <div class="sub">${T('Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim')}</div></div>
@@ -5000,13 +4341,6 @@ VIEWS.sources=()=>{
     <p class="mnote">${T('Modeller sizi çoğunlukla kendi sitenizden değil, üçüncü taraf kaynaklardan öğrenir. Bu yüzden listenin üstündeki alan adlarında bulunmamak, kendi sitenizdeki bir eksikten daha pahalıdır.')}</p>
   </div>`;
 };
-/**
- * Bilinmeyen kaynakları arka planda çözer.
- *
- * Panel isteği hiçbir zaman model beklemez (/api/results allowLlm:false ile
- * çağırır), bu yüzden çözüm ayrı ve isteğe bağlı bir adım. Kullanıcı isterse
- * bekler, istemezse elle işaretler.
- */
 let srcResolveBusy = false;
 async function resolveSources(){
   if(srcResolveBusy) return;
@@ -5021,14 +4355,6 @@ async function resolveSources(){
   finally{ srcResolveBusy = false; S.srcBusy = false; render(); }
 }
 
-/**
- * Elle işaretleme.
- *
- * Seçenekler, kullanıcının "oraya nasıl girilir" sorusuna verebileceği
- * cevaplar olarak yazıldı — taksonominin iç adlarıyla değil. Kimse bir siteye
- * bakıp "bu bir self_publish mi" diye düşünmez; "buraya izinsiz yazabilir
- * miyim" diye düşünür.
- */
 function markSource(domain){
   const secenekler = [
     ['directory',   T('Firmalar profil açabiliyor'),        T('dizin, listeleme, partner ağı')],
@@ -5066,7 +4392,6 @@ function exportSources(){
   dl('yanki-sources.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
-/* ---------- FIRSATLAR ---------- */
 VIEWS.opps=()=>{
   const d=S.data;
   const rows=d.opps.slice().sort((a,b)=>b.opp-a.opp);
@@ -5118,14 +4443,12 @@ function exportOpps(){
   dl('yanki-opportunities.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
-/* ---------- BOT TRAFFIC ---------- */
 VIEWS.bots=()=>head(T('Bot Traffic'),T('What GPTBot, ClaudeBot, PerplexityBot and other AI crawlers do on your site.'))+
   `<div class="card"><div class="empty"><div class="ic">⛭</div>
     <b style="color:var(--fg);font-size:14px">${T('No crawler logs connected')}</b>
     <p style="margin-top:8px;max-width:58ch;margin-inline:auto">${T('A page that is never crawled cannot enter an AI answer, which makes crawler traffic the leading indicator of visibility — typically two to six weeks ahead of the score. Reading it requires your server or CDN logs.')}</p>
     <p style="margin-top:14px;font-size:12px;color:var(--mute2)">${T('Supported sources: Cloudflare Logpush, Nginx/Apache access logs, S3 delivery. Ingestion ships in the next release.')}</p>
   </div></div>`;
-/* ---------- TRAFFIC ---------- */
 VIEWS.traffic=()=>head(T('Traffic'),T('Sessions and conversions coming from AI platforms, matched through GA4.'))+
   `<div class="card"><div class="empty"><div class="ic">◫</div>
     <b style="color:var(--fg);font-size:14px">${T('Google Analytics 4 is not connected')}</b>
@@ -5138,7 +4461,6 @@ VIEWS.search=()=>head(T('Search Performance'),T('Where your SEO and AI performan
     <p style="margin-top:8px;max-width:56ch;margin-inline:auto">${T('This screen puts SEO and AI performance side by side and surfaces the blind-spot pages that rank on Google but never appear in AI answers. It needs Search Console data, which requires an OAuth connection.')}</p>
     <p style="margin-top:14px;font-size:12px;color:var(--mute2)">${T('OAuth connection ships in the next release.')}</p>
   </div></div>`;
-/* ---------- COMPETITORS ---------- */
 VIEWS.rivals=()=>{
   const d=S.data;
   const self=d.sov.find(x=>x.you)||{v:0,pct:0};
@@ -5184,17 +4506,6 @@ VIEWS.rivals=()=>{
    </div>`;
 };
 
-/**
- * Attribute matrix.
- *
- * The single most actionable screen in the product: the score says you are
- * losing, this says why. If the model calls a rival "güvenilir" and calls you
- * "ucuz", no amount of schema markup fixes that — it is a positioning problem,
- * and it is invisible in every other view.
- *
- * Sorted by gap, not volume. An attribute both brands own equally teaches
- * nothing; one a rival owns outright is the work.
- */
 function attributePanel(){
   const A=S.attributes;
   if(!A) return `<div class="empty" style="padding:30px"><div class="ic">◈</div>
@@ -5254,14 +4565,6 @@ function attributePanel(){
     ${T('Numbers are how many answers attached that quality to that brand. + and − show whether it was said favourably.')}</p>`;
 }
 
-/**
- * What moved since the last scan.
- *
- * This is the panel that makes the product worth paying for month after month.
- * A customer who fixes the audit once and never hears from us again cancels;
- * one who sees "you fell from second to fifth and Klasgame passed you" cannot
- * afford to. It sits at the top of the dashboard for exactly that reason.
- */
 function changesPanel(){
   const c=S.changes;
   if(!c || c.error || !c.digest) return '';
@@ -5320,7 +4623,6 @@ function changesPanel(){
     </div></div>`;
 }
 
-/** Jumps to the writer with the prompt pre-filled. */
 function writeFor(text){
   S.writerTopic=text;
   go('tools');
@@ -5339,7 +4641,6 @@ function sovBars(rows){
    </div>`).join('')
    +`<p style="font-size:12px;color:var(--mute);margin-top:12px">${T('The denominator is the tracked brand set only. Adding a competitor changes every share, which is why comparisons stay inside one set.')}</p>`;
 }
-
 
 function addRivalModal(){
   openModal('Add competitor',`<div class="fld"><label>Competitor name</label><input class="in" id="rn" placeholder="Competitor brand"></div>
@@ -5364,7 +4665,6 @@ async function rmRival(id){
 function filterRows(v,id){const t=trLower(v);
   $$('#'+id+' tbody tr').forEach(tr=>tr.style.display=trLower(tr.textContent).includes(t)?'':'none')}
 
-/* ---------- AI SORGULARI ---------- */
 let promptTab='all';
 VIEWS.prompts=()=>{
   const list=S.prompts.filter(p=>promptTab==='all'||(promptTab==='on'?p.active:!p.active));
@@ -5407,12 +4707,6 @@ async function delPrompt(id){
   try{ await api.del(`/api/prompts?id=${encodeURIComponent(id)}`); await loadResults(); toast(T('Prompt deleted')); }
   catch(e){ toast(e.message); }
 }
-/**
- * Each press is one model completion. The server caps this at 15/hour per
- * organisation, but the button also has to stop taking presses while a request
- * is in flight — otherwise an impatient double-click spends twice and the
- * second reply overwrites the first for no benefit.
- */
 let regenBusy=false;
 async function regen(){
   if(regenBusy) return;
@@ -5452,7 +4746,6 @@ async function addPrompt2(){
   }catch(e){ toast(e.message); }
 }
 
-/* ---------- ACTION PLAN ---------- */
 VIEWS.plan=()=>{
   const d=S.data,A=d.actions;
   const gain=A.reduce((a,x)=>a+parseFloat(x.im),0);
@@ -5479,14 +4772,6 @@ VIEWS.plan=()=>{
   ${tab==='platform'?planPlatforms():tab==='tasks'?planTasks(A):planRoad(A,gain)}`;
 };
 
-/**
- * Platform-by-platform advice.
- *
- * A single ranked list quietly assumes every engine works the same way. They
- * do not: Perplexity cites what it just fetched, AI Overviews is fed by the
- * Google index, ChatGPT leans on what the open web says about you. The same
- * score can need three different fixes, so the advice is split by engine.
- */
 function planPlatforms(){
   const ins=S.insights;
   if(!ins) return `<div class="empty" style="padding:44px"><div class="ic">◎</div>
@@ -5505,7 +4790,6 @@ function planPlatforms(){
       <a href="#" onclick="go('settings');setTimeout(()=>setTab('integrations'),30);return false"
       style="color:var(--pri)">${T('Check keys')}</a></div>`:''}</div>`;
 
-  // Worst first: that is the order a marketer should work in.
   const ordered=[...live].sort((a,b)=>b.impact-a.impact);
   const tone=dg=>dg==='healthy'?'ok':dg==='absent'||dg==='losing_to_rival'?'bad':'warn';
 
@@ -5566,12 +4850,6 @@ function planPlatforms(){
       ${idle.map(p=>esc(p.engineLabel)).join(', ')}</span></div>`:''}`;
 }
 
-/**
- * Task detail. The row has had `onclick="taskModal(i)"` since the first build
- * but the function was never written, so every task in the action plan threw a
- * ReferenceError on click — the plan looked interactive and was not. The data
- * it needs (desc, steps, code) has always been on the item.
- */
 function taskModal(i){
   const a=(S.data&&S.data.actions||[])[i];
   if(!a) return;
@@ -5633,7 +4911,6 @@ function exportPlan(){
   dl('yanki-action-plan.txt','YANKI ACTION PLAN — '+S.brand.name+'\n\n'+t);
 }
 
-/* ---------- AUDIT ---------- */
 VIEWS.audit=()=>{
   const d=S.data;
   const facs=d.audit.flatMap(c=>c.facs);
@@ -5741,7 +5018,6 @@ function exportAudit(){
   dl('yanki-audit.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
-/* ---------- TOOLS ---------- */
 let tool='writer';
 VIEWS.tools=()=>{
   const TOOL_TITLES={writer:T('AI Content Writer'),robots:T('Robots.txt Analyser & Generator'),
@@ -5835,9 +5111,6 @@ function toolOutput(){
     JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:S.prompts.slice(0,4).map(p=>({
      "@type":"Question",name:p.text.replace(/"/g,''),acceptedAnswer:{"@type":"Answer",
      text:`${b.name} is ... in ${sectorTerm(b.sector)}. (40-60 word direct answer.)`}}))},null,2)+'\n<\/script>';
-  // A meta description must stand on its own: models and SERPs both quote it
-  // verbatim. Falling back to just the brand name produces a useless tag, so
-  // we compose one from what we know and pad it to a usable length.
   const place=b.city?`${b.city}, ${b.country}`:b.country;
   const desc=((b.desc||'').trim().length>=60
     ? b.desc.trim()
@@ -5891,14 +5164,10 @@ function runWriter(){
   toast('Content draft generated');
 }
 
-/* ---------- SETTINGS ---------- */
 let setTabV='profile';
 function setTab(t){setTabV=t;render()}
 VIEWS.settings=()=>{
   const b=S.brand;
-  // Integrations lists provider keys, their status and the errors they return.
-  // A customer neither owns those accounts nor can change them — the tab would
-  // be a wall of things to worry about with no button that helps.
   const tabs=[['profile',T('Profile')],['brand',T('Brand')],['team',T('Team')],
     ...(S.isAdmin?[['integrations',T('Integrations')]]:[]),['billing',T('Billing')]];
   if(setTabV==='integrations' && !S.isAdmin) setTabV='profile';
@@ -5983,15 +5252,6 @@ VIEWS.settings=()=>{
         </div></div>`;
     setTimeout(()=>loadEngines(false),50);
   }else{
-    /* Usage against the real caps.
-     *
-     * Both halves used to be invented. The caps lived in a table here that had
-     * no entry for growth or agency — so the whole tab threw for customers on
-     * either plan — and the consumption figures were literals: audits always
-     * "1", content always "0". A customer sitting on their monthly audit limit
-     * saw 1/10 and got a refusal with no warning. Caps now come from the plan,
-     * counts from /api/auth/me, and both are labelled with the period they
-     * cover. */
     const cap = S.planLimits || {};
     const u = S.usage || {};
     const dleft = trialDaysLeft();
@@ -6061,13 +5321,6 @@ VIEWS.settings=()=>{
   `<div class="tabs">${tabs.map(t=>`<button class="${setTabV===t[0]?'on':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
    <div>${body}</div>`;
 };
-/**
- * Suggests the forms the automatic alias builder deliberately will not add on
- * its own. "RAMS Türkiye" generates no bare "RAMS", because a short head word
- * is exactly what produces false positives on a common noun — but for a brand
- * whose models say "RAMS" in four answers out of five, the omission reads as
- * zero visibility. So: propose, never assume. The operator decides.
- */
 function suggestedVariants(){
   const name=(S.brand.name||'').trim();
   if(!name) return [];
@@ -6076,11 +5329,9 @@ function suggestedVariants(){
   const GENERIC=new Set(['türkiye','turkiye','global','group','grup','holding','a.ş.','as','ltd',
     'şirketi','sirketi','company','co','inc','international','turkey']);
   if(words.length>1){
-    // Head word, when the rest is a generic qualifier.
     const head=words[0];
     if(head.length>=3 && words.slice(1).every(w=>GENERIC.has(w.toLocaleLowerCase('tr')))) out.add(head);
     else if(head.length>=4) out.add(head);
-    // Acronym for three or more words: "Rams Gayrimenkul Yatırım" -> "RGY"
     if(words.length>=3) out.add(words.map(w=>w[0]).join('').toLocaleUpperCase('tr'));
   }
   return [...out].filter(v=>v.length>=3 && !S.variants.includes(v));
@@ -6089,15 +5340,7 @@ function suggestedVariants(){
 function addVar2(){const v=$('#vv').value.trim();if(!v)return;
   if(!S.variants.includes(v))S.variants.push(v);
   render();
-  // Deliberately not "Variant added": nothing is stored until Save runs, and
-  // telling the user otherwise is how the old build lost every variant.
   toast(T('Variant added — press Save to apply'));}
-/**
- * Provider status. `probe` runs a real one-token call against every configured
- * key, which is the only way to distinguish "key present" from "key works".
- * A retired model name is the most common failure and it is invisible until
- * you actually call the provider.
- */
 async function loadEngines(probe){
   const box=$('#engBox'); if(!box) return;
   if(probe) box.innerHTML=`<div class="empty"><div class="ic">◉</div>${T('Testing every provider…')}</div>`;
@@ -6169,8 +5412,6 @@ async function saveBrand(){
   const body={
     brandName:S.brand.name, domain:S.brand.site, sector:S.brand.sector,
     country:S.brand.country, city:S.brand.city||null,
-    // Without this the variant editor above was decorative: it pushed to local
-    // state, showed a toast and lost everything on the next reload.
     aliases:S.variants};
   const send=async()=>{
     await api.patch(`/api/workspaces/${S.workspaceId}`,body);
@@ -6179,16 +5420,11 @@ async function saveBrand(){
   };
   try{ await send(); }
   catch(e){
-    // 409 means the server spotted that this rename would re-attribute stored
-    // history to a different company. It is a question, not a failure: repeat
-    // the request only once the user has read what happens and agreed.
     if(e.status===409){
       if(confirm(e.message+'\n\n'+T('Continue anyway?'))){
         body.confirmRebrand=true;
         try{ await send(); }catch(e2){ toast(e2.message,'error'); }
       }else{
-        // Put the stored values back so the form stops showing a change that
-        // was never saved.
         await loadResults(); render();
       }
       return;
@@ -6198,8 +5434,6 @@ async function saveBrand(){
 }
 
 async function setPlan(p){
-  // The API only accepts trial|starter|growth|business; Agency is contracted,
-  // not self-served, so it never reaches the endpoint.
   if(p==='agency'){ toast(T('Agency plan is handled by our sales team')); return; }
   try{
     await api.post('/api/org/plan',{plan:p});
@@ -6208,33 +5442,16 @@ async function setPlan(p){
   }catch(e){ toast(e.message); }
 }
 
-/* =====================================================================
-   SCAN CONTROL
-   ===================================================================== */
-/**
- * This function was referenced by the empty-state banner but never existed,
- * so the one visible way to trigger a scan threw a ReferenceError. The
- * scheduled job runs once a day; without a manual trigger a customer who has
- * just fixed something waits until tomorrow to find out whether it worked.
- */
 async function rescan(){
   if(S.scanBusy || !S.workspaceId) return;
-  // Switch the screen first. The request below can take a while, and a button
-  // that only produces a toast reads as a button that did nothing.
   S.scanBusy = true; render();
   try{
-    // warm:false. With warming on, this call drains a batch server-side and
-    // does not answer for up to forty seconds — the whole point of the
-    // progress screen is lost if the first number arrives after it. The queue
-    // is drained by pollScan() instead, which is what makes the counter move.
     const r = await api.post('/api/scan',{workspaceId:S.workspaceId, warm:false});
     if(r.jobs){
       await loadResults({silent:true});
       render();
       pollScan();          // clears S.scanBusy once real progress arrives
     }else{
-      // enqueueScan reports why it queued nothing. Passing that through beats
-      // a generic "done" that leaves the operator staring at an empty chart.
       S.scanBusy = false; render();
       toast(r.reason ? `${T('Nothing to scan')}: ${r.reason}` : T('Nothing to scan'), 'error');
     }
@@ -6244,11 +5461,6 @@ async function rescan(){
   }
 }
 
-/* =====================================================================
-   WORKSPACE SWITCHER
-   ===================================================================== */
-/** "3 dk önce" — an absolute timestamp in a sidebar is noise; freshness is the
- *  only thing the reader actually wants from it. */
 function relTime(iso){
   const d=(Date.now()-new Date(iso))/1000;
   if(!isFinite(d)) return '';
@@ -6276,7 +5488,6 @@ function newBrand(){
   location.href='/uygulama?new=1';
 }
 
-/** Days left on the trial, from the real date rather than a hardcoded 7. */
 function trialDaysLeft(){
   const t=S.org&&S.org.trialEndsAt; if(!t) return null;
   return Math.max(0, Math.ceil((new Date(t)-Date.now())/86400000));
@@ -6292,7 +5503,6 @@ function exportAll(){
     score:S.data.total,audit:S.data.auditScore},null,2),'application/json');
 }
 
-/* ---------- first scan modal ---------- */
 function firstScanModal(){
   const d=S.data;
   const lvl=d.total<15?['Critical','#EF4444']:d.total<35?['Low','#F59E0B']:d.total<60?['Moderate','#B04628']:['Strong','#15803D'];
@@ -6326,10 +5536,6 @@ function firstScanModal(){
    <p style="text-align:center;font-size:11px;color:var(--mute2);margin-top:14px">${T(`The trial scans 3 platforms. The remaining 5 unlock on paid plans.`)}</p></div>`);
 }
 
-/* ---------- boot ----------
-   Session first. A signed-in user with an onboarded workspace lands straight
-   on the dashboard — refreshing the page must never send anyone back through
-   setup. */
 async function boot(){
   let me;
   try{ me = await api.get('/api/auth/me'); }
@@ -6339,15 +5545,10 @@ async function boot(){
 
   if(!me.signedIn){ location.replace('/giris'); return; }
 
-  // Full name if we have one; otherwise the local part of the address, since
-  // a 30-character email overflows the sidebar and tells the user nothing.
   S.user={name: me.user.fullName || me.user.email.split('@')[0], mail: me.user.email};
   S.plan=me.org.plan; S.planLimits=me.limits; S.usage=me.usage||null; S.org=me.org; S.role=me.role;
   S.workspaces=me.workspaces||[];
   S.isAdmin=me.isAdmin===true;
-  // A visitor who switched the marketing site to English arrives with ?lang=en
-  // and expects the product in English too; that choice wins for this visit and
-  // is written back to the account.
   const urlLang=new URLSearchParams(location.search).get('lang');
   S.lang = (urlLang==='en'||urlLang==='tr') ? urlLang : (me.user.locale==='en'?'en':'tr');
   if(me.user.notify) S.notify={...S.notify,...me.user.notify};
@@ -6369,7 +5570,6 @@ async function boot(){
     return;
   }
 
-  // Half-finished setup: resume on the identity step rather than starting over.
   const draft=(me.workspaces||[])[0];
   if(draft){
     S.workspaceId=draft.id;
@@ -6382,11 +5582,6 @@ async function boot(){
 
 let pollTimer=null, ticking=false;
 
-/**
- * While a scan is outstanding: ask the server to process a batch, then refresh.
- * The two calls are separate on purpose — a provider can take thirty seconds
- * to answer, and the read must never wait on that.
- */
 function pollScan(){
   clearTimeout(pollTimer);
   let rounds=0;
@@ -6400,15 +5595,11 @@ function pollScan(){
       }
       await loadResults({silent:true});
       const pending=S.scanState?Number(S.scanState.pending||0):0;
-      // Hand the screen back to the dashboard the moment the queue empties.
-      // Without this the busy flag set by rescan() never clears and the
-      // progress screen stays up after the scan has finished.
       if(pending<=0) S.scanBusy=false;
       render();
       if(pending>0 && rounds<80) pollTimer=setTimeout(step,900);
       else if(rounds>=80) S.scanBusy=false;
     }catch(e){
-      // Transient failures are expected while providers are being called.
       if(rounds<80) pollTimer=setTimeout(step,6000);
       else { S.scanBusy=false; render(); }
     }
