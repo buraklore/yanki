@@ -796,15 +796,22 @@ svg{display:block;max-width:100%}
   .acc-h{grid-template-columns:26px minmax(0,1fr)}
 }
 
-.pltabs{display:inline-flex;gap:2px;padding:3px;border-radius:12px;
+.pltabs{display:inline-flex;gap:4px;padding:4px;border-radius:14px;
   background:var(--card2);border:1px solid var(--border)}
-.pltabs button{padding:8px 16px;border-radius:10px;border:0;background:none;
-  color:var(--mute);font-size:13px;font-weight:500;white-space:nowrap}
-.pltabs button:hover{color:var(--fg)}
-.pltabs button.on{background:var(--card);color:var(--fg);
-  box-shadow:0 1px 2px color-mix(in srgb, var(--fg) 8%, transparent)}
+.pltabs button{display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:11px;border:0;background:none;
+  color:var(--mute);font-size:13.5px;font-weight:500;white-space:nowrap}
+.pltabs button .ti{font-size:14px;opacity:.7}
+.pltabs button:hover{color:var(--fg);background:var(--card)}
+.pltabs button.on{background:var(--pri-btn);color:#fff;font-weight:600;
+  box-shadow:0 2px 8px -2px color-mix(in srgb, var(--pri-btn) 55%, transparent)}
+.pltabs button.on .ti{opacity:1}
+.pltabs button .tc{font-family:var(--mono);font-size:11px;padding:2px 7px;
+  border-radius:20px;background:color-mix(in srgb, var(--fg) 8%, transparent);color:var(--mute2)}
+.pltabs button.on .tc{background:rgba(255,255,255,.22);color:#fff}
 @media(max-width:620px){.pltabs{display:flex;width:100%;overflow-x:auto}
-  .pltabs button{flex:1 0 auto}}
+  .pltabs button{flex:1 0 auto;justify-content:center;padding:10px 12px}
+  .pltabs button .ti{display:none}}
 
 .tasklist{display:grid;gap:6px}
 .tsep{display:flex;align-items:center;gap:12px;margin:20px 0 8px;font-size:11px;
@@ -836,6 +843,31 @@ svg{display:block;max-width:100%}
   .tka{display:none}
 }
 
+
+.road{display:grid;gap:14px}
+.rf{border:1px solid var(--border);border-radius:14px;background:var(--card);overflow:hidden}
+.rfh{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:14px;
+  padding:18px 20px;background:var(--card2);border-bottom:1px solid var(--border)}
+.rfn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  background:var(--pri-btn);color:#fff;font-size:16px;font-weight:600;font-family:var(--mono)}
+.rft{display:grid;gap:3px;min-width:0}
+.rft b{font-size:16px;font-weight:600;letter-spacing:-.02em}
+.rft i{font-style:normal;font-size:12px;color:var(--mute);line-height:1.5}
+.rfm{display:grid;gap:3px;justify-items:end;text-align:right;white-space:nowrap}
+.rfw{font-size:11px;color:var(--mute2);text-transform:uppercase;letter-spacing:.08em}
+.rfg{font-size:15px;font-weight:600;color:var(--ok);font-family:var(--mono)}
+.rfs{font-size:11px;color:var(--mute2)}
+.rfl{list-style:none;margin:0;padding:8px 20px 16px}
+.rfl li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;align-items:baseline;gap:12px;
+  padding:9px 0;font-size:13.5px;border-bottom:1px solid color-mix(in srgb,var(--border) 55%,transparent)}
+.rfl li:last-child{border-bottom:0}
+.rfl .d{width:6px;height:6px;border-radius:50%;background:var(--border2);align-self:center}
+.rfl .ef{font-size:11px;color:var(--mute2);white-space:nowrap}
+.rfe{padding:16px 20px;font-size:12.5px;color:var(--mute2)}
+@media(max-width:640px){
+  .rfh{grid-template-columns:36px minmax(0,1fr);row-gap:12px}
+  .rfm{grid-column:1/-1;justify-items:start;text-align:left;display:flex;gap:14px;align-items:baseline}
+}
 </style>
 </head>
 <body>
@@ -1305,6 +1337,19 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.':'Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.',
+  'Üçüncü taraf kaynaklarda yer alma ve kalıcı görünürlük':'Üçüncü taraf kaynaklarda yer alma ve kalıcı görünürlük',
+  'Görünmediğiniz sorgular için içerik ve yapılandırılmış veri':'Görünmediğiniz sorgular için içerik ve yapılandırılmış veri',
+  'Yapay zekanın sitenizi okumasını engelleyen teknik eksikler':'Yapay zekanın sitenizi okumasını engelleyen teknik eksikler',
+  'Bu fazda iş kalemi yok':'Bu fazda iş kalemi yok',
+  'puan':'puan',
+  'Otoriteyi büyüt':'Otoriteyi büyüt',
+  'Boşlukları doldur':'Boşlukları doldur',
+  'Kapıyı aç':'Kapıyı aç',
+  'Marka adı, alan adı ve açıklamayı sitenizdekiyle birebir aynı yazın':'Marka adı, alan adı ve açıklamayı sitenizdekiyle birebir aynı yazın',
+  'Başvuru veya ortaklık gerekiyorsa maliyetini tartın; her kaynak her markaya değmez':'Başvuru veya ortaklık gerekiyorsa maliyetini tartın; her kaynak her markaya değmez',
+  'Serbest kayıtsa profili eksiksiz doldurun — eksik profil listelemede geriye düşer':'Serbest kayıtsa profili eksiksiz doldurun — eksik profil listelemede geriye düşer',
+  'Giriş koşuluna bakın: serbest kayıt mı, başvuru mu, iş ortaklığı mı':'Giriş koşuluna bakın: serbest kayıt mı, başvuru mu, iş ortaklığı mı',
   'Etki':'Etki',
   '60–90 gün · Otoriteyi büyütün':'60–90 gün · Otoriteyi büyütün',
   '30–60 gün · Açıkları kapatın':'30–60 gün · Açıkları kapatın',
@@ -2837,10 +2882,10 @@ const ENGINE_COLOR = { chatgpt:'#10A37F', gemini:'#8F3720', perplexity:'#20B8A6'
 const SRC_KINDS = {
   directory: { label:'Dizin', short:'kayda girin', reachable:true, rank:0,
     eta:'koşula göre değişir',
-    steps:['Kaynağı açın ve giriş koşulunu okuyun — bir kısmı serbest kayıt, bir kısmı başvuru ya da iş ortaklığı ister',
-           'Kayıt serbestse profili eksiksiz doldurun; boş alan bırakılan kayıt listelerde arkaya düşer',
-           'Başvuru veya ortaklık isteniyorsa şartını ve maliyetini değerlendirin — her kaynak her markaya değmez',
-           'Girdikten sonra bilgilerinizi sitenizdekiyle birebir aynı tutun'] },
+    steps:['Giriş koşuluna bakın: serbest kayıt mı, başvuru mu, iş ortaklığı mı',
+           'Serbest kayıtsa profili eksiksiz doldurun — eksik profil listelemede geriye düşer',
+           'Başvuru veya ortaklık gerekiyorsa maliyetini tartın; her kaynak her markaya değmez',
+           'Marka adı, alan adı ve açıklamayı sitenizdekiyle birebir aynı yazın'] },
   self_publish: { label:'Kendi kanalınız', short:'bugün yayınlayın', reachable:true, rank:1,
     eta:'aynı gün',
     steps:['Görünmediğiniz sorguların tam metnini başlık yapın',
@@ -4827,9 +4872,12 @@ VIEWS.plan=()=>{
   </div>
 
   <div class="pltabs" style="margin:20px 0 16px">
-    <button class="${tab==='platform'?'on':''}" onclick="S.planTab='platform';render()">${T('By platform')}</button>
-    <button class="${tab==='tasks'?'on':''}" onclick="S.planTab='tasks';render()">${T('Task list')}</button>
-    <button class="${tab==='road'?'on':''}" onclick="S.planTab='road';render()">${T('90-day roadmap')}</button>
+    <button class="${tab==='platform'?'on':''}" onclick="S.planTab='platform';render()">
+      <span class="ti">◫</span>${T('By platform')}</button>
+    <button class="${tab==='tasks'?'on':''}" onclick="S.planTab='tasks';render()">
+      <span class="ti">☑</span>${T('Task list')}<span class="tc">${A.length}</span></button>
+    <button class="${tab==='road'?'on':''}" onclick="S.planTab='road';render()">
+      <span class="ti">◷</span>${T('90-day roadmap')}<span class="tc">3</span></button>
   </div>
 
   ${tab==='platform'?planPlatforms():tab==='tasks'?planTasks(A):planRoad(A,gain)}`;
@@ -4961,23 +5009,36 @@ function planTasks(A){
 }
 
 function planRoad(A,gain){
-  return `<div class="card"><div class="cb">
-    <div class="ch"><div><h3>${T('90-day roadmap')}</h3>
-      <div class="sub">${T('Expected cumulative gain at the end of each phase')}</div></div></div>
-    ${[[`0–30 ${T('days')}`,T('Open the door'),A.slice(0,2),(gain*.33)],
-       [`30–60 ${T('days')}`,T('Fill the gaps'),A.slice(2,5),(gain*.38)],
-       [`60–90 ${T('days')}`,T('Grow authority'),A.slice(5),(gain*.29)]]
-      .map(([win,name,items,g])=>`
-      <div style="margin-bottom:18px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <b style="font-size:14px">${name}</b><span class="chip">${win}</span>
-          <span class="chip ok" style="margin-left:auto">${T('Expected gain')} +${g.toFixed(1)}</span></div>
-        ${items.length?items.map(a=>`
-          <div style="padding:9px 13px;background:var(--muted);border-radius:8px;margin-bottom:7px;font-size:13px">
-            ${esc(a.t)}</div>`).join('')
-          :`<div style="padding:9px 13px;color:var(--mute2);font-size:12px">${T('Nothing queued for this phase')}</div>`}
-      </div>`).join('')}
-  </div></div>`;
+  const fazlar=[
+    ['1', `0–30 ${T('gün')}`, T('Kapıyı aç'),     T('Yapay zekanın sitenizi okumasını engelleyen teknik eksikler'), A.slice(0,2), gain*.33],
+    ['2', `30–60 ${T('gün')}`, T('Boşlukları doldur'), T('Görünmediğiniz sorgular için içerik ve yapılandırılmış veri'), A.slice(2,5), gain*.38],
+    ['3', `60–90 ${T('gün')}`, T('Otoriteyi büyüt'),   T('Üçüncü taraf kaynaklarda yer alma ve kalıcı görünürlük'),     A.slice(5),  gain*.29],
+  ];
+  let toplam=S.data.total||0;
+  return `<div class="road">
+    ${fazlar.map(([no,sure,ad,aciklama,items,g])=>{
+      toplam+=g;
+      return `<section class="rf">
+        <div class="rfh">
+          <span class="rfn">${no}</span>
+          <div class="rft">
+            <b>${ad}</b>
+            <i>${aciklama}</i>
+          </div>
+          <div class="rfm">
+            <span class="rfw">${sure}</span>
+            <span class="rfg">+${g.toFixed(1)} ${T('puan')}</span>
+            <span class="rfs">${T('skor')} → ${toplam.toFixed(1)}</span>
+          </div>
+        </div>
+        ${items.length?`<ol class="rfl">${items.map(a=>`
+          <li><span class="d"></span><span class="tx">${esc(a.t)}</span>
+            <span class="ef">${esc(a.ef)}</span></li>`).join('')}</ol>`
+          :`<div class="rfe">${T('Bu fazda iş kalemi yok')}</div>`}
+      </section>`;
+    }).join('')}
+    <p class="note">${T('Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.')}</p>
+  </div>`;
 };
 function exportPlan(){
   const t=S.data.actions.map((a,i)=>`${i+1}. ${a.t}\n   ${a.sub}\n   Impact ${a.im} · Effort ${a.ef} · ${a.q}\n   ${a.desc}\n`+
