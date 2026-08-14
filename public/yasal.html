@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yasal — YANKI</title>
+<meta name="description" content="YANKI yasal metinleri: KVKK aydınlatma metni, gizlilik politikası, kullanım şartları, mesafeli satış sözleşmesi, iade politikası ve veri işleme sözleşmesi.">
+<meta name="theme-color" content="#F7F4ED">
+<meta name="robots" content="index,follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F4ED;--card:#FFFDF8;--card2:#F7F4EC;--border:#E4DDCE;--border2:#D4CBB8;
+  --fg:#1A1713;--fg2:#4A423A;--mute:#6E6659;--mute2:#70695C;
+  --pri:#B04628;--warn:#B45309;--r:10px;--gut:clamp(16px,3.6vw,40px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg2);font:400 15px/1.75 Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:#B04628;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:820px;margin:0 auto;padding:0 var(--gut)}
+
+header{border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(247,244,237,.92);
+  backdrop-filter:blur(10px);z-index:10}
+header .wrap{display:flex;align-items:center;gap:14px;height:62px;max-width:1280px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:var(--fg);
+  letter-spacing:.06em}
+.mk{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#B04628,#8A6A3E);font-size:14px}
+header nav{margin-left:auto;display:flex;gap:16px;font-size:13px}
+
+h1{font-size:clamp(26px,4vw,34px);font-weight:600;letter-spacing:-.03em;color:var(--fg);
+  margin:40px 0 10px}
+.lead{font-size:14px;color:var(--mute);margin-bottom:24px}
+
+/* Doldurulması zorunlu alanlar. Yasal metinler şirket künyesi olmadan
+   geçerli değildir; boş bırakıp yayına almak, metnin hiç olmamasından
+   daha kötüdür çünkü uyumluluk izlenimi verir. */
+.todo{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.28);
+  border-radius:var(--r);padding:16px 16px;margin:0 0 32px}
+.todo b{color:#8A3F07;display:block;margin-bottom:6px;font-size:14px}
+.todo ul{margin:8px 0 0 16px;font-size:13px;color:var(--fg2)}
+.todo li{margin:2px 0}
+mark{background:rgba(180,83,9,.14);color:#7A3706;padding:1px 4px;border-radius:4px;
+  font-weight:500}
+
+nav.toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px 20px;margin-bottom:40px}
+nav.toc b{display:block;font-size:13px;color:var(--fg);margin-bottom:10px;
+  text-transform:uppercase;letter-spacing:.08em}
+nav.toc ol{margin-left:16px;font-size:14px}
+nav.toc li{margin:4px 0}
+
+section{border-top:1px solid var(--border);padding:32px 0}
+h2{font-size:20px;font-weight:600;color:var(--fg);letter-spacing:-.02em;margin-bottom:6px}
+h2 .no{color:var(--mute2);font-family:var(--mono);font-size:14px;margin-right:8px}
+.upd{font-size:12px;color:var(--mute2);margin-bottom:16px}
+h3{font-size:16px;font-weight:600;color:var(--fg);margin:24px 0 8px}
+p{margin:10px 0}
+ul,ol{margin:10px 0 10px 20px}
+li{margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--fg);font-weight:600;font-size:13px;background:var(--card2)}
+.note{background:var(--card);border-left:3px solid var(--pri);border-radius:0 var(--r) var(--r) 0;
+  padding:14px 16px;margin:16px 0;font-size:14px}
+
+footer{border-top:1px solid var(--border);margin-top:48px;padding:24px 0 48px;
+  font-size:13px;color:var(--mute2)}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;max-width:1280px}
+footer a{color:var(--mute)}
+.top{margin-left:auto}
+@media print{header,nav.toc,.top{display:none}body{background:#fff;color:#000}
+  h1,h2,h3{color:#000}}
+
+/* --- Tipografi düzeni (tüm sayfalarda ortak) ---
+   Başlıklarda negatif harf aralığı, gövdede geniş satır yüksekliği: uzun
+   Türkçe kelimeler (görünürlüğünüzü, sınıflandırma) sıkışık satırda okunmuyor.
+   Sayılar tabular: bir sütunda alt alta gelen rakamlar kaymasın. */
+h1,h2,h3,h4,h5{letter-spacing:-.028em;text-wrap:balance}
+h1{letter-spacing:-.038em}
+p,li{text-wrap:pretty}
+.mono,code,kbd,[class*="num"]{font-variant-numeric:tabular-nums}
+::selection{background:rgba(176,70,40,.18)}
+:focus-visible{outline:2px solid var(--pri,#B04628);outline-offset:2px;border-radius:4px}
+img,svg{max-width:100%}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* =====================================================================
+   TİPOGRAFİ VE YOĞUNLUK — tasarım kararları
+   =====================================================================
+   1. Inter'ın arayüz varyantları açıldı:
+        cv05  düz 'l' — 1/I/l karışıklığını önler, alan adı listesinde kritik
+        ss03  daha dar '@' ve tırnak
+        tnum  tabular rakam: sütunda alt alta sayılar kaymaz
+        zero  çizgili sıfar — 0/O ayrımı
+   2. Başlıklarda negatif izleme; Inter büyük puntoda varsayılan olarak seyrek.
+   3. Köşe yarıçapı 20px → 10px. 20px yumuşak/tüketici okunuyor; bir ölçüm
+      aracının hassas görünmesi gerekiyor. Rankzup'ın yuvarlaklığını
+      koruyorum ama bir ölçü küçülterek.
+   ===================================================================== */
+body{font-feature-settings:"cv05" 1,"ss03" 1,"tnum" 1,"zero" 1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.006em}
+h1,h2,h3,h4,h5,.ptitle h1{letter-spacing:-.032em}
+h1,.ptitle h1{letter-spacing:-.04em}
+/* Sayı gösteren her yer sekmeli hizada. */
+.kpi .v,.mono,code,kbd,td.n,.cnt,.vv,.sv,.pv{font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1,"zero" 1}
+
+/* Yüzey disiplini — panelle aynı karar: kenarlıklar geri çekiliyor,
+   gruplamayı boşluk ve tipografi taşıyor. */
+.card,.pnl,.plan,.faq details,.tile{
+  border-color:color-mix(in srgb, var(--border) 62%, transparent)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <a class="brand" href="/"><span class="mk">Y</span>YANKI</a>
+  <nav>
+    <a href="/">Ana sayfa</a>
+    <a href="/yardim">Yardım</a>
+    <a href="/app">Panele git</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<h1>Yasal metinler</h1>
+<p class="lead">YANKI hizmetinin kullanımına, kişisel verilerin işlenmesine ve aboneliğe
+ilişkin tüm sözleşme ve bilgilendirme metinleri.</p>
+
+<div class="todo">
+  <b>⚠ Yayına almadan önce doldurulması gerekenler</b>
+  Aşağıdaki metinlerde <mark>böyle işaretli</mark> alanlar şirket künyenizle
+  değiştirilmelidir. Bu alanlar boş kaldığı sürece metinler hukuken geçersizdir
+  ve mesafeli satış mevzuatına aykırıdır.
+  <ul>
+    <li>Ticari unvan, Mersis numarası, vergi dairesi ve numarası</li>
+    <li>Açık adres, telefon, KEP ve e-posta adresi</li>
+    <li>Veri sorumlusu temsilcisi ve VERBİS kayıt bilgisi</li>
+    <li>Kullanılan alt işleyenlerin (hosting, e-posta, AI sağlayıcıları) güncel listesi</li>
+  </ul>
+  <p style="margin-top:10px;font-size:13px">Metinler sektör standardı taslaklardır ve
+  <b>bir avukat tarafından gözden geçirilmelidir</b>. Özellikle KVKK aydınlatma metni ve
+  yurt dışına veri aktarımı bölümü, işleyiş biçiminize göre değişir.</p>
+</div>
+
+<nav class="toc"><b>İçindekiler</b><ol>
+  <li><a href="#kvkk">KVKK Aydınlatma Metni</a></li>
+  <li><a href="#gizlilik">Gizlilik Politikası</a></li>
+  <li><a href="#sartlar">Kullanım Şartları</a></li>
+  <li><a href="#mesafeli">Mesafeli Satış Sözleşmesi</a></li>
+  <li><a href="#iade">İptal ve İade Politikası</a></li>
+  <li><a href="#dpa">Veri İşleme Sözleşmesi (DPA)</a></li>
+  <li><a href="#cerez">Çerez Politikası</a></li>
+</ol></nav>
+
+<!-- ================================================================= -->
+<section id="kvkk">
+<h2><span class="no">1.</span>KVKK Aydınlatma Metni</h2>
+<div class="upd">6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<h3>Veri sorumlusu</h3>
+<p><mark>Ticari Unvan</mark> (&ldquo;YANKI&rdquo;), Mersis <mark>0000000000000000</mark>,
+adres <mark>Açık Adres</mark>, e-posta <mark>kvkk@alanadi.com</mark>.</p>
+
+<h3>İşlenen kişisel veriler ve amaçları</h3>
+<table>
+<thead><tr><th>Veri kategorisi</th><th>Veriler</th><th>İşleme amacı</th><th>Hukuki sebep</th></tr></thead>
+<tbody>
+<tr><td>Kimlik ve iletişim</td><td>Ad soyad, e-posta</td>
+  <td>Hesap oluşturma, kimlik doğrulama, bildirim gönderimi</td>
+  <td>Sözleşmenin kurulması ve ifası (m.5/2-c)</td></tr>
+<tr><td>Müşteri işlem</td><td>Abonelik planı, fatura kayıtları, kullanım sayaçları</td>
+  <td>Hizmet sunumu, faturalama, plan limitlerinin uygulanması</td>
+  <td>Sözleşmenin ifası ve hukuki yükümlülük (m.5/2-c, m.5/2-ç)</td></tr>
+<tr><td>İşlem güvenliği</td><td>IP adresi, oturum kayıtları, giriş denemeleri</td>
+  <td>Yetkisiz erişimin engellenmesi, kötüye kullanımın tespiti</td>
+  <td>Meşru menfaat (m.5/2-f)</td></tr>
+<tr><td>Pazarlama</td><td>E-posta bülten tercihi</td>
+  <td>Hizmet güncellemeleri ve haftalık özet gönderimi</td>
+  <td>Açık rıza (m.5/1) — dilediğiniz an geri alabilirsiniz</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<b>Takip ettiğiniz marka verisi kişisel veri değildir.</b> Panele girdiğiniz marka
+adları, alan adları, rakip listeleri ve sorgular ticari verilerdir. Ancak bir sorgu
+veya marka adı gerçek bir kişiyi işaret ediyorsa (örneğin şahıs firması), o veri de
+bu metin kapsamında işlenir.
+</div>
+
+<h3>Verilerin aktarıldığı taraflar</h3>
+<p>Hizmetin sunulabilmesi için aşağıdaki alt işleyenler kullanılır. Ölçüm sırasında
+yapay zeka sağlayıcılarına <b>yalnızca takip ettiğiniz sorgu metinleri</b> gönderilir;
+hesap bilgileriniz gönderilmez.</p>
+<table>
+<thead><tr><th>Alt işleyen</th><th>Amaç</th><th>Konum</th></tr></thead>
+<tbody>
+<tr><td><mark>Vercel Inc.</mark></td><td>Uygulama barındırma</td><td>AB / ABD</td></tr>
+<tr><td><mark>Supabase</mark></td><td>Veritabanı</td><td><mark>AB (Frankfurt)</mark></td></tr>
+<tr><td><mark>OpenAI, Google, Anthropic, Perplexity</mark></td><td>Sorgu ölçümü</td><td>ABD</td></tr>
+<tr><td><mark>Resend</mark></td><td>E-posta gönderimi</td><td>AB / ABD</td></tr>
+<tr><td><mark>Ödeme sağlayıcısı</mark></td><td>Abonelik tahsilatı</td><td><mark>Türkiye</mark></td></tr>
+</tbody>
+</table>
+<p>Yurt dışına aktarım, KVKK m.9 uyarınca <mark>açık rızanıza / standart sözleşme
+hükümlerine</mark> dayanır. Ajans planında verinin Türkiye veya AB'de barındırılması
+talep edilebilir.</p>
+
+<h3>Saklama süreleri</h3>
+<ul>
+  <li><b>Hesap ve abonelik kayıtları:</b> hesap kapatıldıktan sonra 10 yıl (Türk Ticaret Kanunu ve vergi mevzuatı)</li>
+  <li><b>Ölçüm verisi ve cevap kayıtları:</b> hesap kapatıldığında 30 gün içinde silinir</li>
+  <li><b>Oturum ve güvenlik kayıtları:</b> 12 ay</li>
+  <li><b>Pazarlama izni:</b> geri alındığı anda silinir</li>
+</ul>
+
+<h3>Haklarınız (KVKK m.11)</h3>
+<p>Kişisel verileriniz hakkında bilgi talep etme, işlenip işlenmediğini öğrenme,
+düzeltilmesini, silinmesini veya anonim hale getirilmesini isteme, işlemeye itiraz
+etme ve zararınızın giderilmesini talep etme haklarına sahipsiniz.</p>
+<p>Taleplerinizi <mark>kvkk@alanadi.com</mark> adresine veya <mark>KEP adresi</mark>
+üzerinden iletebilirsiniz. Başvurular en geç <b>30 gün</b> içinde yanıtlanır.
+Panelinizden <b>Ayarlar → Profil → Verilerimi Dışa Aktar</b> ile verinizin tamamını
+indirebilir, <b>Hesabı Sil</b> ile silinmesini talep edebilirsiniz.</p>
+</section>
+
+<!-- ================================================================= -->
+<section id="gizlilik">
+<h2><span class="no">2.</span>Gizlilik Politikası</h2>
+<div class="upd">Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<h3>Verilerinizin kullanılmadığı yerler</h3>
+<p>Bu bölüm bir taahhüttür:</p>
+<ul>
+  <li>Marka, rakip ve sorgu verileriniz <b>başka müşterilerle paylaşılmaz</b>.</li>
+  <li>Verileriniz <b>yapay zeka modeli eğitiminde kullanılmaz</b>.</li>
+  <li>Verileriniz <b>üçüncü taraflara satılmaz</b> ve reklam amaçlı kullanılmaz.</li>
+  <li>Panelde reklam gösterilmez.</li>
+</ul>
+
+<div class="note">
+<b>Tek istisna:</b> kaynak alan adlarının türü (dizin, yayın, forum, satıcı içeriği)
+tüm müşteriler arasında paylaşılan bir sınıflandırma tablosunda tutulur. Bu tabloda
+<b>hangi müşterinin hangi kaynağı gördüğü yer almaz</b> — yalnızca alan adının ne tür
+bir site olduğu bilgisi bulunur. Bir müşterinin yaptığı düzeltme diğerlerine de fayda
+sağlar.
+</div>
+
+<h3>Güvenlik önlemleri</h3>
+<ul>
+  <li>Tüm bağlantılar TLS ile şifrelenir.</li>
+  <li>Veritabanı disk üzerinde şifreli tutulur.</li>
+  <li>Şifreler geri döndürülemez biçimde özetlenerek saklanır (bcrypt).</li>
+  <li>Oturum çerezleri <code>httpOnly</code> ve <code>secure</code> olarak ayarlanır.</li>
+  <li>Giriş, kayıt ve ölçüm uçlarında hız sınırı uygulanır.</li>
+  <li>Her organizasyon yalnızca kendi verisini görür; yetki her istekte sunucuda doğrulanır.</li>
+</ul>
+
+<h3>Yapay zeka sağlayıcılarına ne gönderilir</h3>
+<p>Ölçüm sırasında sağlayıcılara gönderilen tek şey <b>takip ettiğiniz sorgu
+metnidir</b> (örneğin &ldquo;en iyi dijital ajans istanbul&rdquo;). Hesap bilgileriniz,
+e-postanız, diğer markalarınız ve müşteri listeniz gönderilmez. Sağlayıcıların API
+kullanım şartları gereği bu istekler <b>model eğitiminde kullanılmayan</b> kurumsal
+uçlar üzerinden yapılır.</p>
+</section>
+
+<!-- ================================================================= -->
+<section id="sartlar">
+<h2><span class="no">3.</span>Kullanım Şartları</h2>
+<div class="upd">Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<h3>Hizmetin tanımı</h3>
+<p>YANKI, markanızın yapay zeka arama motorlarındaki görünürlüğünü ölçen ve
+iyileştirme önerileri sunan bir yazılım hizmetidir (SaaS).</p>
+
+<div class="note">
+<b>Ölçüm bir tahmindir, garanti değildir.</b> Skorlar, briefler ve raporlar yapay zeka
+platformlarının o anki cevaplarından türetilir. Aynı soru farklı zamanlarda farklı
+cevaplanabilir. YANKI, belirli bir görünürlük artışını, sıralamayı veya ticari sonucu
+<b>garanti etmez</b>. Kararlarınızdan önce verileri kendiniz doğrulayın.
+</div>
+
+<h3>Kullanıcı yükümlülükleri</h3>
+<ul>
+  <li>Hesap bilgilerinizin gizliliğinden siz sorumlusunuz.</li>
+  <li>Takip ettiğiniz marka ve alan adları üzerinde yetkili olduğunuzu beyan edersiniz.</li>
+  <li>Hizmeti otomatik araçlarla aşırı yüklemek, tersine mühendislik yapmak veya
+      plan limitlerini aşmak için birden çok hesap açmak yasaktır.</li>
+  <li>Üretilen içerik önerilerinin telif ve marka haklarına uygunluğu sizin
+      sorumluluğunuzdadır.</li>
+</ul>
+
+<h3>Plan limitleri ve hizmet kesintileri</h3>
+<p>Her plan belirli sayıda sorgu, rakip, marka ve aylık denetim hakkı içerir.
+Limitler panelde <b>Ayarlar → Ödeme</b> ekranından görülebilir. Yapay zeka
+sağlayıcılarının kesintileri, kota aşımları veya API değişiklikleri ölçümü geçici
+olarak durdurabilir; bu durumlar panelde açıkça gösterilir ve YANKI'nın kusuru
+sayılmaz.</p>
+
+<h3>Fesih</h3>
+<p>Aboneliğinizi dilediğiniz an panelden iptal edebilirsiniz; dönem sonuna kadar
+erişiminiz sürer. YANKI, bu şartların ihlali halinde hesabı askıya alma hakkını
+saklı tutar ve bu durumda kalan dönem ücretini iade eder.</p>
+
+<h3>Uygulanacak hukuk</h3>
+<p>Bu şartlara Türkiye Cumhuriyeti hukuku uygulanır. Uyuşmazlıklarda
+<mark>İstanbul (Merkez)</mark> mahkemeleri ve icra daireleri yetkilidir. Tüketici
+sıfatıyla hareket eden kullanıcılar için Tüketici Hakem Heyetleri'ne başvuru hakkı
+saklıdır.</p>
+</section>
+
+<!-- ================================================================= -->
+<section id="mesafeli">
+<h2><span class="no">4.</span>Mesafeli Satış Sözleşmesi</h2>
+<div class="upd">6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<h3>Satıcı bilgileri</h3>
+<table><tbody>
+<tr><th>Ticari unvan</th><td><mark>Ticari Unvan</mark></td></tr>
+<tr><th>Adres</th><td><mark>Açık Adres</mark></td></tr>
+<tr><th>Telefon</th><td><mark>+90 000 000 00 00</mark></td></tr>
+<tr><th>E-posta</th><td><mark>destek@alanadi.com</mark></td></tr>
+<tr><th>Mersis / Vergi No</th><td><mark>0000000000000000</mark> · <mark>Vergi Dairesi</mark></td></tr>
+</tbody></table>
+
+<h3>Sözleşmenin konusu</h3>
+<p>Bu sözleşme, alıcının YANKI web sitesi üzerinden elektronik ortamda sipariş
+verdiği, aşağıda nitelikleri ve satış fiyatı belirtilen <b>dijital abonelik
+hizmetinin</b> satışı ve ifasına ilişkindir.</p>
+
+<h3>Hizmet ve ödeme</h3>
+<ul>
+  <li>Abonelik, seçilen plana göre <b>aylık</b> olarak yenilenir.</li>
+  <li>Fiyatlar panelde ve <a href="/#fiyat">fiyatlandırma bölümünde</a> KDV dahil gösterilir.</li>
+  <li>Ödeme, <mark>ödeme sağlayıcısı</mark> altyapısı üzerinden kredi kartı ile alınır.
+      Kart bilgileri YANKI sunucularında saklanmaz.</li>
+  <li>Fatura, ödeme sonrası e-posta ile iletilir.</li>
+</ul>
+
+<h3>İfa süresi</h3>
+<p>Hizmet, ödemenin onaylandığı anda <b>anında</b> kullanıma açılır. Ölçüm sonuçlarının
+oluşması, taranan sorgu ve platform sayısına bağlı olarak ilk taramadan sonra
+gerçekleşir.</p>
+
+<h3>Cayma hakkı</h3>
+<div class="note">
+Mesafeli Sözleşmeler Yönetmeliği <b>m.15/1-ğ</b> uyarınca, elektronik ortamda anında
+ifa edilen ve tüketiciye anında teslim edilen gayrimaddi mallara ilişkin
+sözleşmelerde <b>cayma hakkı kullanılamaz</b>. Bu nedenle YANKI, cayma hakkı yerine
+aşağıdaki <a href="#iade">iade politikasını</a> uygular — mevzuatın gerektirdiğinden
+daha geniş bir hak sunar.
+</div>
+
+<h3>Uyuşmazlık çözümü</h3>
+<p>Şikayet ve itirazlar için, parasal sınırlara göre bulunduğunuz yerdeki
+<b>Tüketici Hakem Heyeti</b> veya <b>Tüketici Mahkemesi</b>'ne başvurulabilir.
+Güncel parasal sınırlar Ticaret Bakanlığı tarafından her yıl açıklanır.</p>
+</section>
+
+<!-- ================================================================= -->
+<section id="iade">
+<h2><span class="no">5.</span>İptal ve İade Politikası</h2>
+<div class="upd">Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<h3>Deneme süresi</h3>
+<p>Kayıt sonrası <b>7 gün</b> boyunca, kredi kartı bilgisi girmeden ürünü sınırlı
+kapsamda kullanabilirsiniz. Deneme süresi sonunda otomatik ücretlendirme yapılmaz.</p>
+
+<h3>İlk 14 gün — koşulsuz iade</h3>
+<p>İlk ücretli aboneliğinizin başlangıcından itibaren <b>14 gün</b> içinde, sebep
+belirtmeksizin iade talep edebilirsiniz. Ücret, talebin onaylanmasından sonra
+<b>14 gün</b> içinde ödeme yaptığınız yönteme iade edilir.</p>
+
+<h3>Sonraki dönemler</h3>
+<ul>
+  <li>Abonelik iptali dönem sonunda geçerli olur; kalan gün için kısmi iade yapılmaz,
+      erişiminiz dönem sonuna kadar sürer.</li>
+  <li>Yükseltme yaptığınızda fark oranlanarak tahsil edilir.</li>
+  <li>Düşürme yaptığınızda yeni fiyat sonraki dönemde uygulanır.</li>
+</ul>
+
+<h3>Hizmetin sunulamadığı durumlar</h3>
+<p>Yapay zeka sağlayıcılarının kesintisi veya YANKI kaynaklı bir arıza nedeniyle
+ölçüm <b>kesintisiz 7 günden fazla</b> yapılamazsa, o döneme ait ücret talebiniz
+üzerine oranlanarak iade edilir.</p>
+
+<h3>İade talebi nasıl yapılır</h3>
+<p><mark>destek@alanadi.com</mark> adresine hesap e-postanızdan yazın. Talepler
+<b>3 iş günü</b> içinde yanıtlanır.</p>
+</section>
+
+<!-- ================================================================= -->
+<section id="dpa">
+<h2><span class="no">6.</span>Veri İşleme Sözleşmesi (DPA)</h2>
+<div class="upd">Kurumsal ve Ajans planları için · Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<p>Bu bölüm, müşterinin <b>veri sorumlusu</b>, YANKI'nın <b>veri işleyen</b> olduğu
+durumlarda geçerlidir. Ajans planında kendi müşterilerinizin verisini işliyorsanız,
+onlara karşı veri sorumlusu sizsiniz.</p>
+
+<h3>İşlemenin konusu ve süresi</h3>
+<p>YANKI, yalnızca hizmetin sunulması için gerekli olan işlemeyi yapar ve müşterinin
+yazılı talimatları dışına çıkmaz. İşleme, abonelik süresince devam eder ve sözleşme
+sona erdiğinde <b>30 gün</b> içinde veri silinir veya talep üzerine iade edilir.</p>
+
+<h3>YANKI'nın yükümlülükleri</h3>
+<ul>
+  <li>Veriyi yalnızca talimat doğrultusunda işlemek</li>
+  <li>Erişimi görevi gereği ihtiyaç duyan personelle sınırlamak ve gizlilik yükümlülüğüne bağlamak</li>
+  <li>Uygun teknik ve idari tedbirleri almak (bkz. <a href="#gizlilik">Gizlilik Politikası</a>)</li>
+  <li>Alt işleyen değişikliklerini <b>30 gün</b> önce bildirmek ve itiraz hakkı tanımak</li>
+  <li>Veri ihlalini tespitten itibaren <b>72 saat</b> içinde bildirmek</li>
+  <li>İlgili kişi taleplerinin karşılanmasında müşteriye yardımcı olmak</li>
+  <li>Yıllık denetim ve bilgi taleplerine yanıt vermek</li>
+</ul>
+
+<h3>Alt işleyenler</h3>
+<p>Güncel liste <a href="#kvkk">KVKK Aydınlatma Metni</a> içindeki tabloda yer alır.</p>
+
+<h3>İmzalı nüsha</h3>
+<p>Islak veya elektronik imzalı DPA talebi için <mark>destek@alanadi.com</mark>
+adresine yazın.</p>
+</section>
+
+<!-- ================================================================= -->
+<section id="cerez">
+<h2><span class="no">7.</span>Çerez Politikası</h2>
+<div class="upd">Son güncelleme: <mark>GG.AA.YYYY</mark></div>
+
+<p>YANKI, çalışması için gereken en az sayıda çerezi kullanır. <b>Reklam veya
+üçüncü taraf takip çerezi kullanılmaz.</b></p>
+<table>
+<thead><tr><th>Çerez</th><th>Amaç</th><th>Süre</th><th>Tür</th></tr></thead>
+<tbody>
+<tr><td><code>yanki_session</code></td><td>Oturumu açık tutmak</td><td>30 gün</td><td>Zorunlu</td></tr>
+<tr><td><code>yanki_lang</code></td><td>Arayüz dili tercihi</td><td>1 yıl</td><td>Zorunlu</td></tr>
+<tr><td><code>yanki_theme</code></td><td>Açık/koyu tema tercihi</td><td>1 yıl</td><td>İşlevsel</td></tr>
+</tbody>
+</table>
+<p>Zorunlu çerezler hizmetin çalışması için gereklidir ve devre dışı
+bırakıldığında oturum açılamaz. Tarayıcı ayarlarınızdan tüm çerezleri
+silebilirsiniz.</p>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 <mark>Ticari Unvan</mark></span>
+  <a href="#kvkk">KVKK</a>
+  <a href="#gizlilik">Gizlilik</a>
+  <a href="#sartlar">Kullanım Şartları</a>
+  <a href="#mesafeli">Mesafeli Satış</a>
+  <a href="#iade">İade</a>
+  <a href="#dpa">DPA</a>
+  <a class="top" href="#top">↑ Yukarı</a>
+</div></footer>
+
+</body>
+</html>
