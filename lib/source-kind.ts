@@ -264,11 +264,35 @@ export async function classifyDomains(
   // Ortak önbellek + çekirdek liste tek sorguda. Alt alan adı için kayıtlı
   // ana alan adı da kabul edilir: blog.semrush.com da satıcı içeriğidir.
   const lookups = [...new Set(pending.flatMap(d => [d, registrable(d)]))];
-  const rows = await sql<{
+
+  /* Tablo yoksa panelin tamamı çökmemeli.
+   *
+   * db/007_source_domains.sql çalıştırılmadan bu dosya yayına alınırsa Postgres
+   * 42P01 (relation does not exist) fırlatıyordu; hata /api/results'ı 500'e
+   * düşürüp kontrol panelini "Verileriniz yüklenemedi" ekranına çeviriyordu.
+   * Yani bir migration'ın unutulması, ölçümle hiç ilgisi olmayan her sayfayı
+   * kapatıyordu.
+   *
+   * Sınıflandırma yardımcı bir zenginleştirmedir; yokluğunda ürün çalışmaya
+   * devam etmeli. Tablo eksikse her kaynak 'unknown' döner — arayüz bunu zaten
+   * ele alıyor ve kullanıcı "Otomatik çöz" ile ilerleyebilir. */
+  type Kayit = {
     domain: string; kind: string; confidence: string; method: string;
     entry_path: string | null; evidence: { note?: string } | null; classified_at: Date;
-  }[]>`select domain, kind, confidence, method, entry_path, evidence, classified_at
-         from source_domains where domain = any(${lookups})`;
+  };
+  let rows: Kayit[] = [];
+  try {
+    rows = await sql<Kayit[]>`
+      select domain, kind, confidence, method, entry_path, evidence, classified_at
+        from source_domains where domain = any(${lookups})`;
+  } catch (e) {
+    const kod = (e as { code?: string }).code;
+    if (kod !== '42P01') throw e;   // başka bir veritabanı hatasıysa sustur ma
+    console.warn('[source-kind] source_domains tablosu yok — db/007_source_domains.sql çalıştırılmamış. '
+      + 'Kaynak sınıflandırması devre dışı; panel çalışmaya devam ediyor.');
+    for (const d of pending) out.set(d, { domain: d, kind: 'unknown', confidence: 0, method: 'llm' });
+    return out;
+  }
 
   const cache = new Map(rows.map(r => [r.domain, r]));
   const stillPending: string[] = [];
@@ -302,7 +326,8 @@ export async function classifyDomains(
   const resolved = await classifyWithModel(stillPending);
   for (const r of resolved) {
     out.set(r.domain, r);
-    await sql`
+    try {
+      await sql`
       insert into source_domains (domain, kind, confidence, method, evidence, entry_path)
       values (${r.domain}, ${r.kind}, ${r.confidence}, 'llm',
               ${JSON.stringify({ note: r.note ?? null })}::jsonb, ${r.entryPath ?? null})
@@ -312,6 +337,12 @@ export async function classifyDomains(
             classified_at = now(), updated_at = now()
         -- Elle veya kullanıcı tarafından düzeltilmiş kayıt asla ezilmez.
         where source_domains.method = 'llm'`;
+    } catch (e) {
+      // Tablo yoksa sınıflandırma yine de bu istek için geçerli; sadece
+      // kalıcı olmuyor. Sessizce geçmek, kullanıcıyı bir migration hatasıyla
+      // karşılaştırmaktan iyidir.
+      if ((e as { code?: string }).code !== '42P01') throw e;
+    }
   }
   return out;
 }
