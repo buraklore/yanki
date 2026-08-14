@@ -9,6 +9,15 @@ export default {
         { source: '/', destination: '/marketing.html' },
         { source: '/app', destination: '/app.html' },
         { source: '/yardim', destination: '/help.html' },
+        // Yasal metinler tek sayfada, bölüm çıpalarıyla. Ayrı ayrı URL isteyen
+        // ödeme sağlayıcıları için her biri kendi adresinden de açılır.
+        { source: '/yasal', destination: '/yasal.html' },
+        { source: '/kvkk', destination: '/yasal.html' },
+        { source: '/gizlilik', destination: '/yasal.html' },
+        { source: '/kullanim-sartlari', destination: '/yasal.html' },
+        { source: '/mesafeli-satis', destination: '/yasal.html' },
+        { source: '/iade', destination: '/yasal.html' },
+        { source: '/dpa', destination: '/yasal.html' },
         { source: '/giris', destination: '/auth.html' },
         { source: '/kayit', destination: '/auth.html' },
       ],
