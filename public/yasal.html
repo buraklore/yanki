@@ -16,7 +16,6 @@
   --fg:#1A1713;--fg2:#4A423A;--mute:#6E6659;--mute2:#70695C;
   --pri:#B04628;--warn:#B45309;--r:10px;--gut:clamp(16px,3.6vw,40px);
 }
-*{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--fg2);font:400 15px/1.75 Inter,system-ui,sans-serif;
   -webkit-font-smoothing:antialiased}
 a{color:#B04628;text-decoration:none}
@@ -36,9 +35,6 @@ h1{font-size:clamp(26px,4vw,34px);font-weight:600;letter-spacing:-.03em;color:va
   margin:40px 0 10px}
 .lead{font-size:14px;color:var(--mute);margin-bottom:24px}
 
-/* Doldurulması zorunlu alanlar. Yasal metinler şirket künyesi olmadan
-   geçerli değildir; boş bırakıp yayına almak, metnin hiç olmamasından
-   daha kötüdür çünkü uyumluluk izlenimi verir. */
 .todo{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.28);
   border-radius:var(--r);padding:16px 16px;margin:0 0 32px}
 .todo b{color:#8A3F07;display:block;margin-bottom:6px;font-size:14px}
@@ -76,10 +72,6 @@ footer a{color:var(--mute)}
 @media print{header,nav.toc,.top{display:none}body{background:#fff;color:#000}
   h1,h2,h3{color:#000}}
 
-/* --- Tipografi düzeni (tüm sayfalarda ortak) ---
-   Başlıklarda negatif harf aralığı, gövdede geniş satır yüksekliği: uzun
-   Türkçe kelimeler (görünürlüğünüzü, sınıflandırma) sıkışık satırda okunmuyor.
-   Sayılar tabular: bir sütunda alt alta gelen rakamlar kaymasın. */
 h1,h2,h3,h4,h5{letter-spacing:-.028em;text-wrap:balance}
 h1{letter-spacing:-.038em}
 p,li{text-wrap:pretty}
@@ -89,29 +81,13 @@ p,li{text-wrap:pretty}
 img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* =====================================================================
-   TİPOGRAFİ VE YOĞUNLUK — tasarım kararları
-   =====================================================================
-   1. Inter'ın arayüz varyantları açıldı:
-        cv05  düz 'l' — 1/I/l karışıklığını önler, alan adı listesinde kritik
-        ss03  daha dar '@' ve tırnak
-        tnum  tabular rakam: sütunda alt alta sayılar kaymaz
-        zero  çizgili sıfar — 0/O ayrımı
-   2. Başlıklarda negatif izleme; Inter büyük puntoda varsayılan olarak seyrek.
-   3. Köşe yarıçapı 20px → 10px. 20px yumuşak/tüketici okunuyor; bir ölçüm
-      aracının hassas görünmesi gerekiyor. Rankzup'ın yuvarlaklığını
-      koruyorum ama bir ölçü küçülterek.
-   ===================================================================== */
 body{font-feature-settings:"cv05" 1,"ss03" 1,"tnum" 1,"zero" 1;
   font-variant-numeric:tabular-nums;letter-spacing:-.006em}
 h1,h2,h3,h4,h5,.ptitle h1{letter-spacing:-.032em}
 h1,.ptitle h1{letter-spacing:-.04em}
-/* Sayı gösteren her yer sekmeli hizada. */
 .kpi .v,.mono,code,kbd,td.n,.cnt,.vv,.sv,.pv{font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum" 1,"zero" 1}
 
-/* Yüzey disiplini — panelle aynı karar: kenarlıklar geri çekiliyor,
-   gruplamayı boşluk ve tipografi taşıyor. */
 .card,.pnl,.plan,.faq details,.tile{
   border-color:color-mix(in srgb, var(--border) 62%, transparent)}
 </style>
