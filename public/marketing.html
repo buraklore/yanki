@@ -309,8 +309,10 @@ h1,.ptitle h1{letter-spacing:-.04em}
     </div>
     <div class="nav-cta">
       <button class="btn b-gh b-sm" data-lang-btn onclick="toggleSiteLang()" aria-label="Language">EN</button>
-      <a class="btn b-gh b-sm" href="/giris">Giriş yap</a>
-      <a class="btn b-pri b-sm" href="app.html">Ücretsiz deneyin</a>
+      <span id="authBtns">
+        <a class="btn b-gh b-sm" href="/giris">Giriş yap</a>
+        <a class="btn b-pri b-sm" href="/giris?mode=register">Ücretsiz deneyin</a>
+      </span>
     </div>
   </div>
 </nav>
@@ -722,5 +724,19 @@ $('#sCite').innerHTML=CITE.map((c,i)=>`
 })();
 </script>
 <script src="/site-i18n.js"></script>
+<script>
+/* Oturum açıksa üst çubuk "Giriş yap / Ücretsiz deneyin" göstermemeli —
+   kullanıcı zaten içeride. */
+fetch('/api/auth/me',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  if(!d.signedIn) return;
+  const k=document.getElementById('authBtns');
+  if(k) k.innerHTML='<a class="btn b-pri b-sm" href="/app">Panele git →</a>';
+  document.querySelectorAll('a[href="app.html"],a[href="/giris"]').forEach(a=>{
+    if(a.closest('#authBtns')) return;
+    a.setAttribute('href','/app');
+    if(/ücretsiz|deneyin|analiz başlat/i.test(a.textContent)) a.textContent='Panele git →';
+  });
+}).catch(()=>{});
+</script>
 </body>
 </html>
