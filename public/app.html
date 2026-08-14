@@ -868,6 +868,39 @@ svg{display:block;max-width:100%}
   .rfh{grid-template-columns:36px minmax(0,1fr);row-gap:12px}
   .rfm{grid-column:1/-1;justify-items:start;text-align:left;display:flex;gap:14px;align-items:baseline}
 }
+
+.chgh{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:14px;
+  width:100%;text-align:left;padding:4px 0;border:0;background:none;color:var(--fg)}
+.chgi{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:15px}
+.chgi.bad{background:color-mix(in srgb,var(--bad) 13%,transparent);color:var(--bad)}
+.chgi.ok{background:color-mix(in srgb,var(--ok) 13%,transparent);color:var(--ok)}
+.chgt{display:grid;gap:3px;min-width:0}
+.chgt b{font-size:14.5px;font-weight:600;letter-spacing:-.015em}
+.chgt i{font-style:normal;font-size:12px;color:var(--mute)}
+.chgc{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--mute);
+  padding:7px 13px;border-radius:99px;border:1px solid var(--border);background:var(--card2);
+  white-space:nowrap}
+.chgh:hover .chgc{border-color:var(--border2);color:var(--fg)}
+.chgh.on .chgc{background:var(--card3)}
+.chgc b{font-size:10px}
+@media(max-width:560px){.chgh{grid-template-columns:34px minmax(0,1fr)}
+  .chgc{grid-column:2;justify-self:start;margin-top:6px}}
+
+.bell{position:relative;width:36px;height:36px;border-radius:10px;flex:none;
+  display:grid;place-items:center;border:1px solid var(--border);
+  background:var(--card);color:var(--mute)}
+.bell:hover{color:var(--fg);border-color:var(--border2)}
+.bell svg{width:18px;height:18px}
+.bell.has{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 34%,transparent)}
+.bell .bdg{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;
+  border-radius:99px;display:grid;place-items:center;font-size:10px;font-weight:600;
+  font-family:var(--mono);background:var(--mute);color:var(--bg);
+  box-shadow:0 0 0 2px var(--bg)}
+.bell.has .bdg{background:var(--bad);color:#fff}
+.bell.has::after{content:"";position:absolute;inset:-3px;border-radius:13px;
+  border:2px solid color-mix(in srgb,var(--bad) 42%,transparent);animation:bpulse 2.2s ease-out infinite}
+@keyframes bpulse{0%{opacity:.9;transform:scale(.94)}70%,100%{opacity:0;transform:scale(1.18)}}
+@media(prefers-reduced-motion:reduce){.bell.has::after{animation:none;opacity:.5}}
 </style>
 </head>
 <body>
@@ -949,6 +982,13 @@ svg{display:block;max-width:100%}
     </div>
     <div class="apphead">
       <div class="hs" id="headScan"></div>
+      <button class="bell" id="headBell" onclick="openChanges()" title="Değişimler" aria-label="Değişimler">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5"/>
+          <path d="M13.7 20a2 2 0 0 1-3.4 0"/></svg>
+        <span class="bdg" id="bellBadge" hidden></span>
+      </button>
       <button class="btn b-pri" id="headRescan" onclick="rescan()">↻ Yeniden tara</button>
     </div>
     <!-- Ölçümün ne olduğu ve ne olmadığı, her ekranın üstünde.
@@ -1337,6 +1377,8 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Göster':'Göster',
+  'Kapat':'Kapat',
   'Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.':'Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.',
   'Üçüncü taraf kaynaklarda yer alma ve kalıcı görünürlük':'Üçüncü taraf kaynaklarda yer alma ve kalıcı görünürlük',
   'Görünmediğiniz sorgular için içerik ve yapılandırılmış veri':'Görünmediğiniz sorgular için içerik ve yapılandırılmış veri',
@@ -3298,6 +3340,7 @@ function renderChrome(){
 function render(){
   renderNav();
   renderChrome();
+  renderBell();
   const page=$('#page');
   if(!S.data){ page.innerHTML=S.loadError?errorScreen(S.loadError):loadingScreen(); return; }
   try{
@@ -4673,6 +4716,31 @@ function attributePanel(){
     ${T('Numbers are how many answers attached that quality to that brand. + and − show whether it was said favourably.')}</p>`;
 }
 
+function openChanges(){
+  S.changesOpen = true;
+  if(S.route !== 'dashboard'){ go('dashboard'); }
+  else { render(); }
+  setTimeout(()=>{
+    const el = document.querySelector('.chgh');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 90);
+}
+
+function renderBell(){
+  const b=$('#headBell'), n=$('#bellBadge');
+  if(!b||!n) return;
+  const d=(S.changes && !S.changes.error) ? S.changes.digest : null;
+  const acil=(d&&d.urgent||[]).length, iyi=(d&&d.wins||[]).length;
+  const toplam=acil+iyi;
+  b.hidden = !toplam;
+  b.classList.toggle('has', acil>0);
+  n.hidden = !toplam;
+  n.textContent = toplam>9 ? '9+' : String(toplam);
+  b.title = acil
+    ? `${acil} ${T('need attention')}${iyi?` · ${iyi} ${T('improvements')}`:''}`
+    : `${iyi} ${T('improvements')}`;
+}
+
 function changesPanel(){
   const c=S.changes;
   if(!c || c.error || !c.digest) return '';
@@ -4680,7 +4748,7 @@ function changesPanel(){
   const urgent=d.urgent||[], wins=d.wins||[];
   if(!urgent.length && !wins.length) return '';
 
-  const open=S.changesOpen!==false;
+  const open=S.changesOpen===true;
   const icon=k=>({score_drop:'▼',rank_loss:'▼',lost_mention:'✕',rival_overtake:'⚑',
                   rival_surge:'▲',citation_lost:'✕',score_rise:'▲',rank_gain:'▲',
                   new_mention:'✓',citation_gained:'✓'})[k]||'·';
@@ -4699,13 +4767,14 @@ function changesPanel(){
   return `
   <div class="card" style="margin-bottom:14px;${urgent.length?'border-color:rgba(239,68,68,.28)':''}">
     <div class="cb">
-      <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;cursor:pointer"
-           onclick="S.changesOpen=${open?'false':'true'};render()">
-        <b style="font-size:14px">${urgent.length?'⚠ ':''}${T('What changed since the last scan')}</b>
-        ${urgent.length?`<span class="chip bad">${urgent.length} ${T('need attention')}</span>`:''}
-        ${wins.length?`<span class="chip ok">${wins.length} ${T('improvements')}</span>`:''}
-        <span style="margin-left:auto;color:var(--mute2);font-size:12px">${open?'▴':'▾'}</span>
-      </div>
+      <button class="chgh ${open?'on':''}" onclick="S.changesOpen=${open?'false':'true'};render()">
+        <span class="chgi ${urgent.length?'bad':'ok'}">${urgent.length?'⚠':'✓'}</span>
+        <span class="chgt">
+          <b>${T('What changed since the last scan')}</b>
+          <i>${urgent.length?`${urgent.length} ${T('need attention')}`:''}${urgent.length&&wins.length?' · ':''}${wins.length?`${wins.length} ${T('improvements')}`:''}</i>
+        </span>
+        <span class="chgc">${open?T('Kapat'):T('Göster')} <b>${open?'▴':'▾'}</b></span>
+      </button>
       ${open?`
         <div style="margin-top:8px">
           ${urgent.map(e=>line(e,true)).join('')}
