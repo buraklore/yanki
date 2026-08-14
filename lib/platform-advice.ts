@@ -151,8 +151,8 @@ export const generic: Playbook = {
       why: `${c.label} sizi tanımıyor. Kendi sitenizdeki içerik bunu tek başına çözmez; model markayı üçüncü taraf kaynaklardan öğrenir.`,
       actions: acik.length
         ? [{
-            title: `${acik.length} kaynağa girmeniz mümkün — oradan başlayın`,
-            detail: 'Bu platformun okuduğu kaynaklar arasında dışarıya açık olanlar bunlar. Giriş koşulu kaynağa göre değişir: kimi serbest kayıt, kimi başvuru veya iş ortaklığı ister.',
+            title: `${acik.length} kaynağa girebilirsiniz`,
+            detail: `Bu platformun okuduğu kaynaklardan ${acik.length} tanesi dışarıya açık. Hangileri olduğunu ve ne istediklerini Kaynaklar ekranında görürsünüz.`,
             steps: [
               /* Kaynağa özgü ayrıntı uydurulmuyor.
                *
@@ -163,12 +163,12 @@ export const generic: Playbook = {
                * yok, üstelik kayıt değil ticari anlaşma gerekiyor. Bu, ilk
                * düzelttiğimiz "editörlerine ulaşın" hatasının aynısıydı:
                * kaynağın ne olduğunu bilmeden nasıl girileceğini söylemek. */
-              'Kaynağı açın ve kendi giriş koşulunu okuyun — bir kısmı serbest kayıt, bir kısmı başvuru veya iş ortaklığı ister',
-              'Kayıt serbestse profili eksiksiz doldurun; boş alan bırakılan kayıt listelerde arkaya düşer',
-              'Başvuru veya iş ortaklığı isteniyorsa şartlarını ve maliyetini değerlendirin — her kaynak her markaya değmez',
-              'Girdikten sonra bilgilerinizi sitenizdekiyle birebir aynı tutun; çelişen bilgi modelin markayı tanımasını zorlaştırır',
+              'Giriş koşuluna bakın: serbest kayıt mı, başvuru mu, iş ortaklığı mı',
+              'Serbest kayıtsa profili eksiksiz doldurun — eksik profil listelemede geriye düşer',
+              'Başvuru veya ortaklık gerekiyorsa maliyetini tartın; her kaynak her markaya değmez',
+              'Marka adı, alan adı ve açıklamayı sitenizdekiyle birebir aynı yazın',
               ...(kapali.length
-                ? [`Kalan ${kapali.length} kaynak bir şirketin kendi sitesidir — oraya dışarıdan girilmez, listede altta işaretli`]
+                ? [`Kalan ${kapali.length} kaynak şirketlerin kendi siteleri — listede ⛔ işaretli, zaman harcamayın`]
                 : []),
             ],
           }]
