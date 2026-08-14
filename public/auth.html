@@ -79,6 +79,10 @@ h1,.ptitle h1{letter-spacing:-.04em}
 
 .card,.pnl,.plan,.faq details,.tile{
   border-color:color-mix(in srgb, var(--border) 62%, transparent)}
+
+html.checking body>*{visibility:hidden}
+html.checking::after{content:"";position:fixed;inset:0;display:grid;place-items:center;
+  background:var(--bg)}
 </style>
 </head>
 <body>
@@ -221,13 +225,19 @@ if(resetToken){
   }, true);
 }
 
-if(!resetToken){
-  fetch('/api/auth/me').then(r => r.json()).then(d => {
-    if (d.signedIn) location.replace('/app');
-  }).catch(() => {});
+if(resetToken){
+  setMode(mode);
+}else{
+  document.documentElement.classList.add('checking');
+  fetch('/api/auth/me',{cache:'no-store'}).then(r => r.json()).then(d => {
+    if (d.signedIn){ location.replace('/app'); return; }
+    document.documentElement.classList.remove('checking');
+    setMode(mode);
+  }).catch(() => {
+    document.documentElement.classList.remove('checking');
+    setMode(mode);
+  });
 }
-
-setMode(mode);
 </script>
 </body>
 </html>
