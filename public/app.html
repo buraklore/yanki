@@ -1030,7 +1030,6 @@ svg{display:block;max-width:100%}
          Skorlar yapay zekanın o anki cevabından türetilir; bir garanti değil,
          bir tahmindir. Bunu küçük harflerle sayfa dibine gömmek, müşteri
          beklentisini yanlış kuruyor. -->
-    <div class="aidisc" id="aiDisc"></div>
     <div class="page" id="page"></div>
     <!-- Yasal footer. Ödeme sağlayıcıları ve mesafeli satış mevzuatı bu
          bağlantıların her sayfadan erişilebilir olmasını gerektiriyor. -->
@@ -1455,6 +1454,7 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Türü belirlenemeyen kaynakları arka planda çöz':'Türü belirlenemeyen kaynakları arka planda çöz',
   'Dönem':'Dönem',
   'sorgusunda hiç geçmiyorsunuz':'sorgusunda hiç geçmiyorsunuz',
   'sorgusunda zayıfsınız':'sorgusunda zayıfsınız',
@@ -1506,7 +1506,6 @@ const I18N = {
   'platform ölçülmüyor':'platform ölçülmüyor',
   'için ölçüm yapılamıyor. Skorunuz mecranın tamamını değil, ölçülen bölümünü temsil ediyor.':'için ölçüm yapılamıyor. Skorunuz mecranın tamamını değil, ölçülen bölümünü temsil ediyor.',
   'Platformları gör':'Platformları gör',
-  'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. İşaretlemeniz hem planınızı hem ortak sınıflandırmayı iyileştirir.':'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. İşaretlemeniz hem planınızı hem ortak sınıflandırmayı iyileştirir.',
   'Fırsatlar':'Fırsatlar',
   'siz':'siz',
   'Algı':'Algı',
@@ -1543,10 +1542,6 @@ const I18N = {
   'Markanızın adının geçtiği cümleler — en uç tonlar önce. Satıra tıklayın, cevabın tamamı açılsın.':'Markanızın adının geçtiği cümleler — en uç tonlar önce. Satıra tıklayın, cevabın tamamı açılsın.',
   'sırada':'sırada',
   'Örnek geçiş bulunamadı':'Örnek geçiş bulunamadı',
-  'AI tahminidir, garanti değildir.':'AI tahminidir, garanti değildir.',
-  'Skorlar ve öneriler yapay zeka platformlarının':'Skorlar ve öneriler yapay zeka platformlarının',
-  'o anki cevaplarından türetilir; zamanla değişebilir ve hata payı taşır — kararlarınızdan önce doğrulayın.':'o anki cevaplarından türetilir; zamanla değişebilir ve hata payı taşır — kararlarınızdan önce doğrulayın.',
-  'Ölçümler AI platformlarının resmî API’ları üzerinden yapılır; sohbet ekranında görülen cevabın birebir aynısı olmayabilir.':'Ölçümler AI platformlarının resmî API’ları üzerinden yapılır; sohbet ekranında görülen cevabın birebir aynısı olmayabilir.',
   'KVKK':'KVKK',
   'Gizlilik':'Gizlilik',
   'Kullanım Şartları':'Kullanım Şartları',
@@ -1575,8 +1570,6 @@ const I18N = {
   'Yapay zekaya kategori sorusu soruluyor…':'Yapay zekaya kategori sorusu soruluyor…',
   'Rakipler cevaptan çıkarılıyor…':'Rakipler cevaptan çıkarılıyor…',
   'Sorgu önerileri hazırlanıyor…':'Sorgu önerileri hazırlanıyor…',
-  'kaynağın türü belirlenemedi':'kaynağın türü belirlenemedi',
-  'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.':'Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.',
   'Otomatik çöz':'Otomatik çöz',
   'Çözülüyor…':'Çözülüyor…',
   'kaynağın türü belirlendi':'kaynağın türü belirlendi',
@@ -3588,22 +3581,17 @@ function toggleSb(v){const sb=$('#sb'),sc=$('#sbScrim');
 function go(r){S.route=r;toggleSb(false);render();scrollTo(0,0)}
 /** Kalıcı unsurlar: ölçüm uyarısı ve yasal footer. Sayfa değişse de kalır. */
 function renderChrome(){
-  const d=$('#aiDisc');
-  if(d && !d.dataset.on){
-    d.dataset.on='1';
-    const motorlar=(S.data&&S.data.plats||[]).filter(p=>p.measured!==false&&p.checks>0)
-      .map(p=>p.n).slice(0,3).join(', ');
-    d.innerHTML=`<span class="ic">⚠</span><span>${T('AI tahminidir, garanti değildir.')}
-      ${T('Skorlar ve öneriler yapay zeka platformlarının')}${motorlar?` (${esc(motorlar)})`:''}
-      ${T('o anki cevaplarından türetilir; zamanla değişebilir ve hata payı taşır — kararlarınızdan önce doğrulayın.')}</span>`;
-  }
+  /* Ölçüm uyarısı ve API açıklaması kaldırıldı: her ekranın üstünde duran
+     kalıcı bir uyarı, bir süre sonra okunmuyor ve yalnızca dikey alan
+     harcıyor. Aynı bilgi Kullanım Şartları'nda duruyor.
+     Yasal bağlantılar kalıyor — mesafeli satış mevzuatı her sayfadan
+     erişilebilir olmalarını gerektiriyor. */
   const f=$('#appFoot');
   if(f && !f.dataset.on){
     f.dataset.on='1';
     const yasal=[['/kvkk','KVKK'],['/gizlilik','Gizlilik'],['/kullanim-sartlari','Kullanım Şartları'],
                  ['/mesafeli-satis','Mesafeli Satış'],['/iade','İade'],['/dpa','DPA']];
-    f.innerHTML=`<p>${T('Ölçümler AI platformlarının resmî API’ları üzerinden yapılır; sohbet ekranında görülen cevabın birebir aynısı olmayabilir.')}</p>
-      <nav>${yasal.map(([h,l])=>`<a href="${h}" target="_blank" rel="noopener">${T(l)}</a>`).join('<i>·</i>')}</nav>`;
+    f.innerHTML=`<nav>${yasal.map(([h,l])=>`<a href="${h}" target="_blank" rel="noopener">${T(l)}</a>`).join('<i>·</i>')}</nav>`;
   }
 }
 
@@ -4755,16 +4743,6 @@ function buildCenter(d){
     actions:[{label:`${T('Platformları gör')} →`,pri:1,go:"go('platforms')"}],
   });
 
-  /* 7 — Türü belirlenmemiş kaynaklar. Kullanıcı işaretlerse hem kendi planı
-   *     hem ortak sınıflandırma zenginleşir. */
-  const bilinmeyen=(d.sources||[]).filter(s=>!s.mine&&s.kind==='unknown');
-  if(bilinmeyen.length>=3) out.push({
-    sev:'low', icon:'?', kind:T('Kaynak'),
-    title:`${bilinmeyen.length} ${T('kaynağın türü belirlenemedi')}`,
-    body:T('Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. İşaretlemeniz hem planınızı hem ortak sınıflandırmayı iyileştirir.'),
-    actions:[{label:`${T('Kaynakları gör')} →`,pri:1,go:"go('sources')"}],
-  });
-
   const rank={high:0,mid:1,low:2};
   return out.sort((a,b)=>rank[a.sev]-rank[b.sev]);
 }
@@ -4978,18 +4956,15 @@ VIEWS.sources=()=>{
       <span>${T('Bu sitelerde yer almak — listelenmek, yorumlanmak, örnek olay olarak geçmek — yapay zekanın sizi öğrendiği yolu doğrudan genişletir.')}</span>
       <button onclick="go('plan')">${T('Aksiyon planı')} →</button></div>`:''}
 
-  ${(()=>{const unk=d.sources.filter(x=>!x.mine&&x.kind==='unknown');
-     if(!unk.length) return '';
-     return `<div class="srcwarn ok" style="border-left-color:#8F3720">
-       <b>${unk.length} ${T('kaynağın türü belirlenemedi')}</b>
-       <span>${T('Bu kaynaklara nasıl girileceğini bilmeden tavsiye vermiyoruz. Sistem arka planda çözmeye çalışır; siz de elle işaretleyebilirsiniz — işaretiniz bu kaynağı gören diğer markalara da yardımcı olur.')}</span>
-       <button onclick="resolveSources()" ${S.srcBusy?'disabled':''}>${S.srcBusy?T('Çözülüyor…'):T('Otomatik çöz')}</button></div>`;
-   })()}
 
   <div class="card">
     <div class="ch"><div><h3>${T('Kaynak sıralaması')}</h3>
       <div class="sub">${T('Atıf sayısı, hangi platformların kullandığı ve dönem içindeki değişim')}</div></div>
-      <span class="rt">${T('Son')} ${S.range} ${T('gün')}</span></div>
+      <span class="rt">${(()=>{const unk=d.sources.filter(x=>!x.mine&&x.kind==='unknown');
+        return unk.length?`<button class="btn b-gh b-sm" onclick="resolveSources()" ${S.srcBusy?'disabled':''}
+          title="${esc(T('Türü belirlenemeyen kaynakları arka planda çöz'))}">${
+          S.srcBusy?T('Çözülüyor…'):`${T('Otomatik çöz')} (${unk.length})`}</button>`:'';})()}
+        ${T('Son')} ${S.range} ${T('gün')}</span></div>
     <div class="tw"><table class="stbl"><thead><tr>
       <th class="n">#</th><th>${T('Alan adı')}</th><th>${T('Tür')}</th>
       <th style="width:22%">${T('Atıf')}</th>
