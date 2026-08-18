@@ -961,6 +961,81 @@ svg{display:block;max-width:100%}
 .tanı{display:inline-block;margin-left:8px;font-size:10.5px;padding:2px 7px;border-radius:5px;
   background:color-mix(in srgb,var(--pri) 12%,transparent);color:var(--pri);opacity:0}
 .otbl tr.clk:hover .tanı{opacity:1}
+
+.dgw{display:grid;grid-template-columns:290px minmax(0,1fr);gap:20px;align-items:start}
+.dgl{border:1px solid var(--border);border-radius:12px;background:var(--card);
+  overflow:hidden;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto}
+.dglh{padding:14px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--mute2);border-bottom:1px solid var(--border);background:var(--card2)}
+.dgli{display:grid;gap:6px;width:100%;text-align:left;padding:12px 16px;border:0;
+  background:none;color:var(--fg);border-bottom:1px solid color-mix(in srgb,var(--border) 55%,transparent)}
+.dgli:hover{background:var(--card2)}
+.dgli.on{background:color-mix(in srgb,var(--pri) 10%,transparent);
+  box-shadow:inset 3px 0 0 var(--pri-btn)}
+.dgli .q{font-size:13px;line-height:1.45}
+.dgli.on .q{font-weight:600}
+.dgli .m{display:flex;gap:10px;align-items:baseline;font-size:11px}
+.dgli .m i{font-style:normal;padding:2px 7px;border-radius:5px}
+.dgli .m i.none{background:color-mix(in srgb,var(--bad) 13%,transparent);color:var(--bad)}
+.dgli .m i.part{background:color-mix(in srgb,var(--warn) 13%,transparent);color:var(--warn)}
+.dgli .m b{font-family:var(--mono);color:var(--mute2);font-weight:400}
+.dgm{display:grid;gap:20px}
+.dgt{border:1px solid var(--border);border-radius:12px;background:var(--card);padding:20px 22px}
+.dgt h3{font-size:20px;letter-spacing:-.025em;margin-bottom:12px}
+.dgtm{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:14px;font-size:12px}
+.dgsec{border:1px solid var(--border);border-radius:12px;background:var(--card);padding:20px 22px}
+.dgsec h4{display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600;
+  letter-spacing:-.02em;margin-bottom:16px}
+.dgsec h4 .n{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+  background:var(--pri-btn);color:#fff;font-size:11px;font-family:var(--mono);flex:none}
+.dgrl{display:grid;gap:14px}
+.dgri b{display:block;font-size:13.5px;font-weight:600;margin-bottom:5px}
+.dgri p{font-size:12.5px;color:var(--mute);line-height:1.7}
+.dgst{width:100%;border-collapse:collapse;font-size:13px}
+.dgst th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--mute2);padding:0 10px 9px;font-weight:600}
+.dgst th.n,.dgst td.n{text-align:right}
+.dgst td{padding:10px;border-top:1px solid color-mix(in srgb,var(--border) 55%,transparent)}
+.dgst tr.me{background:color-mix(in srgb,var(--pri) 8%,transparent)}
+.dgst .yes{font-size:12px;color:var(--ok)}
+.dgst .no{font-size:12px;color:var(--mute2)}
+.dgst .tagme{font-style:normal;font-size:9.5px;padding:2px 6px;border-radius:4px;
+  background:color-mix(in srgb,var(--pri) 16%,transparent);color:var(--pri)}
+.dgfx{display:grid;gap:12px}
+.dgf{border:1px solid var(--border);border-radius:11px;background:var(--card2);padding:16px 18px}
+.dgf.no{opacity:.78}
+.dgfh{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:13px;align-items:start}
+.dgfh .i{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+  background:var(--pri-btn);color:#fff;font-size:11px;font-weight:600;font-family:var(--mono)}
+.dgf.no .dgfh .i{background:var(--border2);color:var(--mute)}
+.dgfh .t{display:grid;gap:5px;min-width:0}
+.dgfh .t b{font-size:14px;font-weight:600}
+.dgfh .t em{font-style:normal;font-size:12px;color:var(--mute);line-height:1.6}
+.dgfh .t code{font-family:var(--mono);font-size:11.5px;background:var(--card3);
+  padding:2px 6px;border-radius:4px}
+.dgfh .m{display:grid;gap:4px;justify-items:end;text-align:right}
+.dgfh .tg{font-size:10px;padding:2px 8px;border-radius:5px;background:var(--card3);color:var(--mute2)}
+.dgfh .e{font-size:11px;color:var(--mute2);white-space:nowrap}
+.dgfs{list-style:none;margin:13px 0 0;padding:0 0 0 39px;display:block}
+.dgfs li{margin-bottom:8px}
+.dgfs li{position:relative;display:block;font-size:12.8px;line-height:1.65;color:var(--fg2)}
+.dgfs li::before{content:"";position:absolute;left:-14px;top:8px;width:5px;height:5px;
+  border-radius:50%;background:var(--border2)}
+.dgfw{margin:12px 0 0 39px;font-size:12px;color:var(--warn);line-height:1.6}
+@media(max-width:900px){
+  .dgw{grid-template-columns:1fr}
+  .dgl{position:static;max-height:280px}
+}
+@media(max-width:640px){
+  /* Kaynak tablosu dar ekranda sığmıyordu: yatay kaydırmaya alındı ve
+     alan adları kırılabilir yapıldı. */
+  .dgst{display:block;overflow-x:auto;white-space:nowrap}
+  .dgst td b{word-break:break-all;white-space:normal}
+  .dgsec,.dgt{padding:16px 14px}
+  .dgfh{grid-template-columns:24px minmax(0,1fr)}
+  .dgfh .m{grid-column:2;justify-items:start;text-align:left;display:flex;gap:10px}
+  .dgfs,.dgfw{padding-left:0;margin-left:16px}
+}
 </style>
 </head>
 <body>
@@ -1437,6 +1512,43 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  'Teşhis edilecek bir açık yok. Yeni sorgu ekleyerek kapsamı genişletebilirsiniz.':'Teşhis edilecek bir açık yok. Yeni sorgu ekleyerek kapsamı genişletebilirsiniz.',
+  'rakip bu sorguda geçiyor':'rakip bu sorguda geçiyor',
+  'Bir sorgu seçin: hangi platformlarda geçmediğinizi, yapay zekanın o cevabı hangi sitelerden derlediğini ve o listeye nasıl gireceğinizi görün.':'Bir sorgu seçin: hangi platformlarda geçmediğinizi, yapay zekanın o cevabı hangi sitelerden derlediğini ve o listeye nasıl gireceğinizi görün.',
+  'Model sitenizi okuyamıyor ya da sayfanızda bu soruya doğrudan cevap veren bir bölüm bulamıyor. Bu eksikler kapanmadan yayınlanan içerik de okunmaz.':'Model sitenizi okuyamıyor ya da sayfanızda bu soruya doğrudan cevap veren bir bölüm bulamıyor. Bu eksikler kapanmadan yayınlanan içerik de okunmaz.',
+  'teknik':'teknik',
+  'evet':'evet',
+  'Yapay zekanın okuduğu':'Yapay zekanın okuduğu',
+  'Fiyat, süre, kapsam gibi somut sayılar koyun — modeller sayı içeren kaynağı öne alır':'Fiyat, süre, kapsam gibi somut sayılar koyun — modeller sayı içeren kaynağı öne alır',
+  'Sayfaya FAQPage veya Article şeması ekleyin (Araçlar → Schema üreteci)':'Sayfaya FAQPage veya Article şeması ekleyin (Araçlar → Schema üreteci)',
+  'Bunlar şirketlerin kendi siteleri; profil açma veya yazı gönderme yolu yoktur.':'Bunlar şirketlerin kendi siteleri; profil açma veya yazı gönderme yolu yoktur.',
+  'Bir sorgu seçin; neden geçmediğinizi ve nasıl geçeceğinizi görün.':'Bir sorgu seçin; neden geçmediğinizi ve nasıl geçeceğinizi görün.',
+  'Kendi sitenizde bu soruya doğrudan cevap veren bir sayfa yayınlayın':'Kendi sitenizde bu soruya doğrudan cevap veren bir sayfa yayınlayın',
+  'Cevabı listeye veya tabloya dökün; modeller yapılandırılmış içeriği düz metne tercih eder':'Cevabı listeye veya tabloya dökün; modeller yapılandırılmış içeriği düz metne tercih eder',
+  'Aynı soruya kendi sitenizde daha iyi cevap veren bir kaynak yayınlayın':'Aynı soruya kendi sitenizde daha iyi cevap veren bir kaynak yayınlayın',
+  'Takip ettiğiniz her sorguda geçiyorsunuz':'Takip ettiğiniz her sorguda geçiyorsunuz',
+  'Bu sorgu için içerik üret':'Bu sorgu için içerik üret',
+  'Cevapta yer sınırlı: modeller genelde üç–beş marka sayar. Rakipleriniz o yerleri doldurmuş demektir.':'Cevapta yer sınırlı: modeller genelde üç–beş marka sayar. Rakipleriniz o yerleri doldurmuş demektir.',
+  'niyet':'niyet',
+  'Model bu cevabı uydurmuyor; belirli siteleri okuyup derliyor. O listede olmayan marka cevapta da olmaz. En sık ve en doğrudan sebep budur.':'Model bu cevabı uydurmuyor; belirli siteleri okuyup derliyor. O listede olmayan marka cevapta da olmaz. En sık ve en doğrudan sebep budur.',
+  'Girebilir misiniz':'Girebilir misiniz',
+  'Bu sorgunun cevaplarında hiç kaynak gösterilmemiş':'Bu sorgunun cevaplarında hiç kaynak gösterilmemiş',
+  'Sayfa başlığı sorgunun kendisi olsun':'Sayfa başlığı sorgunun kendisi olsun',
+  'açık sorgu':'açık sorgu',
+  'İlk paragrafta 40–60 kelimelik doğrudan cevap verin — modeller cevabı çoğunlukla ilk paragraftan alır':'İlk paragrafta 40–60 kelimelik doğrudan cevap verin — modeller cevabı çoğunlukla ilk paragraftan alır',
+  'kaynağa girilemez — zaman harcamayın':'kaynağa girilemez — zaman harcamayın',
+  'Bu eksikler kapanmadan yayınlanan içerik de okunmaz — sıralamada önce bunlar gelir.':'Bu eksikler kapanmadan yayınlanan içerik de okunmaz — sıralamada önce bunlar gelir.',
+  'kendi kontrolünüzde':'kendi kontrolünüzde',
+  'AI sorguları':'AI sorguları',
+  'Modeller doğrudan kendi eğitim bilgisinden cevaplıyor. Bu durumda kaynak listesine girmek işe yaramaz; marka bilinirliği, ansiklopedi ve sicil kayıtları belirleyici olur.':'Modeller doğrudan kendi eğitim bilgisinden cevaplıyor. Bu durumda kaynak listesine girmek işe yaramaz; marka bilinirliği, ansiklopedi ve sicil kayıtları belirleyici olur.',
+  'hiç geçmiyor':'hiç geçmiyor',
+  'Ürettiğiniz içeriğin girilebilir kaynaklarda alıntılanmasını sağlayın':'Ürettiğiniz içeriğin girilebilir kaynaklarda alıntılanmasını sağlayın',
+  'Yapay zeka bu cevabı nereden derliyor':'Yapay zeka bu cevabı nereden derliyor',
+  'Sitenizde':'Sitenizde',
+  'Denetimde bu kriterleri kapatın':'Denetimde bu kriterleri kapatın',
+  'En hızlı ve tek başınıza yapabileceğiniz adım. Kimseden izin gerekmez.':'En hızlı ve tek başınıza yapabileceğiniz adım. Kimseden izin gerekmez.',
+  'şirketin kendi sitesi':'şirketin kendi sitesi',
+  'O sayfaların neden alıntılandığını inceleyin: hangi soruya, hangi yapıda cevap veriyorlar':'O sayfaların neden alıntılandığını inceleyin: hangi soruya, hangi yapıda cevap veriyorlar',
   '1–3 gün':'1–3 gün',
   'Nasıl geçersiniz':'Nasıl geçersiniz',
   'Bu sorguda kim geçiyor':'Bu sorguda kim geçiyor',
@@ -2480,6 +2592,7 @@ const S = {
   brand: { name: '', site: '', sector: 'Teknoloji & Bilişim', country: 'Türkiye', city: '', desc: '' },
   workspaces: [], wsMenu: false, scanBusy: false, quality: null, isAdmin: false, usage: null, srcBusy: false,
   perception: null, percBusy: false, actFilter: 'all',
+  diag: null, diagPrompt: null, diagBusy: false,
   mFilter: 'all', mPlat: '',
   variants: [], rivals: [{ n: '', d: '' }, { n: '', d: '' }, { n: '', d: '' }],
   rawCompetitors: [], prompts: [], data: null,
@@ -3279,6 +3392,7 @@ const ICON={
   platforms:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
   sources:'<path d="M10 13a5 5 0 0 0 7.5.6l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.6l-3 3a5 5 0 0 0 7 7L12.2 19"/>',
   center:'<path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/>',
+  diag:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/><path d="M11 8v3.2l2 1.2"/>',
   perception:'<path d="M20.5 11.5a8 8 0 0 1-8 8 8.4 8.4 0 0 1-3.6-.8L3.5 20.5l1.8-4.9a8 8 0 0 1-.8-3.6 8 8 0 0 1 8-8 8 8 0 0 1 8 7.5z"/><path d="M8.4 12h1.7l1 2 1.4-4 1 2h1.6"/>',
   rivals:'<path d="M3 20h4v-8H3zM10 20h4V4h-4zM17 20h4v-5h-4z"/>',
   prompts:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>',
@@ -3302,6 +3416,7 @@ const NAV=[
  {r:'rivals',   g:'rivals',   n:'Competitors'},
  {r:'prompts',  g:'prompts',  n:'AI Prompts'},
  {r:'opps',     g:'opps',     n:'Opportunities'},
+ {r:'diag',     g:'diag',     n:'Teşhis'},
  {sec:'AKSİYON'},
  {r:'center',   g:'center',   n:'Aksiyon Merkezi'},
  {r:'plan',     g:'plan',     n:'Action Plan'},
@@ -4343,6 +4458,244 @@ function buildCenter(d){
 
   const rank={high:0,mid:1,low:2};
   return out.sort((a,b)=>rank[a.sev]-rank[b.sev]);
+}
+
+/* Teşhis sayfası — sorgu seç, neden geçmediğini ve nasıl geçeceğini gör. */
+
+VIEWS.diag=()=>{
+  const d=S.data;
+  const sorgular=(d.opps||[]).slice()
+    .filter(o=>o.cover<1)
+    .sort((a,b)=>a.cover-b.cover || b.opp-a.opp);
+
+  if(!sorgular.length) return head(T('Teşhis'),T('Bir sorgu seçin; neden geçmediğinizi ve nasıl geçeceğinizi görün.'))+
+    `<div class="card"><div class="empty" style="padding:44px 16px"><div class="ic">✓</div>
+      <b style="color:var(--fg);font-size:16px">${T('Takip ettiğiniz her sorguda geçiyorsunuz')}</b>
+      <p style="margin-top:8px">${T('Teşhis edilecek bir açık yok. Yeni sorgu ekleyerek kapsamı genişletebilirsiniz.')}</p>
+      <button class="btn b-gh b-sm" style="margin-top:16px" onclick="go('prompts')">${T('AI sorguları')} →</button></div></div>`;
+
+  const secili = S.diagPrompt || sorgular[0].p.id;
+  if(!S.diag || S.diag.promptId!==secili) loadDiag(secili);
+
+  return head(T('Teşhis'),
+    T('Bir sorgu seçin: hangi platformlarda geçmediğinizi, yapay zekanın o cevabı hangi sitelerden derlediğini ve o listeye nasıl gireceğinizi görün.'))+
+  `<div class="dgw">
+    <aside class="dgl">
+      <div class="dglh">${sorgular.length} ${T('açık sorgu')}</div>
+      ${sorgular.map(o=>`
+        <button class="dgli ${o.p.id===secili?'on':''}" onclick="S.diagPrompt='${o.p.id}';render()">
+          <span class="q">${esc(o.p.text)}</span>
+          <span class="m">
+            <i class="${o.cover===0?'none':'part'}">${o.cover===0?T('hiç geçmiyor'):`%${(o.cover*100).toFixed(0)}`}</i>
+            ${o.p.vol?`<b>${nf(o.p.vol)}</b>`:''}
+          </span>
+        </button>`).join('')}
+    </aside>
+    <div class="dgm">${diagBody()}</div>
+  </div>`;
+};
+
+async function loadDiag(promptId){
+  if(S.diagBusy) return;
+  S.diagBusy=true;
+  try{
+    const r=await api.get(`/api/diagnose?workspace=${S.workspaceId}&prompt=${encodeURIComponent(promptId)}&days=${S.range}`);
+    S.diag={...r, promptId};
+  }catch(e){ S.diag={error:e.message, promptId}; }
+  finally{ S.diagBusy=false; if(S.route==='diag') render(); }
+}
+
+function diagBody(){
+  const d=S.diag;
+  if(!d) return `<div class="card"><div class="empty" style="padding:50px"><div class="ic">◌</div>
+    ${T('Bu sorgunun cevapları okunuyor…')}</div></div>`;
+  if(d.error) return `<div class="card"><div class="empty" style="padding:40px"><div class="ic">⚠</div>
+    ${esc(d.error)}</div></div>`;
+
+  const pl=k=>(S.data.plats||[]).find(p=>p.id===k)||{n:k,c:'var(--pri)'};
+  const dis=d.sources.filter(s=>!s.mine);
+  const rakipler=d.brands.filter(b=>!b.isSelf);
+  const acik=d.sources.filter(s=>!s.mine&&s.reachable);
+  const kapali=d.sources.filter(s=>!s.mine&&!s.reachable&&s.kind!=='unknown');
+  const benimSite=d.sources.some(s=>s.mine);
+
+  /* Nedenler: her biri bir sayıya dayanır. Ölçülmemiş hiçbir şey iddia edilmez. */
+  const nedenler=[];
+  if(dis.length&&!benimSite) nedenler.push({
+    b:`${T('Yapay zekanın okuduğu')} ${dis.length} ${T('kaynağın hiçbirinde yoksunuz')}`,
+    d:T('Model bu cevabı uydurmuyor; belirli siteleri okuyup derliyor. O listede olmayan marka cevapta da olmaz. En sık ve en doğrudan sebep budur.') });
+  if(rakipler.length) nedenler.push({
+    b:`${rakipler.length} ${T('rakip bu sorguda geçiyor')}${rakipler[0].avgRank?` — ${T('en önde olanı ortalama')} ${rakipler[0].avgRank}. ${T('sırada')}`:''}`,
+    d:T('Cevapta yer sınırlı: modeller genelde üç–beş marka sayar. Rakipleriniz o yerleri doldurmuş demektir.') });
+  if(d.auditGaps.length) nedenler.push({
+    b:`${T('Sitenizde')} ${d.auditGaps.length} ${T('teknik kriter karşılanmıyor')}`,
+    d:T('Model sitenizi okuyamıyor ya da sayfanızda bu soruya doğrudan cevap veren bir bölüm bulamıyor. Bu eksikler kapanmadan yayınlanan içerik de okunmaz.') });
+  if(!dis.length) nedenler.push({
+    b:T('Bu sorgunun cevaplarında hiç kaynak gösterilmemiş'),
+    d:T('Modeller doğrudan kendi eğitim bilgisinden cevaplıyor. Bu durumda kaynak listesine girmek işe yaramaz; marka bilinirliği, ansiklopedi ve sicil kayıtları belirleyici olur.') });
+
+  return `
+  <div class="dgt">
+    <h3>“${esc(d.prompt.text)}”</h3>
+    <div class="dgtm">
+      <span class="dgs ${d.absentOn?'bad':'ok'}">${d.absentOn
+        ? `${d.platforms.length} ${T('platformun')} ${d.absentOn} ${T('tanesinde geçmiyorsunuz')}`
+        : T('Tüm platformlarda geçiyorsunuz')}</span>
+      ${d.prompt.volume?`<span class="mut">${T('aylık hacim')} ${nf(d.prompt.volume)}</span>`:''}
+      <span class="mut">${T('niyet')}: ${intentLabel(d.prompt.intent)}</span>
+    </div>
+    <div class="dgp">${d.platforms.map(p=>{
+      const e=pl(p.engineKey);
+      return `<span class="dgpi ${p.mentions?'on':''}">
+        <i style="background:${p.mentions?e.c:'var(--border2)'}"></i>${esc(e.n)}
+        <b>${p.mentions?`%${(p.coverage*100).toFixed(0)}${p.avgRank?` · ${p.avgRank}.`:''}`:T('yok')}</b></span>`;
+    }).join('')}</div>
+  </div>
+
+  <section class="dgsec">
+    <h4><span class="n">1</span>${T('Neden geçmiyorsunuz')}</h4>
+    <div class="dgrl">${nedenler.map(x=>`
+      <div class="dgri"><b>${x.b}</b><p>${x.d}</p></div>`).join('')}</div>
+  </section>
+
+  ${dis.length?`<section class="dgsec">
+    <h4><span class="n">2</span>${T('Yapay zeka bu cevabı nereden derliyor')}</h4>
+    <table class="dgst"><thead><tr>
+      <th>${T('Site')}</th><th>${T('Tür')}</th><th class="n">${T('Atıf')}</th><th>${T('Girebilir misiniz')}</th>
+    </tr></thead><tbody>${d.sources.map(s=>`
+      <tr class="${s.mine?'me':''}">
+        <td><b>${esc(s.domain)}</b>${s.mine?` <i class="tagme">${T('siteniz')}</i>`:''}</td>
+        <td><span class="kchip ${s.kind}">${T(s.label)}</span></td>
+        <td class="n">${s.citations}</td>
+        <td>${s.mine?'<span class="mut">—</span>'
+          :s.reachable?`<span class="yes">${T('evet')} · ${T(s.eta)}</span>`
+          :`<span class="no">⛔ ${T('şirketin kendi sitesi')}</span>`}</td>
+      </tr>`).join('')}</tbody></table>
+  </section>`:''}
+
+  ${rakipler.length?`<section class="dgsec">
+    <h4><span class="n">3</span>${T('Bu sorguda kim geçiyor')}</h4>
+    <div class="dgb">${d.brands.map(b=>`
+      <div class="dgbr ${b.isSelf?'me':''}">
+        <span class="nm">${b.isSelf?esc(S.brand.name||T('Siz')):esc(b.name)}${b.isSelf?` <i>${T('siz')}</i>`:''}</span>
+        <span class="ct">${b.answers} ${T('cevapta')}</span>
+        <span class="rk">${b.avgRank?`${b.avgRank}. ${T('sırada')}`:'—'}</span>
+      </div>`).join('')}</div>
+  </section>`:''}
+
+  <section class="dgsec">
+    <h4><span class="n">${dis.length?(rakipler.length?4:3):2}</span>${T('Nasıl geçersiniz')}</h4>
+    <div class="dgfx">${cozumler(d, acik, kapali, benimSite)}</div>
+  </section>
+
+  <div class="dga">
+    <button class="btn b-pri b-sm" onclick="writerFor('${esc(d.prompt.id)}')">✦ ${T('Bu sorgu için içerik üret')}</button>
+    <button class="btn b-gh b-sm" onclick="go('sources')">${T('Kaynakları gör')} →</button>
+    ${d.auditGaps.length?`<button class="btn b-gh b-sm" onclick="go('audit')">${T('Denetimi aç')} →</button>`:''}
+  </div>`;
+}
+
+/**
+ * Çözüm adımları.
+ *
+ * Her adım üç şeyi söyler: ne yapılacak, nasıl yapılacak (somut alt maddeler),
+ * ne kadar sürer. Genel tavsiye vermiyoruz — kaynak sınıfı ne yapılacağını
+ * belirliyor ve her sınıfın kendi yöntemi var.
+ */
+function cozumler(d, acik, kapali, benimSite){
+  const adimlar=[];
+
+  if(!benimSite) adimlar.push({
+    t:T('Kendi sitenizde bu soruya doğrudan cevap veren bir sayfa yayınlayın'),
+    n:T('En hızlı ve tek başınıza yapabileceğiniz adım. Kimseden izin gerekmez.'),
+    s:[
+      `${T('Sayfa başlığı sorgunun kendisi olsun')}: “${esc(d.prompt.text)}”`,
+      T('İlk paragrafta 40–60 kelimelik doğrudan cevap verin — modeller cevabı çoğunlukla ilk paragraftan alır'),
+      T('Cevabı listeye veya tabloya dökün; modeller yapılandırılmış içeriği düz metne tercih eder'),
+      T('Sayfaya FAQPage veya Article şeması ekleyin (Araçlar → Schema üreteci)'),
+      T('Fiyat, süre, kapsam gibi somut sayılar koyun — modeller sayı içeren kaynağı öne alır'),
+    ],
+    e:T('1–3 hafta'), tag:T('kendi kontrolünüzde'), pri:1,
+  });
+
+  const grup={};
+  acik.forEach(s=>{ (grup[s.kind]=grup[s.kind]||[]).push(s); });
+  const YONTEM={
+    directory:{ b:'Bu dizinlere kaydolun', s:[
+      'Kaynağı açıp giriş koşuluna bakın: serbest kayıt mı, başvuru mu, iş ortaklığı mı',
+      'Serbest kayıtsa profili eksiksiz doldurun — eksik profil listelemede geriye düşer',
+      'Kategori seçimini dar tutun; genel kategoride yüzlerce firma arasında kaybolursunuz',
+      'Marka adı, alan adı ve açıklamayı sitenizdekiyle birebir aynı yazın',
+    ]},
+    marketplace:{ b:'Bu pazar yerlerinde satıcı olun', s:[
+      'Satıcı kaydını tamamlayın; ürün başlıklarını müşterinin aradığı biçimde yazın',
+      'Açıklamaya özellik tablosu ve sayısal veri koyun',
+      'Görsel, varyant ve stok bilgisini eksiksiz doldurun',
+    ]},
+    review:{ b:'Bu yorum platformlarındaki profilinizi güçlendirin', s:[
+      'Var olan profili sahiplenin — açılmasını beklemeyin, muhtemelen zaten var',
+      'Olumsuz yorumlara kurumsal ve çözüm odaklı yanıt verin',
+      'Memnun müşterilerden düzenli yorum akışı kurun',
+      'Yanıt oranınızı %90 üzerinde tutun',
+    ]},
+    publication:{ b:'Bu yayınlarda yer alın', s:[
+      'Yayının dışarıdan içerik alıp almadığını kontrol edin — her yayın almaz',
+      'Alıyorsa ürün tanıtımı değil, kendi verinizi içeren bir konu önerin',
+      'Almıyorsa haber değeri taşıyan bir gelişmeyle iletişime geçin',
+    ]},
+    community:{ b:'Bu topluluklara katılın', s:[
+      'Marka hesabıyla değil, kimliğini açıkça belirten bir çalışan hesabıyla katılın',
+      'Önce yalnızca soru cevaplayın — markanızı hiç anmadan, en az birkaç hafta',
+      'Marka ancak doğrudan sorulduğunda ve bağlantı vermeden geçsin',
+      'Olumsuz bir başlık varsa savunmaya geçmeyin; sorunu kabul edip çözümü yazın',
+    ], w:'Acele etmek geri teper: tanıtım kokan katkı silinir, olay olumsuz içeriğe dönüşür.'},
+    self_publish:{ b:'Kendi kanallarınızda yayınlayın', s:[
+      'Sorgunun tam metnini başlık yapın',
+      'İlk paragrafta 40–60 kelimelik doğrudan cevap verin',
+      'Kendi sitenizdeki asıl kaynağa bağlantı verin',
+    ]},
+    authority:{ b:'Kayıtlarınızı düzeltin', s:[
+      'Mevcut kaydınızı bulun ve doğruluğunu kontrol edin — yanlış kayıt yokluktan kötüdür',
+      'Wikidata için marka adı, alan adı, kuruluş yılı ve sektörü tamamlayın',
+    ], w:'Wikipedia’ya kendi maddenizi yazmak kural ihlalidir ve geri alınır.'},
+  };
+  Object.entries(grup).forEach(([kind, liste])=>{
+    const y=YONTEM[kind]; if(!y) return;
+    adimlar.push({
+      t:T(y.b), n:`${liste.length} ${T('kaynak')} · ${liste.map(s=>`<code>${esc(s.domain)}</code>`).join(' ')}`,
+      s:y.s.map(x=>T(x)), w:y.w?T(y.w):null, e:T(liste[0].eta), tag:T(srcKind(kind).label), pri:2,
+    });
+  });
+
+  if(d.auditGaps.length) adimlar.push({
+    t:T('Denetimde bu kriterleri kapatın'),
+    n:T('Bu eksikler kapanmadan yayınlanan içerik de okunmaz — sıralamada önce bunlar gelir.'),
+    s:d.auditGaps.map(f=>esc(T(f.label))),
+    e:T('1–3 gün'), tag:T('teknik'), pri:0,
+  });
+
+  if(kapali.length) adimlar.push({
+    t:`${kapali.length} ${T('kaynağa girilemez — zaman harcamayın')}`,
+    n:T('Bunlar şirketlerin kendi siteleri; profil açma veya yazı gönderme yolu yoktur.'),
+    s:[
+      T('O sayfaların neden alıntılandığını inceleyin: hangi soruya, hangi yapıda cevap veriyorlar'),
+      T('Aynı soruya kendi sitenizde daha iyi cevap veren bir kaynak yayınlayın'),
+      T('Ürettiğiniz içeriğin girilebilir kaynaklarda alıntılanmasını sağlayın'),
+    ],
+    e:T('dolaylı yol · 2–4 ay'), tag:T('girilemez'), pri:9, blok:true,
+  });
+
+  adimlar.sort((a,b)=>a.pri-b.pri);
+  return adimlar.map((a,i)=>`
+    <div class="dgf ${a.blok?'no':''}">
+      <div class="dgfh">
+        <span class="i">${i+1}</span>
+        <div class="t"><b>${a.t}</b><em>${a.n}</em></div>
+        <div class="m"><span class="tg">${a.tag}</span><span class="e">${a.e}</span></div>
+      </div>
+      <ul class="dgfs">${a.s.map(x=>`<li>${x}</li>`).join('')}</ul>
+      ${a.w?`<p class="dgfw">⚠ ${a.w}</p>`:''}
+    </div>`).join('');
 }
 
 VIEWS.perception=()=>{
