@@ -901,6 +901,66 @@ svg{display:block;max-width:100%}
   border:2px solid color-mix(in srgb,var(--bad) 42%,transparent);animation:bpulse 2.2s ease-out infinite}
 @keyframes bpulse{0%{opacity:.9;transform:scale(.94)}70%,100%{opacity:0;transform:scale(1.18)}}
 @media(prefers-reduced-motion:reduce){.bell.has::after{animation:none;opacity:.5}}
+
+.dg{display:grid;gap:22px}
+.dgh{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dgs{font-size:14px;font-weight:600;padding:7px 14px;border-radius:99px}
+.dgs.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.dgs.ok{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.dgv{font-size:12px;color:var(--mute2)}
+.dgp{display:flex;gap:8px;flex-wrap:wrap}
+.dgpi{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;padding:6px 11px;
+  border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--mute)}
+.dgpi.on{color:var(--fg)}
+.dgpi i{width:7px;height:7px;border-radius:50%}
+.dgpi b{font-family:var(--mono);font-size:11px;color:var(--mute2)}
+.dgpi.on b{color:var(--fg2)}
+.dg section h4{font-size:13px;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--mute2);margin-bottom:12px;font-weight:600}
+.dgr{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.dgr li{position:relative;padding-left:20px;font-size:13.5px;line-height:1.65;color:var(--fg2)}
+.dgr li::before{content:"";position:absolute;left:4px;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--bad)}
+.dgsrc{display:flex;gap:7px;flex-wrap:wrap}
+.dgc{display:inline-flex;align-items:baseline;gap:7px;font-size:12px;padding:7px 11px;
+  border-radius:8px;border:1px solid var(--border);background:var(--card2)}
+.dgc i{font-style:normal;font-size:10.5px;color:var(--mute2)}
+.dgc b{font-family:var(--mono);font-size:10.5px;color:var(--mute2)}
+.dgc.me{background:color-mix(in srgb,var(--pri) 12%,transparent);border-color:transparent;color:var(--pri)}
+.dgc.no{opacity:.6}
+.dgb{display:grid;gap:2px}
+.dgbr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:baseline;
+  padding:9px 10px;border-radius:8px;font-size:13px}
+.dgbr:nth-child(odd){background:var(--card2)}
+.dgbr.me{background:color-mix(in srgb,var(--pri) 10%,transparent)}
+.dgbr .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dgbr .nm i{font-style:normal;font-size:9.5px;padding:2px 6px;border-radius:4px;
+  background:color-mix(in srgb,var(--pri) 18%,transparent);color:var(--pri)}
+.dgbr .ct,.dgbr .rk{font-size:11.5px;color:var(--mute2);white-space:nowrap}
+.dgf{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:f}
+.dgf li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:13px;align-items:start;
+  padding:13px 15px;border:1px solid var(--border);border-radius:10px;background:var(--card2)}
+.dgf .i{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+  background:var(--pri-btn);color:#fff;font-size:11px;font-weight:600;font-family:var(--mono)}
+.dgf .t{display:grid;gap:5px;min-width:0}
+.dgf .t b{font-size:13.5px;font-weight:600}
+.dgf .t em{font-style:normal;font-size:12px;color:var(--mute);line-height:1.6}
+.dgf .t code{font-family:var(--mono);font-size:11.5px;background:var(--card3);
+  padding:2px 6px;border-radius:4px}
+.dgf .t i{font-style:normal;font-size:11px;color:var(--mute2)}
+.dgf .e{font-size:11px;color:var(--mute2);white-space:nowrap}
+.dga{display:flex;gap:9px;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--border)}
+@media(max-width:600px){
+  .dgf li{grid-template-columns:24px minmax(0,1fr)}
+  .dgf .e{grid-column:2}
+  .dgbr{grid-template-columns:minmax(0,1fr) auto}
+}
+
+.otbl tr.clk{cursor:pointer}
+.otbl tr.clk:hover{background:var(--card2)}
+.tanı{display:inline-block;margin-left:8px;font-size:10.5px;padding:2px 7px;border-radius:5px;
+  background:color-mix(in srgb,var(--pri) 12%,transparent);color:var(--pri);opacity:0}
+.otbl tr.clk:hover .tanı{opacity:1}
 </style>
 </head>
 <body>
@@ -1377,6 +1437,31 @@ const I18N = {
   'Evidence of a content calendar':'İçerik takvimi izi',
   'Outdated statistics refreshed':'Eskimiş istatistikler tazelenmiş',
   'Rescan':'Yeniden tara',
+  '1–3 gün':'1–3 gün',
+  'Nasıl geçersiniz':'Nasıl geçersiniz',
+  'Bu sorguda kim geçiyor':'Bu sorguda kim geçiyor',
+  '★ sizin siteniz · ⛔ girilemez (şirketin kendi sitesi)':'★ sizin siteniz · ⛔ girilemez (şirketin kendi sitesi)',
+  'Bu sorguda kaynak gösterilen siteler':'Bu sorguda kaynak gösterilen siteler',
+  'Neden geçmiyorsunuz':'Neden geçmiyorsunuz',
+  'Tüm platformlarda geçiyorsunuz':'Tüm platformlarda geçiyorsunuz',
+  'tanesinde geçmiyorsunuz':'tanesinde geçmiyorsunuz',
+  'platformun':'platformun',
+  'Bunlar şirketlerin kendi siteleri. Zaman harcamayın — yukarıdaki adımlar aynı cevaba dolaylı yoldan girmenizi sağlar.':'Bunlar şirketlerin kendi siteleri. Zaman harcamayın — yukarıdaki adımlar aynı cevaba dolaylı yoldan girmenizi sağlar.',
+  'kaynağa girilemez':'kaynağa girilemez',
+  'Denetimde şu kriterleri kapatın':'Denetimde şu kriterleri kapatın',
+  'Başlık sorgunun kendisi olsun; ilk paragrafta 40–60 kelimelik doğrudan cevap verin — modeller cevabı oradan alır.':'Başlık sorgunun kendisi olsun; ilk paragrafta 40–60 kelimelik doğrudan cevap verin — modeller cevabı oradan alır.',
+  'Bu soruya doğrudan cevap veren bir sayfa yayınlayın':'Bu soruya doğrudan cevap veren bir sayfa yayınlayın',
+  'Girilebilir kaynaklara kaydolun':'Girilebilir kaynaklara kaydolun',
+  'Bu sorgunun cevaplarında hiç kaynak gösterilmemiş — modeller doğrudan kendi bilgisinden cevaplıyor. Bu durumda marka bilinirliği ve otorite kayıtları belirleyici olur.':'Bu sorgunun cevaplarında hiç kaynak gösterilmemiş — modeller doğrudan kendi bilgisinden cevaplıyor. Bu durumda marka bilinirliği ve otorite kayıtları belirleyici olur.',
+  'Sitenizde bu tür sorgular için gereken':'Sitenizde bu tür sorgular için gereken',
+  'en önde olanı ortalama':'en önde olanı ortalama',
+  'bu sorguda geçiyor':'bu sorguda geçiyor',
+  'marka daha':'marka daha',
+  'yapay zeka bu cevabı onlardan derliyor':'yapay zeka bu cevabı onlardan derliyor',
+  'kaynağın hiçbirinde yoksunuz':'kaynağın hiçbirinde yoksunuz',
+  'Bu sorgunun cevapları okunuyor…':'Bu sorgunun cevapları okunuyor…',
+  'Teşhis':'Teşhis',
+  'neden?':'neden?',
   'Göster':'Göster',
   'Kapat':'Kapat',
   'Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.':'Fazlar sırayla yapılmalı: teknik eksikler kapanmadan yayınlanan içerik okunmaz, içerik olmadan üçüncü taraf kaynaklarda anlatacak bir şey olmaz.',
@@ -4574,8 +4659,9 @@ VIEWS.opps=()=>{
     <th>${T('Sorgu')}</th><th>${T('Niyet')}</th><th class="n">${T('Aylık hacim')}</th>
     <th class="n">${T('Görünürlük')}</th><th>${T('İçerik uyumu')}</th><th>${T('Önerilen aksiyon')}</th>
     <th class="n">${T('Fırsat')}</th><th></th></tr></thead>
-  <tbody>${rows.map(o=>`<tr>
-    <td style="max-width:270px"><b>${esc(o.p.text.replace(/"/g,''))}</b></td>
+  <tbody>${rows.map(o=>`<tr class="clk" onclick="if(!event.target.closest('button'))diagnose('${o.p.id}')">
+    <td style="max-width:270px"><b>${esc(o.p.text.replace(/"/g,''))}</b>
+      <span class="tanı">${T('neden?')}</span></td>
     <td><span class="chip">${intentLabel(o.p.intent)}</span></td>
     <td class="n">${nf(o.p.vol)}</td>
     <td class="n">${o.cover===0
@@ -4584,7 +4670,7 @@ VIEWS.opps=()=>{
     <td><span class="chip ${o.fit==='High'?'ok':o.fit==='Medium'?'warn':''}">${T(o.fit)}</span></td>
     <td class="mut" style="font-size:12px">${T(o.act)}</td>
     <td class="n"><span class="oscore" style="--w:${Math.min(100,o.opp)}%">${o.opp}</span></td>
-    <td><button class="btn b-gh b-sm" onclick="writerFor('${o.p.id}')">${T('Generate content')} ✦</button></td></tr>`).join('')}
+    <td><button class="btn b-gh b-sm" onclick="diagnose('${o.p.id}')">${T('Teşhis')} →</button></td></tr>`).join('')}
   </tbody></table></div>
   <p class="mnote">${T('Fırsat skoru hacmi tek başına değil, kaybı ölçer: çok aranan ve hiç görünmediğiniz bir sorgu, orta hacimli ama zaten önde olduğunuz bir sorgudan önce gelir.')}</p></div>`;
 };
@@ -4739,6 +4825,124 @@ function renderBell(){
   b.title = acil
     ? `${acil} ${T('need attention')}${iyi?` · ${iyi} ${T('improvements')}`:''}`
     : `${iyi} ${T('improvements')}`;
+}
+
+async function diagnose(promptId){
+  openModal(T('Teşhis'), `<div class="empty" style="padding:36px"><div class="ic">◌</div>
+    ${T('Bu sorgunun cevapları okunuyor…')}</div>`);
+  let d;
+  try{
+    d = await api.get(`/api/diagnose?workspace=${S.workspaceId}&prompt=${encodeURIComponent(promptId)}&days=${S.range}`);
+  }catch(e){
+    $('#mBody').innerHTML = `<div class="empty" style="padding:30px"><div class="ic">⚠</div>${esc(e.message)}</div>`;
+    return;
+  }
+  if(d.error){
+    $('#mBody').innerHTML = `<div class="empty" style="padding:30px"><div class="ic">⚠</div>${esc(d.error)}</div>`;
+    return;
+  }
+
+  const pl = k => (S.data.plats||[]).find(p=>p.id===k) || {n:k, c:'var(--pri)', ab:'◆'};
+  const yok = d.platforms.filter(p=>!p.mentions);
+  const var_ = d.platforms.filter(p=>p.mentions);
+  const rakipler = d.brands.filter(b=>!b.isSelf);
+  const benim = d.brands.find(b=>b.isSelf);
+  const dis = d.sources.filter(s=>!s.mine);
+
+  /* Neden — her madde bir sayıya dayanıyor. Ölçülmemiş hiçbir şey iddia
+     edilmiyor: "sayfanız zayıf" değil, "bu sorguda kaynak gösterilen N
+     sitede yoksunuz". */
+  const nedenler = [];
+  if(dis.length && !d.sources.some(s=>s.mine))
+    nedenler.push(`<b>${dis.length}</b> ${T('kaynağın hiçbirinde yoksunuz')} — ${
+      T('yapay zeka bu cevabı onlardan derliyor')}`);
+  if(rakipler.length)
+    nedenler.push(`${rakipler.slice(0,2).map(r=>`<b>${esc(r.name)}</b>`).join(', ')}${
+      rakipler.length>2?` ${T('ve')} ${rakipler.length-2} ${T('marka daha')}`:''} ${
+      T('bu sorguda geçiyor')}${rakipler[0].avgRank?` — ${T('en önde olanı ortalama')} ${rakipler[0].avgRank}. ${T('sırada')}`:''}`);
+  if(d.auditGaps.length)
+    nedenler.push(`${T('Sitenizde bu tür sorgular için gereken')} <b>${d.auditGaps.length}</b> ${
+      T('teknik kriter karşılanmıyor')}`);
+  if(!dis.length)
+    nedenler.push(T('Bu sorgunun cevaplarında hiç kaynak gösterilmemiş — modeller doğrudan kendi bilgisinden cevaplıyor. Bu durumda marka bilinirliği ve otorite kayıtları belirleyici olur.'));
+
+  const adim = [];
+  if(d.fixes.reachable.length) adim.push({
+    n: T('Girilebilir kaynaklara kaydolun'),
+    d: `${d.fixes.reachable.map(s=>`<code>${esc(s.domain)}</code> <i>${T(s.label)}</i>`).join(' · ')}`,
+    e: d.fixes.reachable[0].eta,
+  });
+  if(d.fixes.ownContent) adim.push({
+    n: `${T('Bu soruya doğrudan cevap veren bir sayfa yayınlayın')}`,
+    d: `${T('Başlık sorgunun kendisi olsun; ilk paragrafta 40–60 kelimelik doğrudan cevap verin — modeller cevabı oradan alır.')}`,
+    e: T('1–3 hafta'),
+  });
+  if(d.auditGaps.length) adim.push({
+    n: `${T('Denetimde şu kriterleri kapatın')}`,
+    d: d.auditGaps.slice(0,3).map(f=>`<i>${esc(T(f.label))}</i>`).join(' · '),
+    e: T('1–3 gün'),
+  });
+  if(d.fixes.blocked) adim.push({
+    n: `${d.fixes.blocked} ${T('kaynağa girilemez')}`,
+    d: T('Bunlar şirketlerin kendi siteleri. Zaman harcamayın — yukarıdaki adımlar aynı cevaba dolaylı yoldan girmenizi sağlar.'),
+    e: '—',
+  });
+
+  $('#mTitle').textContent = `“${d.prompt.text}”`;
+  $('#mBody').innerHTML = `
+  <div class="dg">
+    <div class="dgh">
+      <span class="dgs ${yok.length?'bad':'ok'}">${yok.length
+        ? `${d.platforms.length} ${T('platformun')} ${yok.length} ${T('tanesinde geçmiyorsunuz')}`
+        : `${T('Tüm platformlarda geçiyorsunuz')}`}</span>
+      ${d.prompt.volume?`<span class="dgv">${T('aylık hacim')} ${nf(d.prompt.volume)}</span>`:''}
+    </div>
+
+    <div class="dgp">${d.platforms.map(p=>{
+      const e=pl(p.engineKey);
+      return `<span class="dgpi ${p.mentions?'on':''}" title="${esc(e.n)}">
+        <i style="background:${p.mentions?e.c:'var(--border2)'}"></i>${esc(e.n)}
+        <b>${p.mentions?`${(p.coverage*100).toFixed(0)}%`:T('yok')}</b></span>`;
+    }).join('')}</div>
+
+    <section>
+      <h4>${T('Neden geçmiyorsunuz')}</h4>
+      <ul class="dgr">${nedenler.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </section>
+
+    ${dis.length?`<section>
+      <h4>${T('Bu sorguda kaynak gösterilen siteler')}</h4>
+      <div class="dgsrc">${d.sources.map(s=>`
+        <span class="dgc ${s.mine?'me':s.reachable?'ok':'no'}">
+          ${s.mine?'★ ':s.reachable?'':'⛔ '}${esc(s.domain)}
+          <i>${T(s.label)}</i><b>${s.citations}</b></span>`).join('')}</div>
+      <p class="note">${T('★ sizin siteniz · ⛔ girilemez (şirketin kendi sitesi)')}</p>
+    </section>`:''}
+
+    ${rakipler.length?`<section>
+      <h4>${T('Bu sorguda kim geçiyor')}</h4>
+      <div class="dgb">${d.brands.map(b=>`
+        <div class="dgbr ${b.isSelf?'me':''}">
+          <span class="nm">${b.isSelf?esc(S.brand.name||T('Siz')):esc(b.name)}${b.isSelf?` <i>${T('siz')}</i>`:''}</span>
+          <span class="ct">${b.answers} ${T('cevapta')}</span>
+          <span class="rk">${b.avgRank?`${b.avgRank}. ${T('sırada')}`:'—'}</span>
+        </div>`).join('')}</div>
+    </section>`:''}
+
+    <section>
+      <h4>${T('Nasıl geçersiniz')}</h4>
+      <ol class="dgf">${adim.map((a,i)=>`
+        <li><span class="i">${i+1}</span>
+          <span class="t"><b>${a.n}</b><em>${a.d}</em></span>
+          <span class="e">${esc(a.e)}</span></li>`).join('')}</ol>
+    </section>
+
+    <div class="dga">
+      <button class="btn b-pri b-sm" onclick="closeModal();writerFor('${esc(d.prompt.id)}')">✦ ${T('İçerik üret')}</button>
+      <button class="btn b-gh b-sm" onclick="closeModal();go('sources')">${T('Kaynakları gör')} →</button>
+      ${d.auditGaps.length?`<button class="btn b-gh b-sm" onclick="closeModal();go('audit')">${T('Denetimi aç')} →</button>`:''}
+    </div>
+  </div>`;
 }
 
 function changesPanel(){
