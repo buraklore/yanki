@@ -138,17 +138,21 @@ export interface DrainResult { claimed: number; ok: number; failed: number; fina
 
 export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainResult> {
   const started = Date.now();
+  const deadline = started + budgetMs;
   const jobs = await sql`select * from claim_jobs(${batch})`;
   let ok = 0, failed = 0;
 
   // Bounded concurrency: providers rate-limit, and a serverless function has
-  // a hard wall-clock ceiling we must respect.
+  // a hard wall-clock ceiling we must respect. A lane starts a job only while
+  // enough of the budget remains for a *short* attempt; the job itself then
+  // sizes its ask window from the same deadline (see runJob), so the last job
+  // started still finishes inside the wall instead of being killed with it.
   const LANES = 5;
-  const queue = jobs.map(j => j as unknown as Job);
+  const queue = jobs.map(j => ({ ...(j as unknown as Job), deadline }));
   await Promise.all(Array.from({ length: LANES }, async () => {
     for (;;) {
       const job = queue.shift();
-      if (!job || Date.now() - started > budgetMs) return;
+      if (!job || deadline - Date.now() < 24_000) return;
       try {
         await runJob(job);
         await sql`update scan_jobs set done_at = now(), error = null where id = ${job.id}`;
@@ -169,9 +173,12 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
         const quotaSpent =
           /no credits remaining|insufficient_quota|insufficient quota|credit balance is too low|billing.?hard.?limit|exceeded your current quota/i
             .test(msg);
+        // An out-of-budget start is this invocation's problem, never the
+        // job's: it must retry untouched on the next tick.
+        const outOfBudget = /no time budget/.test(msg);
         const permanent =
-          quotaSpent ||
-          /HTTP 40[0134]|invalid.?api.?key|API key not valid|incorrect api key|model.*not found|does not exist|unauthorized|permission/i.test(msg);
+          !outOfBudget && (quotaSpent ||
+          /HTTP 40[0134]|invalid.?api.?key|API key not valid|incorrect api key|model.*not found|does not exist|unauthorized|permission/i.test(msg));
         await sql`update scan_jobs
              set error = ${msg.slice(0, 400)},
                  attempts = ${permanent ? 4 : sql`attempts`},
@@ -206,6 +213,8 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
 }
 
 interface Job {
+  /** Wall-clock deadline of the invocation draining this job (epoch ms). */
+  deadline?: number;
   id: number; scan_id: string; workspace_id: string; prompt_id: string;
   engine_key: string; run_index: number;
 }
@@ -226,8 +235,18 @@ async function runJob(job: Job) {
       ({ id: r.id, name: r.name, domain: r.domain, variants: r.aliases })),
   ];
 
+  // §deadline — the job must fit inside the invocation that runs it.
+  // 40s ask + an unbounded judge exceeded Vercel's 60s wall whenever a
+  // provider hung; the platform then killed the function mid-batch and the
+  // progress of every job in it was lost, which is how a scan freezes at
+  // 0/N while looking alive. The ask window now shrinks to what is left of
+  // the invocation after reserving time for the judge and the DB writes.
+  const JUDGE_RESERVE = 16_000;
+  const left = job.deadline ? job.deadline - Date.now() : Infinity;
+  const askMs = Math.min(35_000, left - JUDGE_RESERVE);
+  if (askMs < 5_000) throw new Error('no time budget left in this invocation');
   const ac = new AbortController();
-  const timer = setTimeout(() => ac.abort(), 40_000);
+  const timer = setTimeout(() => ac.abort(), askMs);
   let answer;
   try {
     answer = await engine.ask({
