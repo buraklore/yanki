@@ -55,6 +55,10 @@ export const LIMITS = {
    * up to 4 engines — ~24 provider calls plus the judge. Growth+ only, and
    * still not a button to lean on. */
   variants: { max: 8, window: 60 * 60 },
+
+  /* Log ingestion is machine-to-machine and batched; the ceiling exists to
+   * stop a broken shipper looping, not to ration a periodic cron. */
+  botIngest: { max: 240, window: 60 * 60 },
 } satisfies Record<string, Limit>;
 
 /** Client IP, trusting the proxy header Vercel sets. */
