@@ -279,12 +279,15 @@ export async function buildDigest(workspaceId: string, days = 7): Promise<Digest
       count(*) filter (where rb.is_self)::int as mentions,
       (select count(*)::int from run_citations rc
         join answer_runs a2 on a2.id = rc.run_id
+        join prompts p2 on p2.id = a2.prompt_id and coalesce(p2.source,'') <> 'variant'
        where a2.workspace_id = ${workspaceId}
          and a2.asked_at > now() - make_interval(days => ${days})) as citations,
       (select count(*)::int from answer_runs a3
+        join prompts p3 on p3.id = a3.prompt_id and coalesce(p3.source,'') <> 'variant'
         where a3.workspace_id = ${workspaceId}
           and a3.asked_at > now() - make_interval(days => ${days})) as checks
       from answer_runs ar
+      join prompts pp on pp.id = ar.prompt_id and coalesce(pp.source,'') <> 'variant'
       left join run_brands rb on rb.run_id = ar.id
      where ar.workspace_id = ${workspaceId}
        and ar.asked_at > now() - make_interval(days => ${days})`;
