@@ -4,6 +4,7 @@ import { PLAN_RANK, limits, type PlanKey } from '@/lib/plans';
 import { classifyDomains } from '@/lib/source-kind';
 import { opportunityScore, type Intent } from '@/lib/prompts';
 import { engineByKey } from '@/lib/engines';
+import { weightedShareOfVoice } from '@/lib/score';
 
 export const dynamic = 'force-dynamic';
 
@@ -190,6 +191,22 @@ export const GET = handler(async (req) => {
        and ar.asked_at > now() - make_interval(days => ${days})
        and ar.engine_key = any(${allowed})`;
 
+  /* Position-weighted share of voice (§ methodology panel). Plain SOV counts
+   * mentions; this weighs each mention by the prominence curve, so leading
+   * every answer and trailing every answer stop reading as the same number.
+   * The formula lives in lib/score.ts next to the score it mirrors. */
+  const rankRows = await sql`
+    select coalesce(rb.competitor_id::text, 'self') as brand,
+           array_agg(coalesce(rb.rank, 0)) as ranks
+      from run_brands rb join answer_runs ar on ar.id = rb.run_id
+     where ar.workspace_id = ${workspaceId}
+       and ar.asked_at > now() - make_interval(days => ${days})
+       and ar.engine_key = any(${allowed})
+     group by 1`;
+  const weightedSov = weightedShareOfVoice(Object.fromEntries(
+    (rankRows as unknown as { brand: string; ranks: number[] }[])
+      .map(r => [r.brand, (r.ranks ?? []).map(Number)])));
+
   // Every active prompt is listed, whether or not it has been scanned yet.
   // Deriving the list from scores would hide brand-new prompts until the next
   // scan, which is exactly when the user wants to see them.
@@ -312,6 +329,7 @@ export const GET = handler(async (req) => {
     })),
     competitors,
     selfMentions: selfCount?.n ?? 0,
+    weightedSov,
     recentMentions: recent,
     rivalGaps: rivalGaps.map(g => ({
       promptId: g.prompt_id, text: g.text, intent: g.intent, volume: Number(g.volume),
