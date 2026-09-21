@@ -2603,6 +2603,7 @@ const S = {
   candidates: null, candBusy: false,
   recs: null, recsBusy: false,
   genHistory: null, genBusy: false, writerPid: null,
+  varTest: {},
   lang: 'tr',
 };
 
@@ -4750,11 +4751,99 @@ function diagBody(){
     <div class="dgfx">${cozumler(d, acik, kapali, benimSite)}</div>
   </section>
 
+  ${variantSection(d.prompt.id)}
+
   <div class="dga">
     <button class="btn b-pri b-sm" onclick="writerFor('${esc(d.prompt.id)}')">✦ ${T('Bu sorgu için içerik üret')}</button>
     <button class="btn b-gh b-sm" onclick="go('sources')">${T('Kaynakları gör')} →</button>
     ${d.auditGaps.length?`<button class="btn b-gh b-sm" onclick="go('audit')">${T('Denetimi aç')} →</button>`:''}
   </div>`;
+}
+
+/* §fan-out — ifade sağlamlığı testi. Aynı soru 5 kez sorulunca koşudan koşuya
+ * gürültü ölçülür; eş anlamlı ifadeler sorulunca ifade kırılganlığı ölçülür.
+ * Varyantlar sunucuda sabit tutulur ki iki test karşılaştırılabilir olsun. */
+function variantSection(pid){
+  const growth=['growth','business','agency'].includes(S.plan);
+  const st=S.varTest[pid];
+
+  if(!growth) return `<section class="dgsec">
+    <h4>✳ ${T('Varyant sağlamlık testi')} <span class="chip">Growth+</span></h4>
+    <p style="font-size:12.5px;color:var(--mute);line-height:1.7">${T('Aynı soruyu 6 farklı ifadeyle sorup markanızın hangi ifadelerde kaybolduğunu ölçer. Bir ifadede 1. sırada olup eş anlamlısında hiç geçmemek sık görülen ve tek ifadeyle ölçen araçların göremediği bir durumdur. Growth ve üzeri planlarda kullanılabilir.')}</p>
+  </section>`;
+
+  if(!st){ loadVarTest(pid); return `<section class="dgsec">
+    <h4>✳ ${T('Varyant sağlamlık testi')}</h4>
+    <div class="empty" style="padding:22px">◌ ${T('Kontrol ediliyor…')}</div></section>`; }
+  if(st.busy && !st.data) return `<section class="dgsec">
+    <h4>✳ ${T('Varyant sağlamlık testi')}</h4>
+    <div class="empty" style="padding:22px">◌ ${T('Varyantlar üretiliyor ve motorlara soruluyor — bu bir dakika sürebilir…')}</div></section>`;
+
+  const v=st.data;
+  if(v && v.error) return `<section class="dgsec">
+    <h4>✳ ${T('Varyant sağlamlık testi')}</h4>
+    <div class="empty" style="padding:22px"><div class="ic">⚠</div>${esc(v.error)}</div>
+    <button class="btn b-gh b-sm" onclick="startVarTest('${pid}')">${T('Tekrar dene')}</button></section>`;
+
+  if(!v || !v.variants || !v.variants.length) return `<section class="dgsec">
+    <h4>✳ ${T('Varyant sağlamlık testi')}</h4>
+    <p style="font-size:12.5px;color:var(--mute);line-height:1.7;margin-bottom:13px">${T('Bu sorgunun 6 eş anlamlı ifadesi üretilir ve her biri en ağırlıklı 4 motorda birer kez sorulur (~24 ölçüm). Sonuç: markanız hangi ifadelerde görünüyor, hangilerinde kayboluyor.')}</p>
+    <button class="btn b-pri b-sm" onclick="startVarTest('${pid}')">✳ ${T('Testi başlat')}</button></section>`;
+
+  const engines=[...new Set(v.cells.map(c=>c.engineKey))];
+  const pl=k=>(S.data.plats||[]).find(p=>p.id===k)||{n:k,c:'var(--pri)'};
+  const cell=(vid,ek)=>{
+    const c=v.cells.find(x=>x.variantId===vid&&x.engineKey===ek);
+    if(!c) return `<td class="n" style="color:var(--mute2)">◌</td>`;
+    return c.mentioned
+      ? `<td class="n" style="color:var(--ok);font-weight:600">✓${c.rank?` <span class="mono" style="font-size:10.5px;color:var(--mute)">${c.rank}.</span>`:''}</td>`
+      : `<td class="n" style="color:var(--bad)">✕</td>`;
+  };
+  const r=v.report||{robustness:0,measured:0};
+  const col=r.robustness>=70?'var(--ok)':r.robustness>=40?'var(--warn)':'var(--bad)';
+
+  return `<section class="dgsec">
+    <h4>✳ ${T('Varyant sağlamlık testi')}
+      ${v.pending?`<span class="chip warn">◌ ${v.pending} ${T('ölçüm bekliyor')}</span>`:''}
+      <span style="margin-left:auto;display:flex;gap:8px">
+        ${v.pending?`<button class="btn b-gh b-sm" onclick="loadVarTest('${pid}',true)">↻ ${T('Yenile')}</button>`:''}
+        <button class="btn b-gh b-sm" onclick="startVarTest('${pid}')">${T('Yeniden koştur')}</button></span></h4>
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:13px">
+      <b style="font-size:26px;color:${col}">%${r.robustness.toFixed(0)}</b>
+      <span style="font-size:12.5px;color:var(--mute)">${T('sağlamlık')} — ${r.mentionedCells}/${r.measured} ${T('ifade × motor hücresinde anıldınız. %70 üstü sağlam, %40 altı kırılgan: marka belirli kalıplara bağımlı demektir.')}</span></div>
+    <table class="dgst"><thead><tr><th>${T('İfade')}</th>${engines.map(e=>`<th class="n">${esc(pl(e).n)}</th>`).join('')}</tr></thead>
+    <tbody>${v.variants.map(x=>`<tr><td style="font-size:12.5px;max-width:300px">${esc(x.text)}</td>${engines.map(e=>cell(x.id,e)).join('')}</tr>`).join('')}</tbody></table>
+    <p class="mut" style="font-size:11px;margin-top:10px">${T('Her hücre tek koşudur ve skora girmez; test yalnızca ifade duyarlılığını ölçer. ✕ satırındaki ifadeye doğrudan cevap veren içerik, kapsamı en hızlı genişleten adımdır.')}</p>
+  </section>`;
+}
+
+async function loadVarTest(pid,force){
+  const st=S.varTest[pid];
+  if(st&&st.busy) return;
+  if(st&&st.data&&!force) return;
+  S.varTest[pid]={...(st||{}),busy:true};
+  try{
+    const r=await api.get(`/api/prompts/variants?workspace=${S.workspaceId}&prompt=${encodeURIComponent(pid)}`);
+    S.varTest[pid]={busy:false,data:r};
+  }catch(e){ S.varTest[pid]={busy:false,data:{error:e.message}}; }
+  if(S.route==='diag') render();
+}
+
+async function startVarTest(pid){
+  const st=S.varTest[pid];
+  if(st&&st.busy) return;
+  S.varTest[pid]={busy:true,data:null};
+  if(S.route==='diag') render();
+  try{
+    await api.post('/api/prompts/variants',{workspaceId:S.workspaceId,promptId:pid});
+    toast(T('Test kuyruğa alındı — ölçümler geldikçe tablo dolar'));
+  }catch(e){
+    S.varTest[pid]={busy:false,data:{error:e.message}};
+    if(S.route==='diag') render();
+    return;
+  }
+  S.varTest[pid]={busy:false,data:null};
+  loadVarTest(pid,true);
 }
 
 /**
