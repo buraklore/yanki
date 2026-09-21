@@ -196,3 +196,31 @@ describe('needsMoreRuns — cost control', () => {
     expect(needsMoreRuns([run(), run(), run(), run(), run()], 5)).toBe(false);
   });
 });
+
+/* ---- weightedShareOfVoice (§11) ------------------------------------ */
+import { weightedShareOfVoice } from '../lib/score';
+
+describe('weightedShareOfVoice', () => {
+  it('sums to 100 over the tracked set', () => {
+    const w = weightedShareOfVoice({ self: [1, 2], a: [2, 1], b: [3, 3] });
+    const total = Object.values(w).reduce((x, y) => x + y, 0);
+    expect(total).toBeCloseTo(100, 6);
+  });
+
+  it('weighs first place above last place for equal mention counts', () => {
+    // Two brands, both mentioned twice: one always 1st, one always 4th.
+    const w = weightedShareOfVoice({ leader: [1, 1], trailer: [4, 4] });
+    expect(w.leader).toBeGreaterThan(w.trailer);
+    // π(1)=1.00, π(4)≈0.4307 → leader ≈ 69.9%
+    expect(w.leader).toBeCloseTo(100 / (1 + prominence(4)), 1);
+  });
+
+  it('counts rank-0 (degraded) mentions at fourth-place weight, not zero', () => {
+    const w = weightedShareOfVoice({ self: [0], rival: [4] });
+    expect(w.self).toBeCloseTo(50, 6);
+  });
+
+  it('returns zeros on an empty window', () => {
+    expect(weightedShareOfVoice({ self: [] }).self).toBe(0);
+  });
+});
