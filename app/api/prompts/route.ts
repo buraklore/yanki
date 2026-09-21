@@ -12,6 +12,9 @@ const Add = z.object({
     intent: z.enum(['transactional', 'brand_defence', 'comparison', 'evaluation', 'informational']),
     volume: z.number().int().min(1).max(1_000_000).default(200),
     source: z.enum(['ai', 'custom']).default('custom'),
+    // §5 — optional per-prompt market. Null inherits from the workspace.
+    language: z.string().regex(/^[a-z]{2}$/).nullable().optional(),
+    countryCode: z.string().regex(/^[A-Z]{2}$/).nullable().optional(),
   })).min(1).max(200),
 });
 
@@ -21,7 +24,7 @@ export const GET = handler(async (req) => {
   if (!id) throw new HttpError(400, 'workspace required');
   await requireWorkspace(s, id);
   const rows = await sql`
-    select id, text, intent, volume, source, active from prompts
+    select id, text, intent, volume, source, active, language, country_code from prompts
      where workspace_id = ${id} order by created_at`;
   return Response.json({ prompts: rows });
 });
@@ -40,6 +43,7 @@ export const POST = handler(async (req) => {
   const rows = b.prompts.slice(0, room).map(p => ({
     workspace_id: b.workspaceId, text: p.text.trim(),
     intent: p.intent, volume: p.volume, source: p.source,
+    language: p.language ?? null, country_code: p.countryCode ?? null,
   }));
   const inserted = await sql`
     insert into prompts ${sql(rows)} on conflict (workspace_id, text) do nothing returning id`;
