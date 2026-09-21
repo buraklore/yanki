@@ -513,3 +513,23 @@ create index if not exists generated_content_ws_idx
 -- source). Deleting the parent deletes its variants.
 alter table prompts add column if not exists parent_id uuid references prompts(id) on delete cascade;
 create index if not exists prompts_parent_idx on prompts (parent_id) where parent_id is not null;
+
+-- §bot traffic — crawler log ingestion (the README's "şema hazır" debt, now
+-- actually paid). Aggregated per (workspace, day, bot): raw log lines never
+-- touch the database, so a busy site cannot bloat it and no visitor data is
+-- stored — only AI-crawler counters.
+alter table workspaces add column if not exists ingest_token text unique;
+
+create table if not exists bot_hits (
+  workspace_id uuid not null references workspaces(id) on delete cascade,
+  day          date not null,
+  bot          text not null,
+  hits         integer not null default 0,
+  llms_hits    integer not null default 0,   -- requests to /llms.txt
+  robots_hits  integer not null default 0,   -- requests to /robots.txt
+  sitemap_hits integer not null default 0,   -- requests to sitemap files
+  first_seen   timestamptz not null default now(),
+  last_seen    timestamptz not null default now(),
+  primary key (workspace_id, day, bot)
+);
+create index if not exists bot_hits_ws_idx on bot_hits (workspace_id, day desc);
