@@ -2602,6 +2602,7 @@ const S = {
   insights: null, attributes: null, changes: null, attrBusy: false,
   candidates: null, candBusy: false,
   recs: null, recsBusy: false,
+  genHistory: null, genBusy: false, writerPid: null,
   lang: 'tr',
 };
 
@@ -3034,6 +3035,7 @@ function adopt(r) {
   S.prompts = (r.prompts || []).map(p => ({
     id: p.id, text: p.text, intent: p.intent, vol: p.volume,
     src: p.source, active: true, score: p.score, ci: p.ci,
+    lang: p.language || null, cc: p.countryCode || null,
     coverage: p.coverage, opportunity: p.opportunity, engines: p.engines,
   }));
   S.enginesMeta = r.engines;
@@ -3100,6 +3102,7 @@ function adopt(r) {
       plats: (s.engines || []).map(k => plats.find(p => p.id === k)).filter(Boolean),
     })),
     series: (r.series || []).map(x => Number(x.score)),
+    seriesDates: (r.series || []).map(x => x.scan_date),
     seriesDates: (r.series || []).map(x => x.scan_date),
     audit,
     auditScore: r.audit ? Number(r.audit.total_score) : 0,
@@ -3348,7 +3351,7 @@ function donut(items,center,sub){
     <text x="72" y="70" text-anchor="middle" font-size="21" font-weight="600" fill="var(--fg)">${center}</text>
     <text x="72" y="86" text-anchor="middle" font-size="10" fill="var(--mute2)" font-family="ui-monospace">${sub}</text></svg>`;
 }
-function trendChart(ser){
+function trendChart(ser,marks){
   if(!ser || ser.length<2) return `<div class="empty" style="padding:34px 12px">
     <div class="ic">◜</div>${T('Ölçüm biriktikçe eğri oluşur')}</div>`;
   const W=680,H=190,PL=38,PR=14,PT=14,PB=26;
@@ -3375,6 +3378,13 @@ function trendChart(ser){
     <path d="${line} L ${sx(ser.length-1).toFixed(1)} ${H-PB} L ${PL} ${H-PB} Z" fill="url(#tgr)"/>
     <path d="${line}" fill="none" stroke="${col}" stroke-width="2"
       stroke-linejoin="round" stroke-linecap="round"/>
+    ${(marks||[]).map(m=>`
+      <line x1="${sx(m.i).toFixed(1)}" x2="${sx(m.i).toFixed(1)}" y1="${PT}" y2="${H-PB}"
+        stroke="var(--pri)" stroke-opacity=".55" stroke-width="1.4" stroke-dasharray="3 4"/>
+      <g><title>${esc(m.label)}</title>
+      <circle cx="${sx(m.i).toFixed(1)}" cy="${PT+6}" r="7" fill="var(--pri)" fill-opacity=".14"/>
+      <text x="${sx(m.i).toFixed(1)}" y="${PT+9.5}" text-anchor="middle" font-size="9"
+        fill="var(--pri)" font-weight="700">✓</text></g>`).join('')}
     <circle cx="${sx(ser.length-1).toFixed(1)}" cy="${sy(ser[ser.length-1]).toFixed(1)}" r="3.5" fill="${col}"/>
     <text x="${PL}" y="${H-7}" font-size="10" fill="currentColor" fill-opacity=".45">-${S.range} ${T('gün')}</text>
     <text x="${W-PR}" y="${H-7}" text-anchor="end" font-size="10"
@@ -3577,7 +3587,24 @@ function errorScreen(msg){
 const POST={
   plan(){ if(!S.insights) loadInsights().then(()=>{ if(S.route==='plan') render(); }); },
   rivals(){ if(!S.attributes) loadAttributes(true).then(()=>{ if(S.route==='rivals') render(); }); },
-  dashboard(){ if(!S.changes) loadChanges().then(()=>{ if(S.route==='dashboard') render(); }); },};
+  dashboard(){ if(!S.changes) loadChanges().then(()=>{ if(S.route==='dashboard') render(); });
+               if(!S.recs && !S.recsBusy) loadRecs(); },};
+
+/* §26 — yapıldı işaretlerinin trend eğrisi üzerindeki yeri. Tarih, günlük
+ * skor serisindeki güne eşlenir; seri dışında kalan işaretler çizilmez. */
+function doneMarks(){
+  const dates=(S.data&&S.data.seriesDates)||[];
+  if(!dates.length||!S.recs) return [];
+  const day=v=>String(v).slice(0,10);
+  const idx=new Map(dates.map((d,i)=>[day(d),i]));
+  const out=[];
+  for(const r of S.recs){
+    if(r.status!=='done'||!r.done_at) continue;
+    const i=idx.get(day(r.done_at));
+    if(i!==undefined) out.push({i,label:`✓ ${r.title} · ${new Date(r.done_at).toLocaleDateString()}`});
+  }
+  return out.slice(0,8);
+}
 
 const VIEWS={};
 
@@ -3636,6 +3663,30 @@ const KPI_HELP = {
       ['In short', 'Classic share of voice, adapted to the AI channel. Your share among the brands named on the same queries; you and your competitors add up to 100%.'],
       ['Your competitor list sets the number', 'The calculation covers only the competitor set you defined, not the whole market. Adding a competitor lowers your share — that is the measurement widening, not a decline. Keep the list fixed when comparing periods.'],
       ['How it differs from visibility score', 'Visibility score measures you on your own; share of voice measures your position in the market. If your score holds steady while a rival accelerates, your share erodes — standing still in a growing channel is a decline.'],
+    ]},
+  },
+  gap: {
+    tr: { t: 'Rakip farkı', b: [
+      ['Kısaca', 'Ağırlıklı ses payınız ile en güçlü rakibinkinin farkı, puan olarak. Artı değer öndesiniz, eksi değer geridesiniz demektir.'],
+      ['Ağırlıklı ses payı nedir', 'Düz ses payı kaç kez anıldığınızı sayar; ağırlıklısı her anılmayı cevaptaki sıraya göre tartar. Formül skorla aynı eğridir: 1. sıra 1.00, 2. sıra 0.63, 4. sıra 0.43 ağırlığında (π = 1/log2(1+sıra)). Yani her cevapta sonuncu anılmakla her cevaba liderlik etmek artık aynı sayı değildir.'],
+      ['Nasıl okunur', 'Fark kapanıyorsa yaklaşıyorsunuz, açılıyorsa rakip hızlanıyor demektir. Hangi sorgularda kaybettiğinizi Teşhis ekranında sorgu sorgu görürsünüz.'],
+    ]},
+    en: { t: 'Competitor gap', b: [
+      ['In short', 'Your weighted share of voice minus the strongest rival\u2019s, in points. Positive means you lead; negative means you trail.'],
+      ['What weighted SoV is', 'Plain share of voice counts mentions; the weighted version weighs each mention by its position, on the same curve the score uses: 1st place 1.00, 2nd 0.63, 4th 0.43 (π = 1/log2(1+rank)). Trailing every answer no longer reads the same as leading every answer.'],
+      ['How to read it', 'A closing gap means you are catching up; a widening one means the rival is accelerating. The Diagnosis screen shows which queries you are losing, one by one.'],
+    ]},
+  },
+  coverage: {
+    tr: { t: 'Sorgu kapsamı', b: [
+      ['Kısaca', 'Takip ettiğiniz aktif sorguların kaçında, seçili dönemde en az bir kez anıldınız. Anılma oranından farkı: o, tüm ölçüm hücrelerini sayar; bu, sorgu bazında var/yok sorusunu cevaplar.'],
+      ['Neden önemli', 'Kapsam dışındaki her sorgu, o soruyu soran müşterinin sizi hiç görmediği bir alandır. Önce kapsamı genişletmek, sonra pozisyonu iyileştirmek gerekir.'],
+      ['Ne yapmalı', 'Hiç geçmediğiniz sorgular Teşhis ekranında en üstte listelenir; her biri için neden geçmediğiniz ve nasıl geçeceğiniz ölçülmüş sebepleriyle gösterilir.'],
+    ]},
+    en: { t: 'Query coverage', b: [
+      ['In short', 'Of the active queries you track, how many mentioned you at least once in the selected window. Unlike mention rate, which counts every measurement cell, this answers the per-query yes/no.'],
+      ['Why it matters', 'Every uncovered query is a customer question where you are invisible. Widen coverage first, then improve position.'],
+      ['What to do', 'Queries where you never appear sit at the top of the Diagnosis screen, each with measured reasons and a path in.'],
     ]},
   },
   audit: {
@@ -3818,6 +3869,24 @@ VIEWS.dashboard=()=>{
         : `<div class="v" style="color:var(--mute2)">—</div>
            <div class="d"><a href="#" onclick="go('rivals');return false"
              style="color:var(--pri);display:inline-block;padding:5px 0;font-weight:500">${T('Add competitors →')}</a></div>`}</div>
+
+    <div class="kpi"><div class="t"><i style="background:var(--pri)"></i>${T('Competitor gap')}
+      ${kpiHelp('gap')}</div>
+      ${(()=>{const me=(d.sov||[]).find(x=>x.you);
+        const best=(d.sov||[]).filter(x=>!x.you).sort((a,b)=>(b.wpct||0)-(a.wpct||0))[0];
+        if(!me||!best||me.wpct===undefined) return `<div class="v" style="color:var(--mute2)">—</div>
+          <div class="d">${T('Rakip ekleyince hesaplanır')}</div>`;
+        const g=(me.wpct||0)-(best.wpct||0);
+        return `<div class="v ${g>=0?'ok':'bad'}">${g>=0?'+':''}${g.toFixed(1)}<small style="font-size:14px;color:var(--mute2);font-weight:400">${T('puan')}</small></div>
+          <div class="d">${g>=0?T('en yakın rakibin önündesiniz'):`${esc(best.n)} ${T('önde')}`} · ${T('ağırlıklı ses payı farkı')}</div>`})()}</div>
+
+    <div class="kpi"><div class="t"><i style="background:var(--ok)"></i>${T('Query coverage')}
+      ${kpiHelp('coverage')}</div>
+      ${(()=>{const act=S.prompts.filter(p=>p.active);
+        const inn=act.filter(p=>Number(p.coverage)>0).length;
+        return act.length?`<div class="v">${inn}<small style="font-size:14px;color:var(--mute2);font-weight:400"> / ${act.length}</small></div>
+          <div class="d">${T('sorguda en az bir kez anıldınız')} · %${act.length?(inn/act.length*100).toFixed(0):0}</div>`
+        :`<div class="v" style="color:var(--mute2)">—</div><div class="d">${T('Henüz sorgu yok')}</div>`})()}</div>
 
     <div class="kpi"><div class="t"><i style="background:var(--warn)"></i>${T('Audit score')}
       ${kpiHelp('audit')}</div>
@@ -4293,7 +4362,7 @@ VIEWS.platforms=()=>{
   <div class="card"><div class="ch"><div><h3>${T('Visibility Trend')} ${kpiHelp('trend')}</h3>
     <div class="sub">${T('Günlük dalgalanma olağandır; kampanya etkisini dört haftalık eğimde okuyun.')}</div></div>
     <span class="rt">${T('Last')} ${S.range} ${T('days')}</span></div>
-    <div class="cb">${trendChart(ser)}</div></div>
+    <div class="cb">${trendChart(ser,doneMarks())}</div></div>
 
   <div class="card"><div class="ch"><div><h3>${T('Platform Details')}</h3>
     <div class="sub">${T('Ağırlık, o platformun toplam skorunuzdaki payıdır — gerçek kullanım oranlarına göre belirlenir, sizin ayarınız değildir.')}</div></div>
@@ -4411,7 +4480,7 @@ async function loadRecs(){
     const r=await api.get(`/api/recommendations?workspace=${S.workspaceId}`);
     S.recs=r.recommendations||[];
   }catch{ S.recs=[]; }
-  finally{ S.recsBusy=false; if(S.route==='center') render(); }
+  finally{ S.recsBusy=false; if(S.route==='center'||S.route==='dashboard') render(); }
 }
 
 async function markRec(i,status){
@@ -5558,7 +5627,7 @@ VIEWS.prompts=()=>{
     <tbody>${list.map(p=>{
       const cs=S.data.cells.filter(c=>c.p.id===p.id&&platAllowed(c.pl));
       const cov=cs.length?cs.filter(c=>c.m>0).length/cs.length*100:0;
-      return `<tr><td style="max-width:320px">${esc(p.text)}</td>
+      return `<tr><td style="max-width:320px">${esc(p.text)}${(p.lang||p.cc)?` <span class="chip" title="${T('Bu sorgu farklı bir pazarda soruluyor')}">${[p.lang?p.lang.toUpperCase():null,p.cc].filter(Boolean).join(' · ')}</span>`:''}</td>
       <td><span class="chip">${intentLabel(p.intent)}</span></td><td class="n">${nf(p.vol)}</td>
       <td class="n" style="color:${cov>50?'var(--ok)':cov>0?'var(--warn)':'var(--bad)'}">${cov.toFixed(0)}%</td>
       <td><span class="chip ${p.src==='ai'?'vio':''}">${p.src==='ai'?T('AI-generated'):T('Custom')}</span></td>
@@ -5609,13 +5678,25 @@ function newPromptModal(){
    <div class="fld"><label>${T(`Intent`)}</label><select class="in" id="ni">
      ${Object.entries(INTENTS).map(([k,v])=>`<option value="${k}">${v.label} · ×${v.mult.toFixed(2)}</option>`).join('')}</select>
      <div class="hint">${T(`The intent multiplier sets the weight in the score: transactional 1.50 … informational 0.80`)}</div></div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+     <div class="fld"><label>${T('Language')}</label><select class="in" id="nl">
+       <option value="">${T('Workspace ile aynı')}</option>
+       <option value="tr">Türkçe</option><option value="en">English</option>
+       <option value="de">Deutsch</option><option value="ar">العربية</option></select></div>
+     <div class="fld"><label>${T('Country')}</label><select class="in" id="nc">
+       <option value="">${T('Workspace ile aynı')}</option>
+       ${OB_COUNTRIES.map(([code,ad])=>`<option value="${code}">${esc(ad)}</option>`).join('')}</select></div>
+   </div>
+   <div class="hint" style="margin:-4px 0 12px">${T('Sadece bu sorgunun sorulacağı pazarı değiştirir; puanlama değişmez. Boş bırakırsanız workspace ayarı geçerli.')}</div>
    <button class="btn b-pri b-full" onclick="addPrompt2()">${T("Add and scan")}</button>`);
 }
 async function addPrompt2(){
   const v=$('#np').value.trim(); if(!v) return toast(T('Prompt is required'));
   try{
+    const lang=$('#nl')?$('#nl').value:'', cc=$('#nc')?$('#nc').value:'';
     await api.post('/api/prompts',{workspaceId:S.workspaceId,
-      prompts:[{text:v,intent:$('#ni').value,volume:300,source:'custom'}]});
+      prompts:[{text:v,intent:$('#ni').value,volume:300,source:'custom',
+        ...(lang?{language:lang}:{}), ...(cc?{countryCode:cc}:{})}]});
     closeModal(); await loadResults();
     toast(T('Prompt added — it will be scanned on the next run'));
   }catch(e){ toast(e.message); }
@@ -5924,7 +6005,9 @@ let tool='writer';
 VIEWS.tools=()=>{
   const TOOL_TITLES={writer:T('AI Content Writer'),robots:T('Robots.txt Analyser & Generator'),
     llms:T('LLMs.txt Generator'),schema:T('Schema Markup Generator'),meta:T('Meta Tag Generator')};
+  if(S.genHistory===null && !S.genBusy) loadGenHistory();
   return head(T('Tools'),T('Generate your technical GEO files in one click. llms.txt, robots.txt, schema markup and meta tag generators.'))+
+  genHistoryCard()+
   `<div class="pills">${Object.entries(TOOL_TITLES).map(([k,v])=>
     `<button class="${tool===k?'on':''}" onclick="toolOpen('${k}')" style="padding:8px 15px;font-size:13px">${v}</button>`).join('')}</div>
    <div id="toolBox">${toolView()}</div>`;
@@ -5999,6 +6082,50 @@ function runGen(){
     <div style="display:flex;gap:9px;margin-top:12px"><button class="btn b-pri b-sm" onclick="copy('gc')">${T('Copy')}</button>
     <button class="btn b-gh b-sm" onclick="dl('${map[tool]}',document.getElementById('gc').textContent)">${T('Download')}</button></div>`;
   toast(map[tool]+' generated');
+  saveGen(tool, map[tool], out);
+}
+
+/* §18/§19 — üretim kaydı. Fire-and-forget: kayıt başarısız olsa bile indirme
+ * engellenmez; tarih, "ürettiğim düzeltme yayına girdi mi ve tam olarak
+ * neydi" sorusunun sunucudaki cevabıdır. */
+async function saveGen(kind,title,body,promptId){
+  try{
+    const r=await api.post('/api/content',{workspaceId:S.workspaceId,kind,title,
+      body:String(body).slice(0,120000), ...(promptId?{promptId}:{})});
+    S.genHistory=[r.item,...(S.genHistory||[])].slice(0,50);
+    if(S.route==='tools') render();
+  }catch{ /* kayıt opsiyonel; üretim zaten ekranda */ }
+}
+
+async function loadGenHistory(){
+  if(S.genBusy) return; S.genBusy=true;
+  try{ const r=await api.get(`/api/content?workspace=${S.workspaceId}`); S.genHistory=r.items||[]; }
+  catch{ S.genHistory=[]; }
+  finally{ S.genBusy=false; if(S.route==='tools') render(); }
+}
+
+async function reDl(id){
+  try{
+    const r=await api.req('/api/content',{method:'PUT',body:JSON.stringify({workspaceId:S.workspaceId,id})});
+    const map={robots:'robots.txt',llms:'llms.txt',schema:'schema.html',meta:'meta-tags.html',content:'content.md'};
+    dl(map[r.item.kind]||'output.txt', r.item.body);
+  }catch(e){ toast(e.message,'error'); }
+}
+
+function genHistoryCard(){
+  const h=S.genHistory;
+  if(!h||!h.length) return '';
+  const map={robots:'robots.txt',llms:'llms.txt',schema:'schema',meta:'meta',content:T('İçerik')};
+  return `<div class="card" style="margin-bottom:16px"><div class="ch"><div>
+    <h3>⭳ ${T('Üretilenler')} <span class="chip">${h.length}</span></h3>
+    <div class="sub">${T('Bu workspace için üretilmiş dosyaların tarihli kaydı. Tarih, botların taramaya başlamasını ölçmenin çapasıdır.')}</div>
+  </div></div><div class="cb">${h.slice(0,8).map(x=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span class="chip">${map[x.kind]||x.kind}</span>
+      <span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.title)}</span>
+      <span class="mut mono" style="font-size:11px">${new Date(x.created_at).toLocaleDateString()}</span>
+      <button class="lnk" onclick="reDl('${x.id}')">⭳ ${T('İndir')}</button>
+    </div>`).join('')}</div></div>`;
 }
 function toolOutput(){
   const b=S.brand;
@@ -6022,7 +6149,7 @@ function toolOutput(){
   const locale=b.country==='Turkey'?'tr_TR':'en_US';
   return `<title>${title}</title>\n<meta name="description" content="${desc}">\n<link rel="canonical" href="${b.site}">\n\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="${b.name}">\n<meta property="og:title" content="${title}">\n<meta property="og:description" content="${desc}">\n<meta property="og:url" content="${b.site}">\n<meta property="og:locale" content="${locale}">\n\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="${title}">\n<meta name="twitter:description" content="${desc}">\n\n\n<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">`;
 }
-function writerFor(pid){const p=S.prompts.find(x=>x.id===pid);S.writerTopic=p?p.text.replace(/"/g,''):'';
+function writerFor(pid){const p=S.prompts.find(x=>x.id===pid);S.writerTopic=p?p.text.replace(/"/g,''):'';S.writerPid=p?p.id:null;
   tool='writer';go('tools');setTimeout(runWriter,60)}
 function runWriter(){
   const topic=($('#wTopic')?.value||S.writerTopic||'').trim();
@@ -6063,6 +6190,7 @@ function runWriter(){
    <div style="margin-top:14px"><b style="font-size:13px">${T('GEO checklist')}</b>
      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">
        ${check.map(c=>`<span class="chip ${c[1]}">${c[1]==='ok'?'✓':'!'} ${c[0]}</span>`).join('')}</div></div>`;
+  saveGen('content', TITLE.slice(0,200), md, S.writerPid||null);
   toast('Content draft generated');
 }
 
