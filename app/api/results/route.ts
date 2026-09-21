@@ -211,7 +211,7 @@ export const GET = handler(async (req) => {
   // Deriving the list from scores would hide brand-new prompts until the next
   // scan, which is exactly when the user wants to see them.
   const allPrompts = await sql`
-    select id, text, intent, volume, source from prompts
+    select id, text, intent, volume, source, language, country_code from prompts
      where workspace_id = ${workspaceId} and active order by volume desc`;
 
   // Per-prompt rollup across engines, plus the opportunity score.
@@ -235,6 +235,7 @@ export const GET = handler(async (req) => {
   const sourceCount = sources.length || 1;
   const prompts = allPrompts.map((row: {
     id: string; text: string; intent: Intent; volume: number; source: string;
+    language: string | null; country_code: string | null;
   }) => {
     const p = byPrompt.get(row.id) ?? {
       id: row.id, text: row.text, intent: row.intent, volume: row.volume,
@@ -243,6 +244,7 @@ export const GET = handler(async (req) => {
     const coverage = p.n ? p.coverage / p.n : 0;
     return {
       id: p.id, text: row.text, intent: row.intent, volume: row.volume, source: row.source,
+      language: row.language ?? null, countryCode: row.country_code ?? null,
       scanned: p.n > 0,
       score: p.n ? +(p.score / p.n).toFixed(2) : 0,
       ci: p.n ? +(Math.sqrt(p.ci) / p.n).toFixed(2) : 0,
