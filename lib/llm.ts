@@ -50,6 +50,13 @@ export async function llmText(req: LlmRequest): Promise<string | null> {
   const provider = llmProvider();
   if (!provider) return null;
 
+  // Every utility call runs inside a serverless function with a hard
+  // wall-clock ceiling. An unbounded fetch here is how one hung provider
+  // socket turns into a 504 that erases a whole queue batch — measured in
+  // production, not hypothesised. Callers with tighter needs pass their own
+  // signal; nobody gets "forever".
+  if (!req.signal) req = { ...req, signal: AbortSignal.timeout(20_000) };
+
   const maxTokens = req.maxTokens ?? 1200;
   const temperature = req.temperature ?? 0;
 
