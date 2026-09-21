@@ -83,6 +83,22 @@ export const GET = handler(async (req) => {
     sql`select domain from competitors where workspace_id = ${workspaceId} and active`,
   ]);
 
+  /* §24 — motor başına marka sıralaması. "Accurate 3. sırada" tek başına
+   * yarım bilgidir; kullanıcı ChatGPT'de 3, Gemini'de hiç olduğunu görmek
+   * ister. rank_kind agregasyona girmez — koşu düzeyinde saklanır ve ham
+   * cevapta görülür; burada yalnızca ortalama sıra raporlanır. */
+  const engineBrands = await sql`
+    select ar.engine_key, coalesce(c.name, '') as name, rb.is_self,
+           count(*)::int as n, round(avg(rb.rank), 1) as avg_rank
+      from run_brands rb
+      join answer_runs ar on ar.id = rb.run_id
+ left join competitors c on c.id = rb.competitor_id
+     where ar.workspace_id = ${workspaceId}
+       and ar.prompt_id = ${promptId}
+       and ar.asked_at > now() - make_interval(days => ${days})
+     group by 1, 2, 3
+     order by ar.engine_key, avg(rb.rank)`;
+
   if (!prompt) return Response.json({ error: 'Sorgu bulunamadı.' }, { status: 404 });
 
   const ownHost = ws.domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
@@ -159,6 +175,21 @@ export const GET = handler(async (req) => {
     ],
     sources: kaynaklar,
     brands: markalar,
+    /** Motor başına, ortalama sıraya göre dizili marka listesi. */
+    byEngine: Object.entries(
+      (engineBrands as unknown as {
+        engine_key: string; name: string; is_self: boolean; n: number; avg_rank: string | null;
+      }[]).reduce<Record<string, { name: string | null; isSelf: boolean; answers: number; avgRank: number | null }[]>>(
+        (acc, r) => {
+          (acc[r.engine_key] ??= []).push({
+            name: r.is_self ? null : r.name,
+            isSelf: r.is_self === true,
+            answers: r.n,
+            avgRank: r.avg_rank === null ? null : Number(r.avg_rank),
+          });
+          return acc;
+        }, {}),
+    ).map(([engineKey, list]) => ({ engineKey, brands: list })),
     auditGaps: (auditRows as unknown as {
       factor_key: string; label: string; category: string; status: string;
     }[]).map(f => ({ key: f.factor_key, label: f.label, category: f.category, status: f.status })),
