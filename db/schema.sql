@@ -489,3 +489,19 @@ create index if not exists recommendations_ws_idx
 -- §5 — per-prompt market override. Null means "inherit from workspace".
 alter table prompts add column if not exists language char(2);
 alter table prompts add column if not exists country_code char(2);
+
+-- §18/§19 — generated output history. The generators run in the browser from
+-- workspace data; what the server owns is the record: what was produced, when,
+-- and for which recommendation, so "did the fix I generated actually ship and
+-- work" has a date to anchor on. Bodies are capped at insert time.
+create table if not exists generated_content (
+  id           uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references workspaces(id) on delete cascade,
+  kind         text not null,           -- llms | robots | schema | meta | content
+  title        text not null,
+  body         text not null,
+  prompt_id    uuid references prompts(id) on delete set null,
+  created_at   timestamptz not null default now()
+);
+create index if not exists generated_content_ws_idx
+  on generated_content (workspace_id, created_at desc);
