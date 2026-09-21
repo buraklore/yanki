@@ -63,6 +63,18 @@ export async function enqueueScan(
     .filter((e: { key: string }) => available.some((x: Engine) => x.key === e.key))
     .map((e: { key: string }) => e.key as string);
 
+  // §keys-are-the-contract — an engine exists exactly while its key does.
+  // Removing a key must remove the engine everywhere, the queue included:
+  // jobs enqueued before the removal would otherwise be retried forever and
+  // sit in the progress denominator as work that can never happen. Pruning
+  // here makes a rescan self-healing after any key change — no manual SQL.
+  if (allowed.length) {
+    await sql`
+      delete from scan_jobs
+       where scan_id = ${scan.id} and done_at is null
+         and engine_key not in ${sql(allowed)}`;
+  }
+
   const rows: Record<string, unknown>[] = [];
   let deferred = 0;
   for (const p of prompts) {
@@ -176,8 +188,9 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
         // An out-of-budget start is this invocation's problem, never the
         // job's: it must retry untouched on the next tick.
         const outOfBudget = /no time budget/.test(msg);
+        const unkeyed = /engine not configured/.test(msg);
         const permanent =
-          !outOfBudget && (quotaSpent ||
+          !outOfBudget && (unkeyed || quotaSpent ||
           /HTTP 40[0134]|invalid.?api.?key|API key not valid|incorrect api key|model.*not found|does not exist|unauthorized|permission/i.test(msg));
         await sql`update scan_jobs
              set error = ${msg.slice(0, 400)},
@@ -221,6 +234,11 @@ interface Job {
 
 async function runJob(job: Job) {
   const engine = engineByKey(job.engine_key);
+  // The key IS the engine. A job for an unkeyed engine (key removed after
+  // enqueue) is dropped in one attempt — no provider call, no retries.
+  if (engine && !engine.enabled()) {
+    throw new Error(`engine not configured: ${job.engine_key} has no API key`);
+  }
   if (!engine) throw new Error(`unknown engine ${job.engine_key}`);
 
   const [ws] = await sql`select * from workspaces where id = ${job.workspace_id}`;
