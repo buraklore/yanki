@@ -2600,6 +2600,8 @@ const S = {
   notify: { weekly: true, alerts: true, mailerConfigured: null },
   promptSource: null, promptAiAvailable: null, promptMix: null,
   insights: null, attributes: null, changes: null, attrBusy: false,
+  candidates: null, candBusy: false,
+  recs: null, recsBusy: false,
   lang: 'tr',
 };
 
@@ -3069,9 +3071,13 @@ function adopt(r) {
   })).filter(c => c.pl);
 
   const totalMentions = (r.competitors || []).reduce((a, c) => a + Number(c.mentions || 0), 0) + Number(r.selfMentions || 0);
+  /* wpct: pozisyon ağırlıklı ses payı (sunucuda hesaplanır, formül lib/score.ts).
+   * Düz pay "kaç kez anıldım", ağırlıklı pay "önerinin ne kadarını tutuyorum"
+   * sorusuna cevap verir; 1. sıra 1.00, 2. sıra 0.63, 4. sıra 0.43 ağırlığındadır. */
+  const wsov = r.weightedSov || {};
   const sov = [
-    { n: r.workspace.brandName, v: Number(r.selfMentions || 0), you: true },
-    ...(r.competitors || []).map(c => ({ n: c.name, v: Number(c.mentions || 0) })),
+    { n: r.workspace.brandName, v: Number(r.selfMentions || 0), you: true, wpct: Number(wsov['self'] || 0) },
+    ...(r.competitors || []).map(c => ({ n: c.name, v: Number(c.mentions || 0), wpct: Number(wsov[c.id] || 0) })),
   ].map(x => ({ ...x, pct: totalMentions ? (x.v / totalMentions) * 100 : 0 }));
 
   const audit = r.audit ? groupAudit(r.audit.factors) : [];
@@ -4327,7 +4333,16 @@ function exportPlats(){
 
 VIEWS.center=()=>{
   const d=S.data;
-  const items=buildCenter(d);
+  if(!S.recs && !S.recsBusy) loadRecs();
+
+  /* §21/§26 — kartlar deterministik üretilir (buildCenter), sunucu yalnızca
+   * hangilerinin yapıldı/yok sayıldı işaretlendiğini tutar. ref kartın kalıcı
+   * kimliğidir; done_at tarihleri önce/sonra karşılaştırmasının çapasıdır. */
+  const recByRef=new Map((S.recs||[]).map(r=>[r.ref,r]));
+  const all=buildCenter(d).map(x=>({...x, rec:recByRef.get(x.ref)||null}));
+  window._centerCards=all;
+  const done=all.filter(x=>x.rec&&x.rec.status==='done');
+  const items=all.filter(x=>!x.rec||x.rec.status==='open');
   const hi=items.filter(x=>x.sev==='high');
   const mid=items.filter(x=>x.sev==='mid');
   const low=items.filter(x=>x.sev==='low');
@@ -4357,7 +4372,9 @@ VIEWS.center=()=>{
         onclick="S.actFilter='${k}';render()">${l}<b>${n}</b></button>`).join('')}
   </div>
 
-  <div class="acts">${shown.map(x=>`
+  <div class="acts">${shown.map(x=>{
+    const i=all.indexOf(x);
+    return `
     <div class="act ${x.sev}">
       <div class="ah">
         <span class="ic">${x.icon}</span>
@@ -4367,12 +4384,59 @@ VIEWS.center=()=>{
       <span class="kind">${x.kind}</span>
       <p>${x.body}</p>
       <div class="aa">${x.actions.map(a=>
-        `<button class="${a.pri?'btn b-pri b-sm':'lnk'}" onclick="${a.go}">${a.label}</button>`).join('')}</div>
-    </div>`).join('')}</div>`
+        `<button class="${a.pri?'btn b-pri b-sm':'lnk'}" onclick="${a.go}">${a.label}</button>`).join('')}
+        <button class="lnk" onclick="markRec(${i},'done')" title="${T('Tarihi kaydedilir; skor değişimini bu tarihe göre okursunuz')}">✓ ${T('Yapıldı işaretle')}</button>
+        <button class="lnk" style="opacity:.65" onclick="markRec(${i},'dismissed')">${T('Yoksay')}</button></div>
+    </div>`;}).join('')}</div>`
   :`<div class="card"><div class="empty" style="padding:44px 16px"><div class="ic">✓</div>
      <b style="color:var(--fg);font-size:14px">${T('Bekleyen aksiyon yok')}</b>
-     <p style="margin-top:8px;max-width:50ch;margin-inline:auto">${T('Ölçüm tamamlandıkça buraya sinyaller düşer: rakibin öne geçtiği bir sorgu, denetimde kalan bir kriter, girilebilir yeni bir kaynak veya algıda bir bozulma.')}</p></div></div>`}`;
+     <p style="margin-top:8px;max-width:50ch;margin-inline:auto">${T('Ölçüm tamamlandıkça buraya sinyaller düşer: rakibin öne geçtiği bir sorgu, denetimde kalan bir kriter, girilebilir yeni bir kaynak veya algıda bir bozulma.')}</p></div></div>`}
+
+  ${done.length?`<div class="card" style="margin-top:16px"><div class="ch"><div>
+    <h3>✓ ${T('Tamamlananlar')} <span class="chip">${done.length}</span></h3>
+    <div class="sub">${T('İşaret tarihi, önce/sonra karşılaştırmasının çapasıdır: skor değişimini bu tarihlere göre okuyun.')}</div>
+  </div></div><div class="cb">${done.map(x=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--ok)">✓</span>
+      <span style="flex:1;text-decoration:line-through;opacity:.7">${x.title}</span>
+      <span class="mut mono" style="font-size:11px">${x.rec.done_at?new Date(x.rec.done_at).toLocaleDateString():''}</span>
+      <button class="lnk" onclick="undoRec('${x.rec.id}')">${T('Geri al')}</button>
+    </div>`).join('')}</div></div>`:''}`;
 };
+
+async function loadRecs(){
+  if(S.recsBusy) return;
+  S.recsBusy=true;
+  try{
+    const r=await api.get(`/api/recommendations?workspace=${S.workspaceId}`);
+    S.recs=r.recommendations||[];
+  }catch{ S.recs=[]; }
+  finally{ S.recsBusy=false; if(S.route==='center') render(); }
+}
+
+async function markRec(i,status){
+  const x=(window._centerCards||[])[i];
+  if(!x||!x.ref) return;
+  try{
+    const r=await api.post('/api/recommendations',{
+      workspaceId:S.workspaceId, ref:x.ref, kind:x.kindKey||'other',
+      // Sunucuya düz metin gider; kart başlığı esc() ile HTML'e kaçırılmıştı.
+      title:x.title.replace(/<[^>]*>/g,'').slice(0,300),
+      severity:x.sev, status,
+    });
+    S.recs=[...(S.recs||[]).filter(q=>q.ref!==x.ref), r.recommendation];
+    toast(status==='done'?T('Yapıldı olarak işaretlendi'):T('Yok sayıldı'));
+    render();
+  }catch(e){ toast(e.message,'error'); }
+}
+
+async function undoRec(id){
+  try{
+    await api.patch('/api/recommendations',{id,status:'open'});
+    S.recs=(S.recs||[]).map(q=>q.id===id?{...q,status:'open',done_at:null}:q);
+    render();
+  }catch(e){ toast(e.message,'error'); }
+}
 
 function buildCenter(d){
   const out=[];
@@ -4386,6 +4450,7 @@ function buildCenter(d){
       const hic=o.cover===0;
       const ticari=o.p.intent==='transactional'||o.p.intent==='comparison';
       out.push({
+        ref:`opp:${o.p.id}`, kindKey:'opportunity',
         sev: hic&&ticari ? 'high' : hic ? 'mid' : 'low',
         icon:'◎', kind:T('Fırsat'),
         title:`“${esc(o.p.text)}” ${hic?T('sorgusunda hiç geçmiyorsunuz'):T('sorgusunda zayıfsınız')}`,
@@ -4400,6 +4465,7 @@ function buildCenter(d){
   if(P && P.overall && P.overall.mentions>=8){
     const neg=P.overall.neg/P.overall.mentions*100;
     if(neg>=15) out.push({
+      ref:'perc:negtone', kindKey:'perception',
       sev: neg>=30?'high':'mid', icon:'◍', kind:T('Algı'),
       title:`${T('Cevapların')} %${neg.toFixed(0)}${T('inde olumsuz anılıyorsunuz')}`,
       body:`${P.overall.neg}/${P.overall.mentions} ${T('anılmada olumsuz ton ölçüldü. Hangi ifadelerin kullanıldığını örnek geçişlerde görün.')}`,
@@ -4407,6 +4473,7 @@ function buildCenter(d){
     });
     const kotu=(P.attributes||[]).filter(a=>a.polarity<=-0.25).slice(0,3);
     if(kotu.length) out.push({
+      ref:'perc:negattrs', kindKey:'perception',
       sev:'mid', icon:'◍', kind:T('Algı'),
       title:`${T('Olumsuz sıfatlar')}: ${kotu.map(a=>esc(a.label)).join(', ')}`,
       body:T('Yapay zeka markanızı bu ifadelerle tanımlıyor. Bunlar cevaptan cevaba taşınır; kaynaklarda düzeltilmedikçe kendiliğinden değişmez.'),
@@ -4419,6 +4486,7 @@ function buildCenter(d){
   acik.slice(0,3).forEach(s=>{
     const k=srcKind(s.kind);
     out.push({
+      ref:`src:open:${s.d}`, kindKey:'source',
       sev:'high', icon:'⚭', kind:T('Kaynak'),
       title:`${T('Kayda açık bir kaynak var')} — ${T(k.label)}`,
       body:`${T('Kaynaklar ekranında')} ${s.v} ${T('atıf alan ve dışarıya açık bir kaynak listeleniyor. Hangi kaynak olduğunu ve giriş koşulunu orada görürsünüz.')}`,
@@ -4431,6 +4499,7 @@ function buildCenter(d){
   if(kapali.length>=3){
     const toplam=kapali.reduce((a,s)=>a+s.v,0);
     out.push({
+      ref:'src:blocked', kindKey:'source',
       sev:'mid', icon:'⛔', kind:T('Kaynak'),
       title:`${kapali.length} ${T('kaynak rakiplerinize atıf sağlıyor, size değil')}`,
       body:`${toplam} ${T('atıf bu kaynaklardan geliyor ve hiçbirine profil açamazsınız — içerik onların kendi pazarlaması. Dolaylı yol izlenmeli.')}`,
@@ -4440,6 +4509,7 @@ function buildCenter(d){
 
   const fails=(d.audit||[]).flatMap(c=>c.facs.filter(f=>f.st==='fail').map(f=>({...f,cat:c.n})));
   if(fails.length) out.push({
+    ref:'audit:fails', kindKey:'audit',
     sev: fails.length>=10?'high':'mid', icon:'◳', kind:T('Denetim'),
     title:`${fails.length} ${T('teknik kriter karşılanmıyor')}`,
     body:`${T('En kritikleri')}: ${fails.slice(0,3).map(f=>esc(T(f.n))).join(', ')}. ${
@@ -4450,6 +4520,7 @@ function buildCenter(d){
 
   const olcusuz=(d.plats||[]).filter(p=>!p.locked&&(p.measured===false||!p.checks));
   if(olcusuz.length>=2) out.push({
+    ref:'plat:unmeasured', kindKey:'platform',
     sev:'low', icon:'◔', kind:T('Platform'),
     title:`${olcusuz.length} ${T('platform ölçülmüyor')}`,
     body:`${olcusuz.map(p=>esc(p.n)).join(', ')} ${T('için ölçüm yapılamıyor. Skorunuz mecranın tamamını değil, ölçülen bölümünü temsil ediyor.')}`,
@@ -4581,6 +4652,28 @@ function diagBody(){
         <span class="ct">${b.answers} ${T('cevapta')}</span>
         <span class="rk">${b.avgRank?`${b.avgRank}. ${T('sırada')}`:'—'}</span>
       </div>`).join('')}</div>
+    ${(d.byEngine||[]).length>1?`
+    <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute2);
+        font-weight:600;margin-bottom:10px">${T('Motor başına sıralama')}</div>
+      <div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+      ${d.byEngine.map(e=>{
+        const p=pl(e.engineKey);
+        const meIn=e.brands.some(b=>b.isSelf);
+        return `<div style="border:1px solid var(--border);border-radius:10px;padding:11px 13px;background:var(--card2)">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">
+            <i style="width:8px;height:8px;border-radius:50%;background:${p.c}"></i>
+            <b style="font-size:12.5px">${esc(p.n)}</b>
+            ${meIn?'':`<span class="no" style="margin-left:auto;font-size:10.5px">${T('siz yoksunuz')}</span>`}</div>
+          <ol style="margin:0;padding-left:18px;display:grid;gap:4px">
+          ${e.brands.slice(0,6).map(b=>`
+            <li style="font-size:12px;${b.isSelf?'color:var(--pri);font-weight:600':'color:var(--fg2)'}">
+              ${b.isSelf?esc(S.brand.name||T('Siz')):esc(b.name)}
+              <span class="mut mono" style="font-size:10.5px">${b.avgRank?b.avgRank.toFixed(1):'—'}</span></li>`).join('')}
+          </ol></div>`;}).join('')}
+      </div>
+      <p class="mut" style="font-size:11px;margin-top:9px">${T('Sıra, seçili dönemdeki koşuların ortalamasıdır. Cevap açık bir sıralı liste içeriyorsa hakemin okuduğu liste sırası, içermiyorsa metindeki ilk geçiş sırası esas alınır; hangisi olduğu ham cevap kaydında görülür.')}</p>
+    </div>`:''}
   </section>`:''}
 
   <section class="dgsec">
@@ -5055,22 +5148,24 @@ VIEWS.rivals=()=>{
   const d=S.data;
   const self=d.sov.find(x=>x.you)||{v:0,pct:0};
   const rows=[
-    {n:S.brand.name, you:true, site:d.host, mentions:self.v, sov:self.pct, rank:null, id:null},
+    {n:S.brand.name, you:true, site:d.host, mentions:self.v, sov:self.pct, wsov:self.wpct??null, rank:null, id:null},
     ...S.rivals.map(r=>{
       const s2=d.sov.find(x=>x.n===r.n);
       const raw=(S.rawCompetitors||[]).find(c=>c.id===r.id);
       return {n:r.n, you:false, site:r.d||'—', id:r.id,
-        mentions:s2?s2.v:0, sov:s2?s2.pct:0,
+        mentions:s2?s2.v:0, sov:s2?s2.pct:0, wsov:s2&&s2.wpct!==undefined?s2.wpct:null,
         rank:raw&&raw.mean_rank!==null&&raw.mean_rank!==undefined?Number(raw.mean_rank):null};
     }),
   ].sort((a,b)=>b.mentions-a.mentions);
+  if(!S.candidates && !S.candBusy) loadCandidates();
 
   return head(T('Competitors'),T('Who gets mentioned how often across the prompts you track, and where you stand.'),
     `<button class="btn b-pri b-sm" onclick="addRivalModal()">+ ${T('Add Competitor')}</button>`)+
+  candidatePanel()+
   `<div class="card"><div class="cb"><input class="in" aria-label="Search competitors"
      placeholder="${T('Search competitors...')}" style="max-width:340px" oninput="filterRows(this.value,'rivTbl')"></div>
    <div class="tw"><table id="rivTbl"><thead><tr><th>#</th><th>${T('Name')}</th><th>${T('Website')}</th>
-     <th class="n">${T('Mention count')}</th><th class="n">${T('Share of voice')}</th><th class="n">${T('Avg. rank')}</th><th></th></tr></thead>
+     <th class="n">${T('Mention count')}</th><th class="n">${T('Share of voice')}</th><th class="n" title="${T('Position-weighted: 1st place weighs 1.00, 2nd 0.63, 4th 0.43. Answers "how much of the recommendation do I hold", not just "how often am I named".')}">${T('Weighted SoV')}</th><th class="n">${T('Avg. rank')}</th><th></th></tr></thead>
    <tbody>${rows.map((x,i)=>`<tr>
      <td class="n">${i+1}</td>
      <td><span style="display:flex;align-items:center;gap:9px"><span style="width:21px;height:21px;border-radius:6px;
@@ -5081,6 +5176,7 @@ VIEWS.rivals=()=>{
      <td class="mut mono" style="font-size:12px">${esc(x.site)}</td>
      <td class="n" style="font-weight:600">${x.mentions}</td>
      <td class="n">${x.sov.toFixed(1)}%</td>
+     <td class="n">${x.wsov!==null&&x.wsov!==undefined?x.wsov.toFixed(1)+'%':'—'}</td>
      <td class="n">${x.rank!==null?x.rank.toFixed(1):'—'}</td>
      <td>${x.you?'':`<button class="btn b-gh b-sm" onclick="rmRival('${x.id}')">${T('Remove')}</button>`}</td></tr>`).join('')}
    </tbody></table></div></div>
@@ -5095,6 +5191,51 @@ VIEWS.rivals=()=>{
       <div class="cb">${attributePanel()}</div></div>
    </div>`;
 };
+
+/* §12 — potansiyel rakipler. Hakem, cevaplarda gördüğü ama takip edilmeyen
+ * marka adlarını puanlamayı etkileyemeyen ayrı bir alanda bildirir; burada
+ * yalnızca sayaç birikir. Rakip olarak ekleme kararı her zaman operatörde. */
+async function loadCandidates(){
+  if(S.candBusy) return;
+  S.candBusy=true;
+  try{
+    const r=await api.get(`/api/competitors/candidates?workspace=${S.workspaceId}`);
+    S.candidates=r.candidates||[];
+  }catch{ S.candidates=[]; }
+  finally{ S.candBusy=false; if(S.route==='rivals') render(); }
+}
+
+async function candAct(id,action){
+  try{
+    const r=await api.post('/api/competitors/candidates',{workspaceId:S.workspaceId,id,action});
+    S.candidates=(S.candidates||[]).filter(c=>c.id!==id);
+    if(action==='add'){
+      toast(T('Competitor added — matched against stored answers'));
+      await loadResults();
+    }
+    render();
+  }catch(e){ toast(e.message,'error'); }
+}
+
+function candidatePanel(){
+  const list=S.candidates;
+  if(!list || !list.length) return '';
+  return `<div class="card" style="margin-bottom:16px"><div class="ch"><div>
+    <h3>◎ ${T('Potential competitors')} <span class="chip">${list.length}</span></h3>
+    <div class="sub">${T('Brands the answers keep naming that you do not track yet. Adding one recalculates share of voice from stored answers at no scan cost.')}</div>
+  </div></div><div class="cb" style="display:flex;flex-wrap:wrap;gap:10px">
+    ${list.slice(0,12).map(c=>`
+      <div style="display:flex;align-items:center;gap:9px;border:1px solid var(--border);
+        border-radius:9px;padding:8px 11px;background:var(--bg2)">
+        <span><b>${esc(c.name)}</b>
+          <span class="mut" style="font-size:11px"> · ${c.mentions} ${T('answers')}</span>
+          ${c.sample_prompt?`<div class="mut" style="font-size:10px;max-width:260px;overflow:hidden;
+            text-overflow:ellipsis;white-space:nowrap">“${esc(c.sample_prompt)}”</div>`:''}</span>
+        <button class="btn b-pri b-sm" onclick="candAct('${c.id}','add')">+ ${T('Track')}</button>
+        <button class="btn b-gh b-sm" onclick="candAct('${c.id}','dismiss')" title="${T('Dismiss')}">×</button>
+      </div>`).join('')}
+  </div></div>`;
+}
 
 function attributePanel(){
   const A=S.attributes;
