@@ -50,6 +50,11 @@ export const LIMITS = {
    * engine query per run. Generous enough that a customer can retype a domain
    * they mistyped, tight enough that the endpoint cannot be looped. */
   siteAnalyze: { max: 12, window: 60 * 60 },
+
+  /* Variant fan-out: one press generates up to 6 phrasings and queues them on
+   * up to 4 engines — ~24 provider calls plus the judge. Growth+ only, and
+   * still not a button to lean on. */
+  variants: { max: 8, window: 60 * 60 },
 } satisfies Record<string, Limit>;
 
 /** Client IP, trusting the proxy header Vercel sets. */
