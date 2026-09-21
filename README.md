@@ -126,7 +126,9 @@ Dürüst olmak gerekirse bunlar arayüzde boş durum gösteriyor, sahte veri de�
 
 - **GA4 ve Search Console** — OAuth akışı gerekiyor. Trafik ve Arama
   Performansı ekranları bağlanana kadar boş.
-- **Bot trafiği** — sunucu/CDN log alımı gerekiyor. Şema hazır, yutucu değil.
+- **Bot trafiği** — ✅ artık var: `/api/bots/ingest` token'lı yutucu, Nginx/Apache
+  combined ve JSON satırlarını ayrıştırır; yalnızca gün×bot sayaçları saklanır
+  (IP/ziyaretçi verisi tutulmaz). Panel: Bot Traffic ekranı.
 - **Nitelik analizi** — hakem modeli ve birkaç yüz cevaplık külliyat gerekiyor.
 - **Faturalama** — `/api/org/plan` yükseltmeyi 402 ile reddediyor. Ödeme
   sağlayıcısı entegre edilip webhook'u bu ucu çağırana kadar plan yükseltmesi
@@ -144,6 +146,7 @@ node qa/sec2.js             # SSRF, yetki yükseltme, hız sınırı, girdi doğ
 node qa/sec3.js             # parola akışları, oturum süresi, denetim sertleştirme
 node qa/sec4.js             # XSS — her kullanıcı alanına enjeksiyon denemesi
 node qa/sec5.js             # kuyruk eşzamanlılığı ve toplam sağlayıcı arızası
+node qa/sec6.js             # v2-v5 uçları: aday/öneri/içerik/varyant/bot izolasyonu
 node qa/vis-live.js         # görsel/erişilebilirlik, 17 ekran × 2 kırılım
 ```
 
