@@ -363,7 +363,11 @@ export async function rollUp(scanId: string, workspaceId: string, opts: { finali
   const runs = await sql`
     select ar.*, p.intent, p.volume from answer_runs ar
       join prompts p on p.id = ar.prompt_id
-     where ar.scan_id = ${scanId}`;
+     where ar.scan_id = ${scanId}
+       -- Variant runs measure phrasing robustness, not the tracked prompt
+       -- set; letting them into the rollup would move the score every time
+       -- someone presses the test button.
+       and coalesce(p.source, '') <> 'variant'`;
 
   if (!runs.length) {
     if (finalize) {
