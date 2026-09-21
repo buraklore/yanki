@@ -198,17 +198,45 @@ export function rankBrands(
 /* Citations                                                           */
 /* ------------------------------------------------------------------ */
 
-/** Pulls cited domains out of an answer, from markdown links and bare URLs. */
-export function extractDomains(answer: string, structured?: { url?: string }[]): string[] {
-  const urls = new Set<string>();
-  (structured || []).forEach(c => c.url && urls.add(c.url));
-  for (const m of answer.matchAll(/https?:\/\/[^\s)\]<>"']+/g)) urls.add(m[0]);
+export interface Citation {
+  domain: string;
+  /** Representative page for this domain in this answer — the first URL seen.
+   *  Domain-only citations (bare hostnames from SERP payloads) leave it null. */
+  url: string | null;
+}
 
-  const domains = new Set<string>();
+/**
+ * Pulls cited pages out of an answer, from structured citations, markdown
+ * links and bare URLs. One row per domain, keeping the first full URL as the
+ * representative page: run_citations is unique on (run_id, domain), so the
+ * page-level detail rides along without changing that contract.
+ */
+export function extractCitations(answer: string, structured?: { url?: string }[]): Citation[] {
+  const urls: string[] = [];
+  (structured || []).forEach(c => c.url && urls.push(c.url));
+  for (const m of answer.matchAll(/https?:\/\/[^\s)\]<>"']+/g)) {
+    // Prose swallows trailing punctuation into the match ("…/urunler." at a
+    // sentence end). Harmless while we kept only domains; fatal now that the
+    // URL is stored as a clickable page. Structured citations are left as-is.
+    urls.push(m[0].replace(/[.,;:!?»""']+$/, ''));
+  }
+
+  const byDomain = new Map<string, string | null>();
   for (const u of urls) {
     try {
-      domains.add(new URL(u).hostname.replace(/^www\./, '').toLowerCase());
+      const parsed = new URL(u);
+      const domain = parsed.hostname.replace(/^www\./, '').toLowerCase();
+      if (!byDomain.has(domain)) {
+        // A bare hostname carries no page information worth storing.
+        const isPage = parsed.pathname !== '/' || !!parsed.search;
+        byDomain.set(domain, isPage ? u.slice(0, 500) : null);
+      }
     } catch { /* ignore malformed */ }
   }
-  return [...domains];
+  return [...byDomain.entries()].map(([domain, url]) => ({ domain, url }));
+}
+
+/** Pulls cited domains out of an answer, from markdown links and bare URLs. */
+export function extractDomains(answer: string, structured?: { url?: string }[]): string[] {
+  return extractCitations(answer, structured).map(c => c.domain);
 }
