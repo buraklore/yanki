@@ -164,7 +164,7 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
   await Promise.all(Array.from({ length: LANES }, async () => {
     for (;;) {
       const job = queue.shift();
-      if (!job || deadline - Date.now() < 24_000) return;
+      if (!job || deadline - Date.now() < 28_000) return;
       try {
         await runJob(job);
         await sql`update scan_jobs set done_at = now(), error = null where id = ${job.id}`;
@@ -259,7 +259,13 @@ async function runJob(job: Job) {
   // progress of every job in it was lost, which is how a scan freezes at
   // 0/N while looking alive. The ask window now shrinks to what is left of
   // the invocation after reserving time for the judge and the DB writes.
-  const JUDGE_RESERVE = 16_000;
+  // Reserve must EXCEED the judge's own timeout (20s in llm.ts) plus DB
+  // writes, or a job admitted at the edge overruns the deadline by the
+  // difference — which is precisely the 504 this logic exists to prevent,
+  // and precisely what v6 shipped with (reserve 16s < judge 20s). With
+  // ask ≤ left − reserve, a job now ends at start + ask + judge + db ≤
+  // deadline by construction, for every admission time.
+  const JUDGE_RESERVE = 23_000;
   const left = job.deadline ? job.deadline - Date.now() : Infinity;
   const askMs = Math.min(35_000, left - JUDGE_RESERVE);
   if (askMs < 5_000) throw new Error('no time budget left in this invocation');
