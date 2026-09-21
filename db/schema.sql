@@ -505,3 +505,11 @@ create table if not exists generated_content (
 );
 create index if not exists generated_content_ws_idx
   on generated_content (workspace_id, created_at desc);
+
+-- §fan-out — query variants. A variant is an ordinary prompt row with
+-- source='variant', active=false and parent_id set: it rides the existing
+-- queue, judge and extraction for free, never counts against the prompt cap
+-- (caps count active rows) and never enters the score (rollUp excludes the
+-- source). Deleting the parent deletes its variants.
+alter table prompts add column if not exists parent_id uuid references prompts(id) on delete cascade;
+create index if not exists prompts_parent_idx on prompts (parent_id) where parent_id is not null;
