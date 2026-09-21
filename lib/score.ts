@@ -234,6 +234,39 @@ export function shareOfVoice(mentions: Record<string, number>): Record<string, n
 }
 
 /**
+ * Position-weighted share of voice.
+ *
+ *   wSOV(b) = Σ π(rank) over b's mentions / Σ π(rank) over all tracked mentions
+ *   π(rank) = 1 / log2(1 + rank)      — the same prominence curve the score uses
+ *
+ * Plain SOV answers "how often am I named"; this answers "how much of the
+ * recommendation weight do I hold". First place is worth 1.00, second 0.63,
+ * fourth 0.43 — being named last in every answer no longer reads the same as
+ * leading every answer. Mentions with no rank (rank 0 from degraded rows)
+ * count at the fourth-place weight rather than zero, so a judge outage lowers
+ * confidence without erasing a real mention.
+ *
+ * Same denominator rule as shareOfVoice: the tracked brand set only.
+ * If you change this formula, change the methodology panel in app.html in
+ * the same commit.
+ */
+export function weightedShareOfVoice(
+  ranksByBrand: Record<string, number[]>,
+): Record<string, number> {
+  const w = (rank: number) => prominence(rank > 0 ? rank : 4);
+  const totals: Record<string, number> = {};
+  let grand = 0;
+  for (const [id, ranks] of Object.entries(ranksByBrand)) {
+    const t = ranks.reduce((a, r) => a + w(r), 0);
+    totals[id] = t;
+    grand += t;
+  }
+  const out: Record<string, number> = {};
+  for (const [id, t] of Object.entries(totals)) out[id] = grand ? (t / grand) * 100 : 0;
+  return out;
+}
+
+/**
  * Adaptive run count. Non-determinism is the whole reason we run R times,
  * but running 5 every time is expensive. If the first 3 runs agree, the
  * remaining 2 buy nothing.
