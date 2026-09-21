@@ -4788,7 +4788,7 @@ function variantSection(pid){
 
   if(!v || !v.variants || !v.variants.length) return `<section class="dgsec">
     <h4>✳ ${T('Varyant sağlamlık testi')}</h4>
-    <p style="font-size:12.5px;color:var(--mute);line-height:1.7;margin-bottom:13px">${T('Bu sorgunun 6 eş anlamlı ifadesi üretilir ve her biri en ağırlıklı 4 motorda birer kez sorulur (~24 ölçüm). Sonuç: markanız hangi ifadelerde görünüyor, hangilerinde kayboluyor.')}</p>
+    <p style="font-size:12.5px;color:var(--mute);line-height:1.7;margin-bottom:13px">${T('Bu sorgunun 6 eş anlamlı ifadesi üretilir ve her biri, yapılandırılmış motorlarda (en çok 4, en ağırlıklılar) birer kez sorulur. Sonuç: markanız hangi ifadelerde görünüyor, hangilerinde kayboluyor.')}</p>
     <button class="btn b-pri b-sm" onclick="startVarTest('${pid}')">✳ ${T('Testi başlat')}</button></section>`;
 
   const engines=[...new Set(v.cells.map(c=>c.engineKey))];
