@@ -2604,6 +2604,7 @@ const S = {
   recs: null, recsBusy: false,
   genHistory: null, genBusy: false, writerPid: null,
   varTest: {},
+  bots: null, botsBusy: false,
   lang: 'tr',
 };
 
@@ -5284,12 +5285,83 @@ function exportOpps(){
   dl('yanki-opportunities.csv',csv(rows),'text/csv;charset=utf-8');
 }
 
-VIEWS.bots=()=>head(T('Bot Traffic'),T('What GPTBot, ClaudeBot, PerplexityBot and other AI crawlers do on your site.'))+
-  `<div class="card"><div class="empty"><div class="ic">⛭</div>
-    <b style="color:var(--fg);font-size:14px">${T('No crawler logs connected')}</b>
-    <p style="margin-top:8px;max-width:58ch;margin-inline:auto">${T('A page that is never crawled cannot enter an AI answer, which makes crawler traffic the leading indicator of visibility — typically two to six weeks ahead of the score. Reading it requires your server or CDN logs.')}</p>
-    <p style="margin-top:14px;font-size:12px;color:var(--mute2)">${T('Supported sources: Cloudflare Logpush, Nginx/Apache access logs, S3 delivery. Ingestion ships in the next release.')}</p>
+VIEWS.bots=()=>{
+  if(!S.bots && !S.botsBusy) loadBots();
+  const bd=S.bots;
+  const header=head(T('Bot Traffic'),T('What GPTBot, ClaudeBot, PerplexityBot and other AI crawlers do on your site.'));
+
+  if(!bd) return header+`<div class="card"><div class="empty" style="padding:40px">◌ ${T('Yükleniyor…')}</div></div>`;
+  if(bd.error) return header+`<div class="card"><div class="empty" style="padding:40px"><div class="ic">⚠</div>${esc(bd.error)}</div></div>`;
+
+  const rows=bd.bots||[];
+  const total=rows.reduce((a,b)=>a+b.hits,0);
+  const llmsHit=rows.some(b=>b.llms>0);
+  const llmsGen=(bd.generated||[]).find(g=>g.kind==='llms');
+  const cronCmd=`tail -n 1000 /var/log/nginx/access.log \\\n | python3 -c 'import sys,json;print(json.dumps({"lines":sys.stdin.read().splitlines()}))' \\\n | curl -s -X POST ${location.origin}/api/bots/ingest \\\n     -H "authorization: Bearer ${bd.token}" \\\n     -H "content-type: application/json" -d @-`;
+
+  const setup=`<div class="card" style="margin-bottom:16px"><div class="ch"><div>
+    <h3>⛭ ${T('Log gönderimi kurulumu')}</h3>
+    <div class="sub">${T('Sunucu access log satırlarınızı periyodik gönderin; ham satırlar saklanmaz, yalnızca AI bot sayaçları tutulur — IP ve ziyaretçi verisi kaydedilmez.')}</div>
+  </div></div><div class="cb">
+    <div class="fld"><label>${T('Ingest token')}</label>
+      <div style="display:flex;gap:9px;align-items:center">
+        <code id="botTok" class="mono" style="font-size:11.5px;background:var(--card3);padding:7px 10px;border-radius:7px;flex:1;overflow:auto;white-space:nowrap">${esc(bd.token)}</code>
+        <button class="btn b-gh b-sm" onclick="copy('botTok')">${T('Copy')}</button>
+        <button class="btn b-gh b-sm" onclick="rotateBotToken()" title="${T('Eski token anında geçersiz olur')}">↻ ${T('Yenile')}</button></div>
+      <div class="hint">${T('Token yalnızca bu workspace\'in bot sayaçlarını artırabilir; başka hiçbir yetkisi yoktur.')}</div></div>
+    <div class="fld"><label>${T('Örnek cron (10 dakikada bir — Nginx/Apache combined log)')}</label>
+      <pre id="botCron" style="font-size:11px">${esc(cronCmd)}</pre>
+      <button class="btn b-gh b-sm" onclick="copy('botCron')">${T('Copy')}</button>
+      <div class="hint">${T('JSON log gönderen kaynaklar (Cloudflare Logpush vb.) satırları doğrudan "lines" dizisinde gönderebilir; her iki biçim de ayrıştırılır.')}</div></div>
   </div></div>`;
+
+  if(!rows.length) return header+setup+
+   `<div class="card"><div class="empty"><div class="ic">⛭</div>
+     <b style="color:var(--fg);font-size:14px">${T('Henüz bot kaydı yok')}</b>
+     <p style="margin-top:8px;max-width:56ch;margin-inline:auto">${T('Hiç taranmayan sayfa cevaba giremez — bot trafiği, skorun 2-6 hafta önden giden öncü göstergesidir. Yukarıdaki cron kurulduğunda ilk kayıtlar birkaç dakika içinde burada görünür.')}</p></div></div>`;
+
+  return header+
+  `<div class="g4" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi"><div class="t">${T('AI bot isteği')}</div>
+      <div class="v">${nf(total)}</div><div class="d">${T('son')} ${bd.days} ${T('gün')} · ${rows.length} ${T('farklı bot')}</div></div>
+    <div class="kpi"><div class="t">llms.txt</div>
+      <div class="v ${llmsHit?'ok':''}">${llmsHit?'✓':'—'}</div>
+      <div class="d">${llmsHit?T('botlar tarafından çekildi'):T('henüz hiçbir bot çekmedi')}${llmsGen?` · ${T('üretim')}: ${new Date(llmsGen.at).toLocaleDateString()}`:''}</div></div>
+    <div class="kpi"><div class="t">${T('En aktif bot')}</div>
+      <div class="v" style="font-size:19px">${esc(rows[0].bot)}</div>
+      <div class="d">${nf(rows[0].hits)} ${T('istek')}</div></div>
+  </div>
+  ${setup}
+  <div class="card"><div class="ch"><div><h3>${T('Bot bazında etkinlik')}</h3>
+    <div class="sub">${T('llms.txt / robots.txt kolonları: o bot dosyayı en az bir kez çekti mi. Üretim tarihinden ilk çekilişe geçen süre, teknik düzeltmenin gerçek gecikmesidir.')}</div></div></div>
+   <div class="tw"><table><thead><tr><th>${T('Bot')}</th><th class="n">7 ${T('gün')}</th><th class="n">${bd.days} ${T('gün')}</th>
+     <th class="n">llms.txt</th><th class="n">robots.txt</th><th class="n">sitemap</th><th>${T('İlk görülme')}</th><th>${T('Son görülme')}</th></tr></thead>
+   <tbody>${rows.map(b=>`<tr>
+     <td><b>${esc(b.bot)}</b></td>
+     <td class="n">${nf(b.hits7||0)}</td>
+     <td class="n" style="font-weight:600">${nf(b.hits)}</td>
+     <td class="n">${b.llms>0?`<span style="color:var(--ok)">✓ ${b.llms}</span>`:'<span class="mut">—</span>'}</td>
+     <td class="n">${b.robots>0?`<span style="color:var(--ok)">✓ ${b.robots}</span>`:'<span class="mut">—</span>'}</td>
+     <td class="n">${b.sitemap>0?`<span style="color:var(--ok)">✓ ${b.sitemap}</span>`:'<span class="mut">—</span>'}</td>
+     <td class="mut" style="font-size:12px">${new Date(b.first_seen).toLocaleDateString()}</td>
+     <td class="mut" style="font-size:12px">${relTime(b.last_seen)}</td></tr>`).join('')}
+   </tbody></table></div></div>`;
+};
+
+async function loadBots(){
+  if(S.botsBusy) return; S.botsBusy=true;
+  try{ S.bots=await api.get(`/api/bots?workspace=${S.workspaceId}&days=${S.range}`); }
+  catch(e){ S.bots={error:e.message}; }
+  finally{ S.botsBusy=false; if(S.route==='bots') render(); }
+}
+
+async function rotateBotToken(){
+  try{
+    const r=await api.post('/api/bots',{workspaceId:S.workspaceId,action:'rotate'});
+    if(S.bots) S.bots.token=r.token;
+    toast(T('Token yenilendi — eski token artık geçersiz')); render();
+  }catch(e){ toast(e.message,'error'); }
+}
 VIEWS.traffic=()=>head(T('Traffic'),T('Sessions and conversions coming from AI platforms, matched through GA4.'))+
   `<div class="card"><div class="empty"><div class="ic">◫</div>
     <b style="color:var(--fg);font-size:14px">${T('Google Analytics 4 is not connected')}</b>
