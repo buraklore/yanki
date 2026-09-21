@@ -3,7 +3,7 @@ import { engineByKey, enabledEngines, type Engine } from './engines';
 import { extract, type BrandRef } from './extract';
 import { scoreCell, aggregate, shareOfVoice, type Cell, type Run } from './score';
 import { PLAN_RANK, limits, type PlanKey } from './plans';
-import { buildAliases, rankBrands } from './entity';
+import { buildAliases, rankBrands, key as brandKey } from './entity';
 import { detectChanges } from './digest';
 
 /**
@@ -232,16 +232,19 @@ async function runJob(job: Job) {
   try {
     answer = await engine.ask({
       prompt: prompt.text,
-      language: ws.language,
-      country: ws.country_code,
-      city: ws.city,
+      // §5 — a prompt may target a different market than its workspace.
+      // Null columns inherit; the override changes only where the question
+      // is asked, never how the answer is scored.
+      language: prompt.language ?? ws.language,
+      country: prompt.country_code ?? ws.country_code,
+      city: prompt.country_code && prompt.country_code !== ws.country_code ? null : ws.city,
       signal: ac.signal,
     });
   } finally {
     clearTimeout(timer);
   }
 
-  const { run, ranks, citedDomains, degraded } = await extract({
+  const { run, ranks, citedPages, others, rankKind, judgeVersion, degraded } = await extract({
     answerText: answer.text,
     citations: answer.citations,
     brands,
@@ -251,14 +254,16 @@ async function runJob(job: Job) {
   const [inserted] = await sql`
     insert into answer_runs (scan_id, workspace_id, prompt_id, engine_key, run_index,
       model_version, method, latency_ms, answer_text,
-      mentioned, rank, cited, recommendation, sentiment, degraded)
+      mentioned, rank, cited, recommendation, sentiment, degraded, rank_kind, judge_version)
     values (${job.scan_id}, ${job.workspace_id}, ${job.prompt_id}, ${job.engine_key}, ${job.run_index},
       ${answer.modelVersion}, ${answer.method}, ${answer.latencyMs}, ${answer.text.slice(0, 20000)},
-      ${run.mentioned}, ${run.rank}, ${run.cited}, ${run.recommendation}, ${run.sentiment}, ${degraded ?? null})
+      ${run.mentioned}, ${run.rank}, ${run.cited}, ${run.recommendation}, ${run.sentiment}, ${degraded ?? null},
+      ${rankKind}, ${judgeVersion})
     on conflict (scan_id, prompt_id, engine_key, run_index) do update
       set answer_text = excluded.answer_text, mentioned = excluded.mentioned,
           rank = excluded.rank, cited = excluded.cited,
-          recommendation = excluded.recommendation, sentiment = excluded.sentiment
+          recommendation = excluded.recommendation, sentiment = excluded.sentiment,
+          rank_kind = excluded.rank_kind, judge_version = excluded.judge_version
     returning id`;
 
   await sql`delete from run_brands where run_id = ${inserted.id}`;
@@ -272,10 +277,35 @@ async function runJob(job: Job) {
     }));
   if (brandRows.length) await sql`insert into run_brands ${sql(brandRows)} on conflict do nothing`;
 
-  if (citedDomains.length) {
-    await sql`insert into run_citations ${sql(
-      citedDomains.slice(0, 40).map(d => ({ run_id: inserted.id, domain: d })),
-    )} on conflict do nothing`;
+  if (citedPages.length) {
+    /* Page-level citations. (run_id, domain) stays the identity — existing
+     * rows and every domain-level query keep working — and the URL upgrades
+     * in place when a re-run supplies one for a row that had none. */
+    await sql`
+      insert into run_citations ${sql(
+        citedPages.slice(0, 40).map(c => ({ run_id: inserted.id, domain: c.domain, url: c.url })),
+      )}
+      on conflict (run_id, domain) do update
+        set url = coalesce(run_citations.url, excluded.url)`;
+  }
+
+  /* §12 — potential competitors. The judge reported untracked brand names in
+   * a field that cannot affect scoring; here they only accumulate counters so
+   * the operator can promote or dismiss them from the Competitors screen.
+   * Names already promoted or dismissed keep their status — only the counters
+   * move, so a dismissal is never silently undone. */
+  if (others.length) {
+    const rows = others.map(name => ({
+      workspace_id: job.workspace_id,
+      name,
+      norm_key: brandKey(name),
+      sample_prompt_id: job.prompt_id,
+    }));
+    await sql`
+      insert into candidate_brands ${sql(rows)}
+      on conflict (workspace_id, norm_key) do update
+        set mentions = candidate_brands.mentions + 1,
+            last_seen = now()`;
   }
 
   await maybeExtendRuns(job);
