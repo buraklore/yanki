@@ -37,7 +37,7 @@ export const POST = handler(async (req) => {
   }
 
   let drained = null;
-  if (warm) drained = await drainJobs(24, 40_000);
+  if (warm) drained = await drainJobs(24, 48_000);
 
   return Response.json({ ...result, drained });
 });

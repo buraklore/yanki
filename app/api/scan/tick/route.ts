@@ -31,7 +31,7 @@ export const POST = handler(async (req) => {
 
   if (!pending) return Response.json({ pending: 0, drained: null });
 
-  const drained = await drainJobs(20, 45_000);
+  const drained = await drainJobs(20, 52_000);
 
   const [{ n: left }] = await sql`
     select count(*)::int as n from scan_jobs j

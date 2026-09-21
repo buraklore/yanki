@@ -97,11 +97,18 @@ type JudgeVerdict = {
 
 type JudgeOutput = { brands: JudgeVerdict[]; others: string[] };
 
+/** The judge's own ceiling. scan.ts sizes its per-job reserve FROM this
+ * constant, so the two can never drift apart again — that drift (reserve
+ * 16s < judge 20s in v6) is what turned one slow judge call into a killed
+ * invocation. A verdict is a small JSON; 12s is generous for it. */
+export const JUDGE_TIMEOUT_MS = 12_000;
+
 async function judge(answer: string, candidates: { id: string; surface: string; context: string }[]):
   Promise<JudgeOutput | null> {
   if (!llmProvider() || !candidates.length) return null;
 
   const parsed = await llmJson<{ brands: JudgeVerdict[]; others?: unknown }>({
+    signal: AbortSignal.timeout(JUDGE_TIMEOUT_MS),
     system: JUDGE_SYSTEM,
     maxTokens: 1100,
     temperature: 0,

@@ -1,6 +1,6 @@
 import { sql } from './db';
 import { engineByKey, enabledEngines, type Engine } from './engines';
-import { extract, type BrandRef } from './extract';
+import { extract, JUDGE_TIMEOUT_MS, type BrandRef } from './extract';
 import { scoreCell, aggregate, shareOfVoice, type Cell, type Run } from './score';
 import { PLAN_RANK, limits, type PlanKey } from './plans';
 import { buildAliases, rankBrands, key as brandKey } from './entity';
@@ -146,6 +146,11 @@ export async function enqueueScan(
 
 /* ------------------------------------------------------------------ */
 
+/** Reserved per job for the judge + DB writes; derived, never hand-tuned. */
+export const JUDGE_RESERVE_MS = JUDGE_TIMEOUT_MS + 3_000;
+/** Below this ask window an attempt is pointless; the job waits instead. */
+export const MIN_ASK_MS = 5_000;
+
 export interface DrainResult { claimed: number; ok: number; failed: number; finalised: number }
 
 export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainResult> {
@@ -164,7 +169,7 @@ export async function drainJobs(batch = 20, budgetMs = 45_000): Promise<DrainRes
   await Promise.all(Array.from({ length: LANES }, async () => {
     for (;;) {
       const job = queue.shift();
-      if (!job || deadline - Date.now() < 28_000) return;
+      if (!job || deadline - Date.now() < JUDGE_RESERVE_MS + MIN_ASK_MS) return;
       try {
         await runJob(job);
         await sql`update scan_jobs set done_at = now(), error = null where id = ${job.id}`;
@@ -259,16 +264,16 @@ async function runJob(job: Job) {
   // progress of every job in it was lost, which is how a scan freezes at
   // 0/N while looking alive. The ask window now shrinks to what is left of
   // the invocation after reserving time for the judge and the DB writes.
-  // Reserve must EXCEED the judge's own timeout (20s in llm.ts) plus DB
-  // writes, or a job admitted at the edge overruns the deadline by the
-  // difference — which is precisely the 504 this logic exists to prevent,
-  // and precisely what v6 shipped with (reserve 16s < judge 20s). With
-  // ask ≤ left − reserve, a job now ends at start + ask + judge + db ≤
-  // deadline by construction, for every admission time.
-  const JUDGE_RESERVE = 23_000;
+  // Reserve must EXCEED the judge's own timeout plus DB writes, or a job
+  // admitted at the edge overruns the deadline by the difference — the v6
+  // 504. It is derived from the judge's exported constant so the two cannot
+  // drift apart, and the judge ceiling itself is 12s rather than 20s so the
+  // ask window stays wide: Gemini with search grounding routinely needs
+  // 15-30s, and a reserve that eats the window aborts healthy answers at
+  // the finish line (v6.2's regression, measured in production).
   const left = job.deadline ? job.deadline - Date.now() : Infinity;
-  const askMs = Math.min(35_000, left - JUDGE_RESERVE);
-  if (askMs < 5_000) throw new Error('no time budget left in this invocation');
+  const askMs = Math.min(35_000, left - JUDGE_RESERVE_MS);
+  if (askMs < MIN_ASK_MS) throw new Error('no time budget left in this invocation');
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), askMs);
   let answer;

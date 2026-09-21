@@ -33,7 +33,7 @@ export async function GET(req: Request) {
   // left is picked up by /api/results while someone has the dashboard open,
   // or by /api/cron/drain if a scheduler is calling it.
   let drained = null;
-  try { drained = await drainJobs(30, 40_000); } catch { /* enqueue still succeeded */ }
+  try { drained = await drainJobs(30, 45_000); } catch { /* enqueue still succeeded */ }
 
   return Response.json({ considered: workspaces.length, queued: results.length, results, drained });
 }
