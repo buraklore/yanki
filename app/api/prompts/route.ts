@@ -25,7 +25,8 @@ export const GET = handler(async (req) => {
   await requireWorkspace(s, id);
   const rows = await sql`
     select id, text, intent, volume, source, active, language, country_code from prompts
-     where workspace_id = ${id} order by created_at`;
+     where workspace_id = ${id} and coalesce(source, '') <> 'variant'
+     order by created_at`;
   return Response.json({ prompts: rows });
 });
 
